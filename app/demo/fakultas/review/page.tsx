@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function DemoFakultasReviewPage() {
+function FakultasReviewContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const scenario = searchParams.get('scenario') || 'approve';
@@ -330,5 +330,13 @@ export default function DemoFakultasReviewPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function DemoFakultasReviewPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <FakultasReviewContent />
+    </Suspense>
   );
 }

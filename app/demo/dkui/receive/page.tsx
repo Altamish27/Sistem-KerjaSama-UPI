@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function DemoDKUIReceivePage() {
+function DKUIReceiveContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const scenario = searchParams.get('scenario') || 'approve';
@@ -300,5 +300,13 @@ export default function DemoDKUIReceivePage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function DemoDKUIReceivePage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <DKUIReceiveContent />
+    </Suspense>
   );
 }

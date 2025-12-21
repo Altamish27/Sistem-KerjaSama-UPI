@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function DemoApprovedResultPage() {
+function ResultApprovedContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -224,5 +224,13 @@ export default function DemoApprovedResultPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function DemoApprovedResultPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <ResultApprovedContent />
+    </Suspense>
   );
 }

@@ -88,7 +88,7 @@ function MonitoringBar({ currentStep, totalSteps, timeline }: any) {
   );
 }
 
-export default function DemoFlowFakultasPage() {
+function DemoFlowFakultasContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialStep = parseInt(searchParams.get('step') || '1');
@@ -815,5 +815,13 @@ export default function DemoFlowFakultasPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function DemoFlowFakultasPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <DemoFlowFakultasContent />
+    </Suspense>
   );
 }

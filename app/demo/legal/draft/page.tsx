@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function DemoLegalDraftPage() {
+function LegalDraftContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const scenario = searchParams.get('scenario') || 'approve';
@@ -245,5 +245,13 @@ export default function DemoLegalDraftPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function DemoLegalDraftPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <LegalDraftContent />
+    </Suspense>
   );
 }

@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function DemoMitraLoginPage() {
+function MitraLoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const scenario = searchParams.get('scenario') || 'approve';
@@ -239,5 +239,13 @@ export default function DemoMitraLoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function DemoMitraLoginPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <MitraLoginContent />
+    </Suspense>
   );
 }
