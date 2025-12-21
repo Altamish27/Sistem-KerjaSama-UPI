@@ -24,25 +24,27 @@ export function ProposalTracker({ proposal, compact = false }: ProposalTrackerPr
       : null
 
   return (
-    <Card className="bg-slate-900/50 border-slate-800">
-      <CardHeader>
+    <Card className="bg-white border border-slate-200 shadow-sm">
+      <CardHeader className="pb-6">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-white">Status Tracking</CardTitle>
-            <CardDescription className="text-slate-400">Progress dan riwayat persetujuan proposal</CardDescription>
+            <CardTitle className="text-2xl font-bold text-slate-900">Status Tracking</CardTitle>
+            <CardDescription className="text-slate-600 text-base mt-2">
+              Progress dan riwayat persetujuan proposal
+            </CardDescription>
           </div>
           {nextStep && (
-            <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30">
-              <ArrowRight className="w-3 h-3 mr-1" />
+            <Badge className="bg-amber-50 text-amber-800 border border-amber-200 font-medium px-3 py-1.5 text-sm">
+              <ArrowRight className="w-3.5 h-3.5 mr-1.5" />
               Selanjutnya: {nextStep.label}
             </Badge>
           )}
         </div>
       </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Timeline Progress */}
+      <CardContent className="space-y-6 pt-2">
+        {/* Timeline Progress - Vertical with solid lines */}
         <div className="relative">
-          <div className={`space-y-4 ${compact ? "max-h-96 overflow-y-auto pr-2" : ""}`}>
+          <div className={`space-y-1 ${compact ? "max-h-96 overflow-y-auto pr-2" : ""}`}>
             {workflowSteps.map((step, index) => {
               const isCompleted = index < currentStepIndex
               const isCurrent = index === currentStepIndex
@@ -63,27 +65,31 @@ export function ProposalTracker({ proposal, compact = false }: ProposalTrackerPr
               const displayHistory = historyForStep || completedHistory
 
               return (
-                <div key={step.status} className="flex gap-4 relative">
-                  {/* Connector Line */}
+                <div key={step.status} className="flex gap-5 relative">
+                  {/* Connector Line - Subtle and professional */}
                   {index < workflowSteps.length - 1 && (
                     <div
-                      className={`absolute left-5 top-12 w-0.5 h-full -ml-px ${
-                        isCompleted ? "bg-emerald-500" : isRejectedAtThis ? "bg-red-500" : "bg-slate-700"
+                      className={`absolute left-5 top-14 w-0.5 h-[calc(100%-16px)] -ml-px ${
+                        isCompleted 
+                          ? "bg-emerald-200" 
+                          : isRejectedAtThis 
+                            ? "bg-red-300" 
+                            : "bg-slate-200"
                       }`}
                     />
                   )}
 
-                  {/* Icon */}
+                  {/* Icon - Timeline Node: Completed = green subtle, Current = amber accent, Rejected = red */}
                   <div className="flex-shrink-0 z-10">
                     <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${
+                      className={`w-11 h-11 rounded-full flex items-center justify-center border-2 transition-all ${
                         isRejectedAtThis
-                          ? "bg-red-500/20 border-red-500 text-red-400 shadow-lg shadow-red-500/20"
+                          ? "bg-red-50 border-red-500 text-red-600"
                           : isCompleted
-                            ? "bg-emerald-500/20 border-emerald-500 text-emerald-400 shadow-lg shadow-emerald-500/20"
+                            ? "bg-emerald-50 border-emerald-500 text-emerald-700"
                             : isCurrent
-                              ? "bg-blue-500/20 border-blue-500 text-blue-400 shadow-lg shadow-blue-500/20 animate-pulse"
-                              : "bg-slate-800 border-slate-700 text-slate-500"
+                              ? "bg-amber-50 border-amber-400 text-amber-700 ring-4 ring-amber-100"
+                              : "bg-slate-50 border-slate-300 text-slate-400"
                       }`}
                     >
                       {isRejectedAtThis ? (
@@ -98,40 +104,56 @@ export function ProposalTracker({ proposal, compact = false }: ProposalTrackerPr
                     </div>
                   </div>
 
-                  {/* Content */}
-                  <div className="flex-1 pb-8">
-                    <div className="bg-slate-800/30 rounded-lg p-4 border border-slate-700/50">
-                      <div className="flex items-start justify-between gap-2 mb-2">
+                  {/* Content Card with soft shadow */}
+                  <div className="flex-1 pb-6">
+                    <div
+                      className={`rounded-xl p-6 border transition-all ${
+                        isCurrent
+                          ? "bg-amber-50/30 border-amber-200 shadow-sm"
+                          : isCompleted
+                            ? "bg-slate-50/50 border-slate-200"
+                            : isRejectedAtThis
+                              ? "bg-red-50/30 border-red-200"
+                              : "bg-white border-slate-150"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-4 mb-4">
                         <div>
-                          <h4 className="text-sm font-semibold text-white">{step.label}</h4>
-                          <p className="text-xs text-slate-400 mt-0.5">
-                            {isCompleted ? "Selesai" : isCurrent ? "Sedang Berlangsung" : isPending ? "Menunggu" : ""}
+                          <h4 className="text-lg font-bold text-slate-900">{step.label}</h4>
+                          <p className="text-sm text-slate-600 mt-1">
+                            {isCompleted 
+                              ? "Selesai" 
+                              : isCurrent 
+                                ? "Sedang Berlangsung" 
+                                : isPending 
+                                  ? "Menunggu" 
+                                  : ""}
                           </p>
                         </div>
                         <Badge
                           variant="outline"
-                          className={`text-xs ${
+                          className={`text-xs font-medium px-2.5 py-1 ${
                             isCompleted
-                              ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/20"
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                               : isCurrent
-                                ? "bg-blue-500/10 text-blue-300 border-blue-500/20"
-                                : "bg-slate-700/30 text-slate-500 border-slate-600/30"
+                                ? "bg-amber-50 text-amber-700 border-amber-200"
+                                : "bg-slate-100 text-slate-500 border-slate-200"
                           }`}
                         >
                           {step.role === "system" ? "Sistem" : step.role.replace("_", " ").toUpperCase()}
                         </Badge>
                       </div>
 
-                      {/* History Info */}
+                      {/* History Info with proper text sizing */}
                       {(isCompleted || isCurrent) && displayHistory && (
-                        <div className="mt-3 pt-3 border-t border-slate-700/50 space-y-2">
-                          <div className="flex items-center gap-2 text-xs">
-                            <span className="text-slate-400">Oleh:</span>
-                            <span className="text-white font-medium">{displayHistory.actorName}</span>
+                        <div className="mt-4 pt-4 border-t border-gray-200 space-y-2.5">
+                          <div className="flex items-center gap-2 text-sm">
+                            <span className="text-gray-500 min-w-[50px]">Oleh:</span>
+                            <span className="text-black font-medium">{displayHistory.actorName}</span>
                           </div>
-                          <div className="flex items-center gap-2 text-xs">
-                            <span className="text-slate-400">Waktu:</span>
-                            <span className="text-slate-300">
+                          <div className="flex items-center gap-2 text-sm">
+                            <span className="text-gray-500 min-w-[50px]">Waktu:</span>
+                            <span className="text-gray-700">
                               {new Date(displayHistory.timestamp).toLocaleString("id-ID", {
                                 dateStyle: "long",
                                 timeStyle: "short",
@@ -139,9 +161,9 @@ export function ProposalTracker({ proposal, compact = false }: ProposalTrackerPr
                             </span>
                           </div>
                           {displayHistory.comment && (
-                            <div className="mt-2">
-                              <p className="text-xs text-slate-400 mb-1">Catatan:</p>
-                              <p className="text-xs text-slate-300 bg-slate-900/50 rounded p-2 leading-relaxed">
+                            <div className="mt-3">
+                              <p className="text-sm text-gray-500 mb-1.5">Catatan:</p>
+                              <p className="text-sm text-gray-700 bg-white rounded-lg p-3 leading-relaxed border border-gray-100">
                                 {displayHistory.comment}
                               </p>
                             </div>
@@ -151,8 +173,8 @@ export function ProposalTracker({ proposal, compact = false }: ProposalTrackerPr
 
                       {/* Current Step - Pending Action */}
                       {isCurrent && !displayHistory && (
-                        <div className="mt-3 pt-3 border-t border-slate-700/50">
-                          <p className="text-xs text-blue-300">
+                        <div className="mt-4 pt-4 border-t border-blue-200">
+                          <p className="text-sm text-blue-700">
                             Menunggu tindakan dari{" "}
                             <span className="font-semibold">{step.role.replace("_", " ").toUpperCase()}</span>
                           </p>
@@ -166,17 +188,17 @@ export function ProposalTracker({ proposal, compact = false }: ProposalTrackerPr
           </div>
         </div>
 
-        {/* Summary Info */}
-        <div className="flex items-center justify-between pt-4 border-t border-slate-800">
+        {/* Summary Info with emphasized progress */}
+        <div className="flex items-center justify-between pt-5 border-t border-gray-200">
           <div className="text-sm">
-            <span className="text-slate-400">Progress: </span>
-            <span className="text-white font-semibold">
+            <span className="text-gray-500">Progress: </span>
+            <span className="text-black font-bold text-base">
               {Math.round((currentStepIndex / (workflowSteps.length - 1)) * 100)}%
             </span>
           </div>
           <div className="text-sm">
-            <span className="text-slate-400">Step: </span>
-            <span className="text-white font-semibold">
+            <span className="text-gray-500">Step: </span>
+            <span className="text-black font-bold text-base">
               {currentStepIndex + 1} dari {workflowSteps.length}
             </span>
           </div>

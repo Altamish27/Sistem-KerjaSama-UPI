@@ -37,27 +37,27 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-primary/10 p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 backdrop-blur-sm border border-primary/20 mb-4">
-            <GraduationCap className="w-8 h-8 text-primary" />
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+      <div className="w-full max-w-lg">
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white border-2 border-slate-200 shadow-sm mb-6">
+            <GraduationCap className="w-10 h-10 text-[#e10000]" />
           </div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">Sistem Kerja Sama</h1>
-          <p className="text-muted-foreground">Universitas Pendidikan Indonesia</p>
+          <h1 className="text-4xl font-bold text-slate-900 mb-2">Sistem Kerja Sama</h1>
+          <p className="text-slate-600 text-lg">Universitas Pendidikan Indonesia</p>
         </div>
 
-        <Card className="border-slate-800 bg-slate-900/50 backdrop-blur-sm">
+        <Card className="border-slate-200 bg-white shadow-sm">
           <CardHeader>
-            <CardTitle className="text-white">Login</CardTitle>
-            <CardDescription className="text-slate-400">
+            <CardTitle className="text-black font-bold text-xl">Login</CardTitle>
+            <CardDescription className="text-gray-600">
               Masukkan email dan password untuk mengakses sistem
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-200">
+                <Label htmlFor="email" className="text-black font-medium">
                   Email
                 </Label>
                 <Input
@@ -67,12 +67,12 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
+                  className="bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-[#e10000] focus:ring-2 focus:ring-[#e10000]/10 py-3 text-base"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-slate-200">
+                <Label htmlFor="password" className="text-slate-900 font-medium text-base">
                   Password
                 </Label>
                 <Input
@@ -82,17 +82,17 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
+                  className="bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-[#e10000] focus:ring-2 focus:ring-[#e10000]/10 py-3 text-base"
                 />
               </div>
 
               {error && (
-                <Alert variant="destructive" className="bg-red-950/50 border-red-900">
-                  <AlertDescription>{error}</AlertDescription>
+                <Alert variant="destructive" className="bg-red-50 border-red-200">
+                  <AlertDescription className="text-red-800">{error}</AlertDescription>
                 </Alert>
               )}
 
-              <Button type="submit" className="w-full bg-white text-slate-900 hover:bg-slate-100" disabled={isLoading}>
+              <Button type="submit" className="w-full bg-[#e10000] text-white hover:bg-[#c10000] font-semibold py-6 text-base shadow-sm" disabled={isLoading}>
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -104,9 +104,9 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            <div className="mt-6 p-4 rounded-lg bg-muted/50 border border-border">
-              <p className="text-xs text-muted-foreground mb-2 font-medium">Demo Accounts:</p>
-              <div className="space-y-1 text-xs text-muted-foreground">
+            <div className="mt-6 p-4 rounded-lg bg-amber-50 border border-amber-200">
+              <p className="text-xs text-gray-700 mb-2 font-semibold">Demo Accounts:</p>
+              <div className="space-y-1 text-xs text-gray-600">
                 <p>MITRA: mitra@partner.com</p>
                 <p>Fakultas: fakultas@upi.edu</p>
                 <p>DKUI: dkui@upi.edu</p>
@@ -114,7 +114,7 @@ export default function LoginPage() {
                 <p>Wakil Rektor: warek@upi.edu</p>
                 <p>Rektor: rektor@upi.edu</p>
                 <p>
-                  Password untuk semua: <span className="text-foreground font-medium">password</span>
+                  Password untuk semua: <span className="text-black font-semibold">password</span>
                 </p>
               </div>
             </div>

@@ -57,91 +57,90 @@ function MitraDashboard() {
   const actionNeeded = userProposals.filter((p) => canUserApprove(p.status, user!.role, p.initiator))
 
   const getStatusColor = (status: string) => {
-    if (status === "draft") return "bg-slate-500/10 text-slate-400 border-slate-500/20"
-    if (status === "completed") return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-    if (status === "rejected") return "bg-red-500/10 text-red-400 border-red-500/20"
-    return "bg-blue-500/10 text-blue-400 border-blue-500/20"
+    if (status === "draft") return "bg-slate-100 text-slate-700 border-slate-200"
+    if (status === "completed") return "bg-emerald-50 text-emerald-700 border-emerald-200"
+    if (status === "rejected") return "bg-red-50 text-red-700 border-red-200"
+    return "bg-amber-50 text-amber-700 border-amber-200"
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-8">\n      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">Dashboard MITRA</h1>
-          <p className="text-slate-400 mt-1">Selamat datang, {user?.name}</p>
+          <h1 className="text-4xl font-bold text-slate-900">Dashboard MITRA</h1>
+          <p className="text-slate-600 mt-2 text-lg">Selamat datang, {user?.name}</p>
         </div>
         <Link href="/dashboard/proposals/new">
-          <Button className="bg-emerald-600 text-white hover:bg-emerald-700">
-            <Plus className="w-4 h-4 mr-2" />
+          <Button className="bg-[#e10000] text-white hover:bg-[#c10000] shadow-sm px-6 py-6 text-base">
+            <Plus className="w-5 h-5 mr-2" />
             Ajukan Proposal Kerja Sama
           </Button>
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-slate-900/50 border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Draft</CardTitle>
-            <FileText className="h-4 w-4 text-slate-400" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-base font-semibold text-slate-900">Draft</CardTitle>
+            <FileText className="h-5 w-5 text-slate-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{draftCount}</div>
-            <p className="text-xs text-slate-500 mt-1">Proposal yang belum diajukan</p>
+            <div className="text-3xl font-bold text-slate-900">{draftCount}</div>
+            <p className="text-sm text-slate-600 mt-2">Proposal yang belum diajukan</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/50 border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Dalam Proses</CardTitle>
-            <Clock className="h-4 w-4 text-blue-400" />
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-base font-semibold text-slate-900">Dalam Proses</CardTitle>
+            <Clock className="h-5 w-5 text-amber-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{pendingCount}</div>
-            <p className="text-xs text-slate-500 mt-1">Sedang dalam review</p>
+            <div className="text-3xl font-bold text-slate-900">{pendingCount}</div>
+            <p className="text-sm text-slate-600 mt-2">Sedang dalam review</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/50 border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Selesai</CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-base font-semibold text-slate-900">Selesai</CardTitle>
+            <CheckCircle2 className="h-5 w-5 text-emerald-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{completedCount}</div>
-            <p className="text-xs text-slate-500 mt-1">Proposal disetujui</p>
+            <div className="text-3xl font-bold text-slate-900">{completedCount}</div>
+            <p className="text-sm text-slate-600 mt-2">Proposal disetujui</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/50 border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Ditolak</CardTitle>
-            <AlertCircle className="h-4 w-4 text-red-400" />
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-base font-semibold text-slate-900">Ditolak</CardTitle>
+            <AlertCircle className="h-5 w-5 text-[#e10000]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{rejectedCount}</div>
-            <p className="text-xs text-slate-500 mt-1">Proposal tidak disetujui</p>
+            <div className="text-3xl font-bold text-slate-900">{rejectedCount}</div>
+            <p className="text-sm text-slate-600 mt-2">Proposal tidak disetujui</p>
           </CardContent>
         </Card>
       </div>
 
       {actionNeeded.length > 0 && (
-        <Card className="bg-slate-900/50 border-blue-900/50">
-          <CardHeader>
-            <CardTitle className="text-white">Memerlukan Tindakan Anda</CardTitle>
-            <CardDescription className="text-slate-400">Proposal yang menunggu tindakan dari Anda</CardDescription>
+        <Card className="bg-amber-50/30 border-amber-200 shadow-sm">
+          <CardHeader className="pb-5">
+            <CardTitle className="text-2xl font-bold text-slate-900">Memerlukan Tindakan Anda</CardTitle>
+            <CardDescription className="text-slate-600 text-base">Proposal yang menunggu tindakan dari Anda</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
+            <div className="space-y-4">
               {actionNeeded.map((proposal) => (
                 <Link key={proposal.id} href={`/dashboard/proposals/${proposal.id}`}>
-                  <div className="p-4 rounded-lg border border-slate-800 hover:bg-slate-800/50 transition-colors">
+                  <div className="p-6 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors bg-white shadow-sm">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex items-center gap-3 mb-2">
                           <Badge className={getStatusColor(proposal.status)}>{STATUS_LABELS[proposal.status]}</Badge>
                         </div>
-                        <h3 className="font-medium text-white">{proposal.title}</h3>
-                        <p className="text-sm text-slate-400 mt-1">UPI - {proposal.fakultas}</p>
+                        <h3 className="font-semibold text-slate-900 text-lg">{proposal.title}</h3>
+                        <p className="text-base text-slate-600 mt-2">UPI - {proposal.fakultas}</p>
                       </div>
                     </div>
                   </div>
@@ -154,17 +153,17 @@ function MitraDashboard() {
 
       {userProposals.filter((p) => p.status !== "draft" && p.status !== "completed" && p.status !== "rejected").length >
         0 && (
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold text-white">Tracking Proposal Aktif</h2>
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-slate-900">Tracking Proposal Aktif</h2>
           {userProposals
             .filter((p) => p.status !== "draft" && p.status !== "completed" && p.status !== "rejected")
             .slice(0, 2)
             .map((proposal) => (
-              <div key={proposal.id} className="space-y-3">
+              <div key={proposal.id} className="space-y-4">
                 <Link href={`/dashboard/proposals/${proposal.id}`}>
-                  <div className="p-4 rounded-lg border border-slate-800 bg-slate-900/30 hover:bg-slate-800/50 transition-colors">
-                    <h3 className="font-medium text-white mb-1">{proposal.title}</h3>
-                    <p className="text-sm text-slate-400">{proposal.partnerName}</p>
+                  <div className="p-6 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors shadow-sm">
+                    <h3 className="font-semibold text-slate-900 mb-2 text-lg">{proposal.title}</h3>
+                    <p className="text-base text-slate-600">{proposal.partnerName}</p>
                   </div>
                 </Link>
                 <ProposalTracker proposal={proposal} compact />
@@ -173,34 +172,34 @@ function MitraDashboard() {
         </div>
       )}
 
-      <Card className="bg-slate-900/50 border-slate-800">
-        <CardHeader>
-          <CardTitle className="text-white">Proposal Terbaru</CardTitle>
-          <CardDescription className="text-slate-400">Daftar proposal kerja sama terbaru Anda</CardDescription>
+      <Card className="bg-white border-slate-200 shadow-sm">
+        <CardHeader className="pb-5">
+          <CardTitle className="text-2xl font-bold text-slate-900">Proposal Terbaru</CardTitle>
+          <CardDescription className="text-slate-600 text-base">Daftar proposal kerja sama terbaru Anda</CardDescription>
         </CardHeader>
         <CardContent>
           {userProposals.length === 0 ? (
-            <div className="text-center py-12">
-              <FileText className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-              <p className="text-slate-400 mb-4">Belum ada proposal</p>
+            <div className="text-center py-16">
+              <FileText className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+              <p className="text-slate-600 mb-6 text-lg">Belum ada proposal</p>
               <Link href="/dashboard/proposals/new">
-                <Button variant="outline" className="border-slate-700 text-slate-200 hover:bg-slate-800 bg-transparent">
+                <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-50 bg-white px-6 py-5">
                   Buat Proposal Pertama
                 </Button>
               </Link>
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-4">
               {userProposals.slice(0, 5).map((proposal) => (
                 <Link key={proposal.id} href={`/dashboard/proposals/${proposal.id}`}>
-                  <div className="p-4 rounded-lg border border-slate-800 hover:bg-slate-800/50 transition-colors">
+                  <div className="p-6 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors shadow-sm">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex items-center gap-3 mb-2">
                           <Badge className={getStatusColor(proposal.status)}>{STATUS_LABELS[proposal.status]}</Badge>
                         </div>
-                        <h3 className="font-medium text-white">{proposal.title}</h3>
-                        <p className="text-sm text-slate-400 mt-1">UPI - {proposal.fakultas}</p>
+                        <h3 className="font-semibold text-slate-900 text-lg">{proposal.title}</h3>
+                        <p className="text-base text-slate-600 mt-2">UPI - {proposal.fakultas}</p>
                       </div>
                     </div>
                   </div>
@@ -233,96 +232,96 @@ function FakultasDashboard() {
   const rejectedProposals = fakultasProposals.filter((p) => p.status === "rejected").length
 
   const getStatusColor = (status: string) => {
-    if (status === "draft") return "bg-slate-500/10 text-slate-400 border-slate-500/20"
-    if (status === "completed") return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-    if (status === "rejected") return "bg-red-500/10 text-red-400 border-red-500/20"
-    return "bg-blue-500/10 text-blue-400 border-blue-500/20"
+    if (status === "draft") return "bg-slate-100 text-slate-700 border-slate-200"
+    if (status === "completed") return "bg-emerald-50 text-emerald-700 border-emerald-200"
+    if (status === "rejected") return "bg-red-50 text-red-700 border-red-200"
+    return "bg-amber-50 text-amber-700 border-amber-200"
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">Dashboard Fakultas</h1>
-          <p className="text-slate-400 mt-1">{user?.fakultas}</p>
+          <h1 className="text-4xl font-bold text-slate-900">Dashboard Fakultas</h1>
+          <p className="text-slate-600 mt-2 text-lg">{user?.fakultas}</p>
         </div>
         <Link href="/dashboard/proposals/new">
-          <Button className="bg-emerald-600 text-white hover:bg-emerald-700">
-            <Plus className="w-4 h-4 mr-2" />
+          <Button className="bg-[#e10000] text-white hover:bg-[#c10000] shadow-sm px-6 py-6 text-base">
+            <Plus className="w-5 h-5 mr-2" />
             Ajukan Proposal Kerja Sama
           </Button>
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-slate-900/50 border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Total Proposal</CardTitle>
-            <FileText className="h-4 w-4 text-slate-400" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-base font-semibold text-slate-900">Total Proposal</CardTitle>
+            <FileText className="h-5 w-5 text-slate-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{totalProposals}</div>
-            <p className="text-xs text-slate-500 mt-1">Semua proposal fakultas</p>
+            <div className="text-3xl font-bold text-slate-900">{totalProposals}</div>
+            <p className="text-sm text-slate-600 mt-2">Semua proposal fakultas</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/50 border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Menunggu Verifikasi</CardTitle>
-            <Clock className="h-4 w-4 text-blue-400" />
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-base font-semibold text-slate-900">Menunggu Verifikasi</CardTitle>
+            <Clock className="h-5 w-5 text-amber-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{actionNeeded.length}</div>
-            <p className="text-xs text-slate-500 mt-1">Perlu tindakan Anda</p>
+            <div className="text-3xl font-bold text-slate-900">{actionNeeded.length}</div>
+            <p className="text-sm text-slate-600 mt-2">Perlu tindakan Anda</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/50 border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Aktif</CardTitle>
-            <TrendingUp className="h-4 w-4 text-blue-400" />
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-base font-semibold text-slate-900">Aktif</CardTitle>
+            <TrendingUp className="h-5 w-5 text-amber-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{activeProposals}</div>
-            <p className="text-xs text-slate-500 mt-1">Dalam proses</p>
+            <div className="text-3xl font-bold text-slate-900">{activeProposals}</div>
+            <p className="text-sm text-slate-600 mt-2">Dalam proses</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/50 border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Selesai</CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-base font-semibold text-slate-900">Selesai</CardTitle>
+            <CheckCircle2 className="h-5 w-5 text-emerald-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{completedProposals}</div>
-            <p className="text-xs text-slate-500 mt-1">Disetujui</p>
+            <div className="text-3xl font-bold text-slate-900">{completedProposals}</div>
+            <p className="text-sm text-slate-600 mt-2">Disetujui</p>
           </CardContent>
         </Card>
       </div>
 
       {actionNeeded.length > 0 && (
-        <Card className="bg-slate-900/50 border-blue-900/50">
-          <CardHeader>
-            <CardTitle className="text-white">Memerlukan Verifikasi Anda</CardTitle>
-            <CardDescription className="text-slate-400">
+        <Card className="bg-amber-50/30 border-amber-200 shadow-sm">
+          <CardHeader className="pb-5">
+            <CardTitle className="text-2xl font-bold text-slate-900">Memerlukan Verifikasi Anda</CardTitle>
+            <CardDescription className="text-slate-600 text-base">
               Proposal yang menunggu verifikasi dari fakultas
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
+            <div className="space-y-4">
               {actionNeeded.map((proposal) => (
                 <Link key={proposal.id} href={`/dashboard/proposals/${proposal.id}`}>
-                  <div className="p-4 rounded-lg border border-slate-800 hover:bg-slate-800/50 transition-colors">
+                  <div className="p-6 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors bg-white shadow-sm">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Badge className="bg-slate-700/50 text-slate-300 border-slate-600">
+                        <div className="flex items-center gap-3 mb-2">
+                          <Badge className="bg-slate-100 text-slate-700 border-slate-200">
                             {proposal.initiator.toUpperCase()}
                           </Badge>
                           <Badge className={getStatusColor(proposal.status)}>{STATUS_LABELS[proposal.status]}</Badge>
                         </div>
-                        <h3 className="font-medium text-white">{proposal.title}</h3>
-                        <p className="text-sm text-slate-400 mt-1">
+                        <h3 className="font-semibold text-slate-900 text-lg">{proposal.title}</h3>
+                        <p className="text-base text-slate-600 mt-2">
                           {proposal.partnerName} • {proposal.createdByName}
                         </p>
                       </div>
@@ -337,17 +336,17 @@ function FakultasDashboard() {
 
       {fakultasProposals.filter((p) => p.status !== "draft" && p.status !== "completed" && p.status !== "rejected")
         .length > 0 && (
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold text-white">Tracking Proposal Aktif</h2>
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-slate-900">Tracking Proposal Aktif</h2>
           {fakultasProposals
             .filter((p) => p.status !== "draft" && p.status !== "completed" && p.status !== "rejected")
             .slice(0, 2)
             .map((proposal) => (
-              <div key={proposal.id} className="space-y-3">
+              <div key={proposal.id} className="space-y-4">
                 <Link href={`/dashboard/proposals/${proposal.id}`}>
-                  <div className="p-4 rounded-lg border border-slate-800 bg-slate-900/30 hover:bg-slate-800/50 transition-colors">
-                    <h3 className="font-medium text-white mb-1">{proposal.title}</h3>
-                    <p className="text-sm text-slate-400">{proposal.partnerName}</p>
+                  <div className="p-6 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors shadow-sm">
+                    <h3 className="font-semibold text-slate-900 mb-2 text-lg">{proposal.title}</h3>
+                    <p className="text-base text-slate-600">{proposal.partnerName}</p>
                   </div>
                 </Link>
                 <ProposalTracker proposal={proposal} compact />
@@ -356,32 +355,32 @@ function FakultasDashboard() {
         </div>
       )}
 
-      <Card className="bg-slate-900/50 border-slate-800">
-        <CardHeader>
-          <CardTitle className="text-white">Semua Proposal Fakultas</CardTitle>
-          <CardDescription className="text-slate-400">Daftar proposal kerja sama terbaru</CardDescription>
+      <Card className="bg-white border-slate-200 shadow-sm">
+        <CardHeader className="pb-5">
+          <CardTitle className="text-2xl font-bold text-slate-900">Semua Proposal Fakultas</CardTitle>
+          <CardDescription className="text-slate-600 text-base">Daftar proposal kerja sama terbaru</CardDescription>
         </CardHeader>
         <CardContent>
           {fakultasProposals.length === 0 ? (
-            <div className="text-center py-12">
-              <FileText className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-              <p className="text-slate-400">Belum ada proposal dari fakultas ini</p>
+            <div className="text-center py-16">
+              <FileText className="w-16 h-16 text-slate-400 mx-auto mb-6" />
+              <p className="text-slate-600 mb-4 text-lg">Belum ada proposal dari fakultas ini</p>
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-4">
               {fakultasProposals.slice(0, 5).map((proposal) => (
                 <Link key={proposal.id} href={`/dashboard/proposals/${proposal.id}`}>
-                  <div className="p-4 rounded-lg border border-slate-800 hover:bg-slate-800/50 transition-colors">
+                  <div className="p-6 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors shadow-sm">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Badge className="bg-slate-700/50 text-slate-300 border-slate-600">
+                        <div className="flex items-center gap-3 mb-2">
+                          <Badge className="bg-slate-100 text-slate-700 border-slate-200">
                             {proposal.initiator.toUpperCase()}
                           </Badge>
                           <Badge className={getStatusColor(proposal.status)}>{STATUS_LABELS[proposal.status]}</Badge>
                         </div>
-                        <h3 className="font-medium text-white">{proposal.title}</h3>
-                        <p className="text-sm text-slate-400 mt-1">{proposal.partnerName}</p>
+                        <h3 className="font-semibold text-slate-900 text-lg">{proposal.title}</h3>
+                        <p className="text-base text-slate-600 mt-2">{proposal.partnerName}</p>
                       </div>
                     </div>
                   </div>
@@ -424,82 +423,82 @@ function DKUIDashboard() {
   )
 
   const getStatusColor = (status: string) => {
-    if (status === "draft") return "bg-slate-500/10 text-slate-400 border-slate-500/20"
-    if (status === "completed") return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-    if (status === "rejected") return "bg-red-500/10 text-red-400 border-red-500/20"
-    return "bg-blue-500/10 text-blue-400 border-blue-500/20"
+    if (status === "draft") return "bg-slate-100 text-slate-700 border-slate-200"
+    if (status === "completed") return "bg-emerald-50 text-emerald-700 border-emerald-200"
+    if (status === "rejected") return "bg-red-50 text-red-700 border-red-200"
+    return "bg-amber-50 text-amber-700 border-amber-200"
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-white">Dashboard DKUI</h1>
-        <p className="text-slate-400 mt-1">Divisi Kerja Sama Universitas Indonesia - Pusat Kendali Sistem</p>
+        <h1 className="text-4xl font-bold text-slate-900">Dashboard DKUI</h1>
+        <p className="text-slate-600 mt-2 text-lg">Divisi Kerja Sama Universitas Indonesia - Pusat Kendali Sistem</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-slate-900/50 border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Total Proposal</CardTitle>
-            <FileText className="h-4 w-4 text-slate-400" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-base font-semibold text-slate-900">Total Proposal</CardTitle>
+            <FileText className="h-5 w-5 text-slate-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{totalProposals}</div>
-            <p className="text-xs text-slate-500 mt-1">
+            <div className="text-3xl font-bold text-slate-900">{totalProposals}</div>
+            <p className="text-sm text-slate-600 mt-2">
               MITRA: {fromMitra} • Fakultas: {fromFakultas}
             </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/50 border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Menunggu Tindakan</CardTitle>
-            <Clock className="h-4 w-4 text-blue-400" />
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-base font-semibold text-slate-900">Menunggu Tindakan</CardTitle>
+            <Clock className="h-5 w-5 text-amber-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{actionNeeded.length}</div>
-            <p className="text-xs text-slate-500 mt-1">Perlu tindakan DKUI</p>
+            <div className="text-3xl font-bold text-slate-900">{actionNeeded.length}</div>
+            <p className="text-sm text-slate-600 mt-2">Perlu tindakan DKUI</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/50 border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Dalam Proses</CardTitle>
-            <TrendingUp className="h-4 w-4 text-blue-400" />
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-base font-semibold text-slate-900">Dalam Proses</CardTitle>
+            <TrendingUp className="h-5 w-5 text-amber-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{inProcessProposals}</div>
-            <p className="text-xs text-slate-500 mt-1">Sedang diproses</p>
+            <div className="text-3xl font-bold text-slate-900">{inProcessProposals}</div>
+            <p className="text-sm text-slate-600 mt-2">Sedang diproses</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/50 border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Selesai</CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-base font-semibold text-slate-900">Selesai</CardTitle>
+            <CheckCircle2 className="h-5 w-5 text-emerald-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{completedProposals}</div>
-            <p className="text-xs text-slate-500 mt-1">Diarsipkan</p>
+            <div className="text-3xl font-bold text-slate-900">{completedProposals}</div>
+            <p className="text-sm text-slate-600 mt-2">Diarsipkan</p>
           </CardContent>
         </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-slate-900/50 border-slate-800">
-          <CardHeader>
-            <CardTitle className="text-white">Statistik per Fakultas</CardTitle>
-            <CardDescription className="text-slate-400">Distribusi proposal per fakultas/unit</CardDescription>
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="pb-5">
+            <CardTitle className="text-2xl font-bold text-slate-900">Statistik per Fakultas</CardTitle>
+            <CardDescription className="text-slate-600 text-base">Distribusi proposal per fakultas/unit</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {Object.entries(fakultasStats).map(([fakultas, count]) => (
-                <div key={fakultas} className="flex items-center justify-between p-3 rounded-lg bg-slate-800/30">
-                  <div className="flex items-center gap-3">
-                    <Building2 className="w-5 h-5 text-slate-400" />
-                    <span className="text-sm font-medium text-white">{fakultas}</span>
+                <div key={fakultas} className="flex items-center justify-between p-4 rounded-lg bg-slate-50 border border-slate-200">
+                  <div className="flex items-center gap-4">
+                    <Building2 className="w-6 h-6 text-slate-600" />
+                    <span className="text-base font-semibold text-slate-900">{fakultas}</span>
                   </div>
-                  <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30">{count} proposal</Badge>
+                  <Badge className="bg-amber-50 text-amber-700 border-amber-200">{count} proposal</Badge>
                 </div>
               ))}
             </div>
@@ -507,26 +506,26 @@ function DKUIDashboard() {
         </Card>
 
         {actionNeeded.length > 0 && (
-          <Card className="bg-slate-900/50 border-blue-900/50">
-            <CardHeader>
-              <CardTitle className="text-white">Memerlukan Tindakan DKUI</CardTitle>
-              <CardDescription className="text-slate-400">Proposal yang perlu diproses</CardDescription>
+          <Card className="bg-amber-50/30 border-amber-200 shadow-sm">
+            <CardHeader className="pb-5">
+              <CardTitle className="text-2xl font-bold text-slate-900">Memerlukan Tindakan DKUI</CardTitle>
+              <CardDescription className="text-slate-600 text-base">Proposal yang perlu diproses</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
+              <div className="space-y-4">
                 {actionNeeded.map((proposal) => (
                   <Link key={proposal.id} href={`/dashboard/proposals/${proposal.id}`}>
-                    <div className="p-4 rounded-lg border border-slate-800 hover:bg-slate-800/50 transition-colors">
+                    <div className="p-6 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors bg-white shadow-sm">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <Badge className="bg-slate-700/50 text-slate-300 border-slate-600">
+                          <div className="flex items-center gap-3 mb-2">
+                            <Badge className="bg-slate-100 text-slate-700 border-slate-200">
                               {proposal.initiator.toUpperCase()}
                             </Badge>
                             <Badge className={getStatusColor(proposal.status)}>{STATUS_LABELS[proposal.status]}</Badge>
                           </div>
-                          <h3 className="font-medium text-white">{proposal.title}</h3>
-                          <p className="text-sm text-slate-400 mt-1">
+                          <h3 className="font-semibold text-slate-900 text-lg">{proposal.title}</h3>
+                          <p className="text-base text-slate-600 mt-2">
                             {proposal.partnerName} • {proposal.fakultas}
                           </p>
                         </div>
@@ -542,17 +541,17 @@ function DKUIDashboard() {
 
       {allProposals.filter((p) => p.status !== "draft" && p.status !== "completed" && p.status !== "rejected").length >
         0 && (
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold text-white">Tracking Proposal Aktif</h2>
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-slate-900">Tracking Proposal Aktif</h2>
           {allProposals
             .filter((p) => p.status !== "draft" && p.status !== "completed" && p.status !== "rejected")
             .slice(0, 2)
             .map((proposal) => (
-              <div key={proposal.id} className="space-y-3">
+              <div key={proposal.id} className="space-y-4">
                 <Link href={`/dashboard/proposals/${proposal.id}`}>
-                  <div className="p-4 rounded-lg border border-slate-800 bg-slate-900/30 hover:bg-slate-800/50 transition-colors">
-                    <h3 className="font-medium text-white mb-1">{proposal.title}</h3>
-                    <p className="text-sm text-slate-400">{proposal.partnerName}</p>
+                  <div className="p-6 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors shadow-sm">
+                    <h3 className="font-semibold text-slate-900 mb-2 text-lg">{proposal.title}</h3>
+                    <p className="text-base text-slate-600">{proposal.partnerName}</p>
                   </div>
                 </Link>
                 <ProposalTracker proposal={proposal} compact />
@@ -593,86 +592,86 @@ function BiroHukumDashboard() {
   ).length
 
   const getStatusColor = (status: string) => {
-    if (status === "draft") return "bg-slate-500/10 text-slate-400 border-slate-500/20"
-    if (status === "completed") return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-    if (status === "rejected") return "bg-red-500/10 text-red-400 border-red-500/20"
-    return "bg-blue-500/10 text-blue-400 border-blue-500/20"
+    if (status === "draft") return "bg-slate-100 text-slate-700 border-slate-200"
+    if (status === "completed") return "bg-emerald-50 text-emerald-700 border-emerald-200"
+    if (status === "rejected") return "bg-red-50 text-red-700 border-red-200"
+    return "bg-amber-50 text-amber-700 border-amber-200"
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-white">Dashboard Biro Hukum</h1>
-        <p className="text-slate-400 mt-1">Validasi dan paraf aspek hukum kerja sama</p>
+        <h1 className="text-4xl font-bold text-slate-900">Dashboard Biro Hukum</h1>
+        <p className="text-slate-600 mt-2 text-lg">Validasi dan paraf aspek hukum kerja sama</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-slate-900/50 border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Total Review</CardTitle>
-            <FileText className="h-4 w-4 text-slate-400" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-base font-semibold text-slate-900">Total Review</CardTitle>
+            <FileText className="h-5 w-5 text-slate-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{totalReviewed}</div>
-            <p className="text-xs text-slate-500 mt-1">Dokumen yang sudah direview</p>
+            <div className="text-3xl font-bold text-slate-900">{totalReviewed}</div>
+            <p className="text-sm text-slate-600 mt-2">Dokumen yang sudah direview</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/50 border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Menunggu Validasi</CardTitle>
-            <Clock className="h-4 w-4 text-blue-400" />
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-base font-semibold text-slate-900">Menunggu Validasi</CardTitle>
+            <Clock className="h-5 w-5 text-amber-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{pendingReview}</div>
-            <p className="text-xs text-slate-500 mt-1">Perlu validasi hukum</p>
+            <div className="text-3xl font-bold text-slate-900">{pendingReview}</div>
+            <p className="text-sm text-slate-600 mt-2">Perlu validasi hukum</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/50 border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Disetujui</CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-base font-semibold text-slate-900">Disetujui</CardTitle>
+            <CheckCircle2 className="h-5 w-5 text-emerald-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{approved}</div>
-            <p className="text-xs text-slate-500 mt-1">Dokumen sah</p>
+            <div className="text-3xl font-bold text-slate-900">{approved}</div>
+            <p className="text-sm text-slate-600 mt-2">Dokumen sah</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/50 border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Ditolak</CardTitle>
-            <AlertCircle className="h-4 w-4 text-red-400" />
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-base font-semibold text-slate-900">Ditolak</CardTitle>
+            <AlertCircle className="h-5 w-5 text-[#e10000]" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{rejected}</div>
-            <p className="text-xs text-slate-500 mt-1">Perlu perbaikan</p>
+            <div className="text-3xl font-bold text-slate-900">{rejected}</div>
+            <p className="text-sm text-slate-600 mt-2">Perlu perbaikan</p>
           </CardContent>
         </Card>
       </div>
 
       {actionNeeded.length > 0 && (
-        <Card className="bg-slate-900/50 border-blue-900/50">
-          <CardHeader>
-            <CardTitle className="text-white">Memerlukan Validasi Hukum</CardTitle>
-            <CardDescription className="text-slate-400">Dokumen yang menunggu review Biro Hukum</CardDescription>
+        <Card className="bg-amber-50/30 border-amber-200 shadow-sm">
+          <CardHeader className="pb-5">
+            <CardTitle className="text-2xl font-bold text-slate-900">Memerlukan Validasi Hukum</CardTitle>
+            <CardDescription className="text-slate-600 text-base">Dokumen yang menunggu review Biro Hukum</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
+            <div className="space-y-4">
               {actionNeeded.map((proposal) => (
                 <Link key={proposal.id} href={`/dashboard/proposals/${proposal.id}`}>
-                  <div className="p-4 rounded-lg border border-slate-800 hover:bg-slate-800/50 transition-colors">
+                  <div className="p-6 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors bg-white shadow-sm">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Badge className="bg-slate-700/50 text-slate-300 border-slate-600">
+                        <div className="flex items-center gap-3 mb-2">
+                          <Badge className="bg-slate-100 text-slate-700 border-slate-200">
                             {proposal.initiator.toUpperCase()}
                           </Badge>
                           <Badge className={getStatusColor(proposal.status)}>{STATUS_LABELS[proposal.status]}</Badge>
                         </div>
-                        <h3 className="font-medium text-white">{proposal.title}</h3>
-                        <p className="text-sm text-slate-400 mt-1">
+                        <h3 className="font-semibold text-slate-900 text-lg">{proposal.title}</h3>
+                        <p className="text-base text-slate-600 mt-2">
                           {proposal.partnerName} • {proposal.fakultas}
                         </p>
                       </div>
@@ -686,17 +685,17 @@ function BiroHukumDashboard() {
       )}
 
       {biroProposals.filter((p) => p.status !== "completed" && p.status !== "rejected").length > 0 && (
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold text-white">Tracking Dokumen dalam Review</h2>
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-slate-900">Tracking Dokumen dalam Review</h2>
           {biroProposals
             .filter((p) => p.status !== "completed" && p.status !== "rejected")
             .slice(0, 2)
             .map((proposal) => (
-              <div key={proposal.id} className="space-y-3">
+              <div key={proposal.id} className="space-y-4">
                 <Link href={`/dashboard/proposals/${proposal.id}`}>
-                  <div className="p-4 rounded-lg border border-slate-800 bg-slate-900/30 hover:bg-slate-800/50 transition-colors">
-                    <h3 className="font-medium text-white mb-1">{proposal.title}</h3>
-                    <p className="text-sm text-slate-400">{proposal.partnerName}</p>
+                  <div className="p-6 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors shadow-sm">
+                    <h3 className="font-semibold text-slate-900 mb-2 text-lg">{proposal.title}</h3>
+                    <p className="text-base text-slate-600">{proposal.partnerName}</p>
                   </div>
                 </Link>
                 <ProposalTracker proposal={proposal} compact />
@@ -705,32 +704,32 @@ function BiroHukumDashboard() {
         </div>
       )}
 
-      <Card className="bg-slate-900/50 border-slate-800">
-        <CardHeader>
-          <CardTitle className="text-white">Riwayat Review</CardTitle>
-          <CardDescription className="text-slate-400">Dokumen yang sudah direview oleh Biro Hukum</CardDescription>
+      <Card className="bg-white border-slate-200 shadow-sm">
+        <CardHeader className="pb-5">
+          <CardTitle className="text-2xl font-bold text-slate-900">Riwayat Review</CardTitle>
+          <CardDescription className="text-slate-600 text-base">Dokumen yang sudah direview oleh Biro Hukum</CardDescription>
         </CardHeader>
         <CardContent>
           {biroProposals.length === 0 ? (
-            <div className="text-center py-12">
-              <FileText className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-              <p className="text-slate-400">Belum ada dokumen yang direview</p>
+            <div className="text-center py-16">
+              <FileText className="w-16 h-16 text-slate-400 mx-auto mb-6" />
+              <p className="text-slate-600 mb-4 text-lg">Belum ada dokumen yang direview</p>
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-4">
               {biroProposals.slice(0, 5).map((proposal) => (
                 <Link key={proposal.id} href={`/dashboard/proposals/${proposal.id}`}>
-                  <div className="p-4 rounded-lg border border-slate-800 hover:bg-slate-800/50 transition-colors">
+                  <div className="p-6 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors shadow-sm">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Badge className="bg-slate-700/50 text-slate-300 border-slate-600">
+                        <div className="flex items-center gap-3 mb-2">
+                          <Badge className="bg-slate-100 text-slate-700 border-slate-200">
                             {proposal.initiator.toUpperCase()}
                           </Badge>
                           <Badge className={getStatusColor(proposal.status)}>{STATUS_LABELS[proposal.status]}</Badge>
                         </div>
-                        <h3 className="font-medium text-white">{proposal.title}</h3>
-                        <p className="text-sm text-slate-400 mt-1">
+                        <h3 className="font-semibold text-slate-900 text-lg">{proposal.title}</h3>
+                        <p className="text-base text-slate-600 mt-2">
                           {proposal.partnerName} • {proposal.fakultas}
                         </p>
                       </div>
@@ -770,88 +769,88 @@ function SupervisiDashboard() {
   ).length
 
   const getStatusColor = (status: string) => {
-    if (status === "draft") return "bg-slate-500/10 text-slate-400 border-slate-500/20"
-    if (status === "completed") return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-    if (status === "rejected") return "bg-red-500/10 text-red-400 border-red-500/20"
-    return "bg-blue-500/10 text-blue-400 border-blue-500/20"
+    if (status === "draft") return "bg-slate-100 text-slate-700 border-slate-200"
+    if (status === "completed") return "bg-emerald-50 text-emerald-700 border-emerald-200"
+    if (status === "rejected") return "bg-red-50 text-red-700 border-red-200"
+    return "bg-amber-50 text-amber-700 border-amber-200"
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-white">
+        <h1 className="text-4xl font-bold text-slate-900">
           Dashboard {user?.role === "wakil_rektor" ? "Wakil Rektor" : "Rektor"}
         </h1>
-        <p className="text-slate-400 mt-1">Review dan persetujuan akhir kerja sama</p>
+        <p className="text-slate-600 mt-2 text-lg">Review dan persetujuan akhir kerja sama</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-slate-900/50 border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Total Proposal</CardTitle>
-            <FileText className="h-4 w-4 text-slate-400" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-base font-semibold text-slate-900">Total Proposal</CardTitle>
+            <FileText className="h-5 w-5 text-slate-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{totalProposals}</div>
-            <p className="text-xs text-slate-500 mt-1">Proposal di tahap supervisi</p>
+            <div className="text-3xl font-bold text-slate-900">{totalProposals}</div>
+            <p className="text-sm text-slate-600 mt-2">Proposal di tahap supervisi</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/50 border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Menunggu Review</CardTitle>
-            <Clock className="h-4 w-4 text-blue-400" />
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-base font-semibold text-slate-900">Menunggu Review</CardTitle>
+            <Clock className="h-5 w-5 text-amber-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{pendingReview}</div>
-            <p className="text-xs text-slate-500 mt-1">Perlu persetujuan Anda</p>
+            <div className="text-3xl font-bold text-slate-900">{pendingReview}</div>
+            <p className="text-sm text-slate-600 mt-2">Perlu persetujuan Anda</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/50 border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Dalam Review</CardTitle>
-            <TrendingUp className="h-4 w-4 text-blue-400" />
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-base font-semibold text-slate-900">Dalam Review</CardTitle>
+            <TrendingUp className="h-5 w-5 text-amber-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{inReview}</div>
-            <p className="text-xs text-slate-500 mt-1">Proses supervisi</p>
+            <div className="text-3xl font-bold text-slate-900">{inReview}</div>
+            <p className="text-sm text-slate-600 mt-2">Proses supervisi</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900/50 border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-white">Disetujui</CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-base font-semibold text-slate-900">Disetujui</CardTitle>
+            <CheckCircle2 className="h-5 w-5 text-emerald-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{approved}</div>
-            <p className="text-xs text-slate-500 mt-1">Kerja sama selesai</p>
+            <div className="text-3xl font-bold text-slate-900">{approved}</div>
+            <p className="text-sm text-slate-600 mt-2">Kerja sama selesai</p>
           </CardContent>
         </Card>
       </div>
 
       {actionNeeded.length > 0 && (
-        <Card className="bg-slate-900/50 border-blue-900/50">
-          <CardHeader>
-            <CardTitle className="text-white">Memerlukan Persetujuan Anda</CardTitle>
-            <CardDescription className="text-slate-400">Proposal yang menunggu digital signing</CardDescription>
+        <Card className="bg-amber-50/30 border-amber-200 shadow-sm">
+          <CardHeader className="pb-5">
+            <CardTitle className="text-2xl font-bold text-slate-900">Memerlukan Persetujuan Anda</CardTitle>
+            <CardDescription className="text-slate-600 text-base">Proposal yang menunggu digital signing</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
+            <div className="space-y-4">
               {actionNeeded.map((proposal) => (
                 <Link key={proposal.id} href={`/dashboard/proposals/${proposal.id}`}>
-                  <div className="p-4 rounded-lg border border-slate-800 hover:bg-slate-800/50 transition-colors">
+                  <div className="p-6 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors bg-white shadow-sm">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Badge className="bg-slate-700/50 text-slate-300 border-slate-600">
+                        <div className="flex items-center gap-3 mb-2">
+                          <Badge className="bg-slate-100 text-slate-700 border-slate-200">
                             {proposal.initiator.toUpperCase()}
                           </Badge>
                           <Badge className={getStatusColor(proposal.status)}>{STATUS_LABELS[proposal.status]}</Badge>
                         </div>
-                        <h3 className="font-medium text-white">{proposal.title}</h3>
-                        <p className="text-sm text-slate-400 mt-1">
+                        <h3 className="font-semibold text-slate-900 text-lg">{proposal.title}</h3>
+                        <p className="text-base text-slate-600 mt-2">
                           {proposal.partnerName} • {proposal.fakultas}
                         </p>
                       </div>
@@ -865,17 +864,17 @@ function SupervisiDashboard() {
       )}
 
       {supervisiProposals.filter((p) => p.status !== "completed").length > 0 && (
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold text-white">Tracking Proposal Supervisi</h2>
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-slate-900">Tracking Proposal Supervisi</h2>
           {supervisiProposals
             .filter((p) => p.status !== "completed")
             .slice(0, 2)
             .map((proposal) => (
-              <div key={proposal.id} className="space-y-3">
+              <div key={proposal.id} className="space-y-4">
                 <Link href={`/dashboard/proposals/${proposal.id}`}>
-                  <div className="p-4 rounded-lg border border-slate-800 bg-slate-900/30 hover:bg-slate-800/50 transition-colors">
-                    <h3 className="font-medium text-white mb-1">{proposal.title}</h3>
-                    <p className="text-sm text-slate-400">{proposal.partnerName}</p>
+                  <div className="p-6 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors shadow-sm">
+                    <h3 className="font-semibold text-slate-900 mb-2 text-lg">{proposal.title}</h3>
+                    <p className="text-base text-slate-600">{proposal.partnerName}</p>
                   </div>
                 </Link>
                 <ProposalTracker proposal={proposal} compact />
@@ -884,32 +883,32 @@ function SupervisiDashboard() {
         </div>
       )}
 
-      <Card className="bg-slate-900/50 border-slate-800">
-        <CardHeader>
-          <CardTitle className="text-white">Riwayat Kerja Sama</CardTitle>
-          <CardDescription className="text-slate-400">Proposal yang sudah melalui tahap supervisi</CardDescription>
+      <Card className="bg-white border-slate-200 shadow-sm">
+        <CardHeader className="pb-5">
+          <CardTitle className="text-2xl font-bold text-slate-900">Riwayat Kerja Sama</CardTitle>
+          <CardDescription className="text-slate-600 text-base">Proposal yang sudah melalui tahap supervisi</CardDescription>
         </CardHeader>
         <CardContent>
           {supervisiProposals.length === 0 ? (
-            <div className="text-center py-12">
-              <FileText className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-              <p className="text-slate-400">Belum ada proposal</p>
+            <div className="text-center py-16">
+              <FileText className="w-16 h-16 text-slate-400 mx-auto mb-6" />
+              <p className="text-slate-600 mb-4 text-lg">Belum ada proposal</p>
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-4">
               {supervisiProposals.slice(0, 5).map((proposal) => (
                 <Link key={proposal.id} href={`/dashboard/proposals/${proposal.id}`}>
-                  <div className="p-4 rounded-lg border border-slate-800 hover:bg-slate-800/50 transition-colors">
+                  <div className="p-6 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors shadow-sm">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Badge className="bg-slate-700/50 text-slate-300 border-slate-600">
+                        <div className="flex items-center gap-3 mb-2">
+                          <Badge className="bg-slate-100 text-slate-700 border-slate-200">
                             {proposal.initiator.toUpperCase()}
                           </Badge>
                           <Badge className={getStatusColor(proposal.status)}>{STATUS_LABELS[proposal.status]}</Badge>
                         </div>
-                        <h3 className="font-medium text-white">{proposal.title}</h3>
-                        <p className="text-sm text-slate-400 mt-1">
+                        <h3 className="font-semibold text-slate-900 text-lg">{proposal.title}</h3>
+                        <p className="text-base text-slate-600 mt-2">
                           {proposal.partnerName} • {proposal.fakultas}
                         </p>
                       </div>
@@ -927,12 +926,12 @@ function SupervisiDashboard() {
 
 function DefaultDashboard() {
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-white">Dashboard</h1>
-      <Card className="bg-slate-900/50 border-slate-800">
-        <CardHeader>
-          <CardTitle className="text-white">Selamat Datang</CardTitle>
-          <CardDescription className="text-slate-400">Silakan login dengan role yang sesuai</CardDescription>
+    <div className="space-y-8">
+      <h1 className="text-4xl font-bold text-slate-900">Dashboard</h1>
+      <Card className="bg-white border-slate-200 shadow-sm">
+        <CardHeader className="pb-5">
+          <CardTitle className="text-2xl font-bold text-slate-900">Selamat Datang</CardTitle>
+          <CardDescription className="text-slate-600 text-base">Silakan login dengan role yang sesuai</CardDescription>
         </CardHeader>
       </Card>
     </div>

@@ -179,27 +179,27 @@ function NewProposalContent() {
           <Button
             variant="outline"
             size="sm"
-            className="border-slate-700 text-slate-200 hover:bg-slate-800 bg-transparent"
+            className="border-slate-300 text-slate-700 hover:bg-slate-50 bg-white"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Kembali
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold text-white">Buat Proposal Baru</h1>
-          <p className="text-slate-400 mt-1">Isi form di bawah untuk mengajukan proposal kerja sama</p>
+          <h1 className="text-4xl font-bold text-slate-900">Buat Proposal Baru</h1>
+          <p className="text-slate-600 mt-2 text-lg">Isi form di bawah untuk mengajukan proposal kerja sama</p>
         </div>
       </div>
 
-      <Card className="bg-slate-900/50 border-slate-800">
+      <Card className="bg-white border-slate-200 shadow-sm">
         <CardHeader>
-          <CardTitle className="text-white">Informasi Proposal</CardTitle>
-          <CardDescription className="text-slate-400">Lengkapi data proposal kerja sama dengan mitra</CardDescription>
+          <CardTitle className="text-slate-900 text-2xl font-bold">Informasi Proposal</CardTitle>
+          <CardDescription className="text-slate-600 text-base">Lengkapi data proposal kerja sama dengan mitra</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="partnerType" className="text-slate-200">
+              <Label htmlFor="partnerType" className="text-slate-900 font-medium">
                 Jenis Mitra *
               </Label>
               <Select
@@ -208,14 +208,14 @@ function NewProposalContent() {
                   setFormData({ ...formData, partnerType: value as "dalam_negeri" | "luar_negeri" })
                 }
               >
-                <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
+                <SelectTrigger className="bg-white border-slate-300 text-slate-900 focus:border-[#e10000] focus:ring-2 focus:ring-[#e10000]/10">
                   <SelectValue placeholder="Pilih jenis mitra" />
                 </SelectTrigger>
-                <SelectContent className="bg-slate-800 border-slate-700">
-                  <SelectItem value="dalam_negeri" className="text-white">
+                <SelectContent className="bg-white border-slate-200 shadow-lg">
+                  <SelectItem value="dalam_negeri" className="text-slate-900">
                     Dalam Negeri
                   </SelectItem>
-                  <SelectItem value="luar_negeri" className="text-white">
+                  <SelectItem value="luar_negeri" className="text-slate-900">
                     Luar Negeri
                   </SelectItem>
                 </SelectContent>
@@ -224,7 +224,7 @@ function NewProposalContent() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="title" className="text-slate-200">
+            <Label htmlFor="title" className="text-slate-900 font-medium">
               Judul Proposal *
             </Label>
             <Input
@@ -232,12 +232,12 @@ function NewProposalContent() {
               placeholder="Masukkan judul proposal"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
+              className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:border-[#e10000] focus:ring-2 focus:ring-[#e10000]/10"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="partnerName" className="text-slate-200">
+            <Label htmlFor="partnerName" className="text-slate-900 font-medium">
               Nama Mitra *
             </Label>
             <Input
@@ -245,12 +245,12 @@ function NewProposalContent() {
               placeholder="Nama institusi/organisasi mitra"
               value={formData.partnerName}
               onChange={(e) => setFormData({ ...formData, partnerName: e.target.value })}
-              className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
+              className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:border-[#e10000] focus:ring-2 focus:ring-[#e10000]/10"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-slate-200">
+            <Label htmlFor="description" className="text-slate-900 font-medium">
               Deskripsi *
             </Label>
             <Textarea
@@ -259,12 +259,12 @@ function NewProposalContent() {
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               rows={4}
-              className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
+              className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:border-[#e10000] focus:ring-2 focus:ring-[#e10000]/10"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="objectives" className="text-slate-200">
+            <Label htmlFor="objectives" className="text-slate-900 font-medium">
               Tujuan Kerja Sama *
             </Label>
             <Textarea
@@ -273,12 +273,12 @@ function NewProposalContent() {
               value={formData.objectives}
               onChange={(e) => setFormData({ ...formData, objectives: e.target.value })}
               rows={4}
-              className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
+              className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:border-[#e10000] focus:ring-2 focus:ring-[#e10000]/10"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="benefits" className="text-slate-200">
+            <Label htmlFor="benefits" className="text-slate-900 font-medium">
               Manfaat *
             </Label>
             <Textarea
@@ -287,12 +287,12 @@ function NewProposalContent() {
               value={formData.benefits}
               onChange={(e) => setFormData({ ...formData, benefits: e.target.value })}
               rows={4}
-              className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
+              className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:border-[#e10000] focus:ring-2 focus:ring-[#e10000]/10"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="scopeOfWork" className="text-slate-200">
+            <Label htmlFor="scopeOfWork" className="text-slate-900 font-medium">
               Ruang Lingkup Pekerjaan *
             </Label>
             <Textarea
@@ -301,13 +301,13 @@ function NewProposalContent() {
               value={formData.scopeOfWork}
               onChange={(e) => setFormData({ ...formData, scopeOfWork: e.target.value })}
               rows={4}
-              className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
+              className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:border-[#e10000] focus:ring-2 focus:ring-[#e10000]/10"
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="duration" className="text-slate-200">
+              <Label htmlFor="duration" className="text-slate-900 font-medium">
                 Durasi (Bulan) *
               </Label>
               <Input
@@ -316,12 +316,12 @@ function NewProposalContent() {
                 placeholder="12"
                 value={formData.duration}
                 onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
+                className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:border-[#e10000] focus:ring-2 focus:ring-[#e10000]/10"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="startDate" className="text-slate-200">
+              <Label htmlFor="startDate" className="text-slate-900 font-medium">
                 Tanggal Mulai *
               </Label>
               <Input
@@ -329,12 +329,12 @@ function NewProposalContent() {
                 type="date"
                 value={formData.startDate}
                 onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                className="bg-slate-800 border-slate-700 text-white"
+                className="bg-white border-slate-300 text-slate-900 focus:border-[#e10000] focus:ring-2 focus:ring-[#e10000]/10"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="endDate" className="text-slate-200">
+              <Label htmlFor="endDate" className="text-slate-900 font-medium">
                 Tanggal Selesai *
               </Label>
               <Input
@@ -342,13 +342,13 @@ function NewProposalContent() {
                 type="date"
                 value={formData.endDate}
                 onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                className="bg-slate-800 border-slate-700 text-white"
+                className="bg-white border-slate-300 text-slate-900 focus:border-[#e10000] focus:ring-2 focus:ring-[#e10000]/10"
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="budget" className="text-slate-200">
+            <Label htmlFor="budget" className="text-slate-900 font-medium">
               Anggaran (Rp) - Opsional
             </Label>
             <Input
@@ -357,23 +357,23 @@ function NewProposalContent() {
               placeholder="50000000"
               value={formData.budget}
               onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
-              className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
+              className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:border-[#e10000] focus:ring-2 focus:ring-[#e10000]/10"
             />
           </div>
 
           {/* Document Upload Section */}
-          <div className="space-y-4 pt-4 border-t border-slate-800">
+          <div className="space-y-4 pt-4 border-t border-slate-200">
             <div className="flex items-center justify-between">
               <div>
-                <Label className="text-slate-200">Dokumen Pendukung</Label>
-                <p className="text-xs text-slate-500 mt-1">Upload dokumen seperti proposal, MOU/MOA draft, dll.</p>
+                <Label className="text-slate-900 font-medium">Dokumen Pendukung</Label>
+                <p className="text-sm text-slate-600 mt-1">Upload dokumen seperti proposal, MOU/MOA draft, dll.</p>
               </div>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => document.getElementById("fileUpload")?.click()}
-                className="border-slate-700 text-slate-200 hover:bg-slate-800 bg-transparent"
+                className="border-slate-300 text-slate-700 hover:bg-slate-50 bg-white"
               >
                 <Upload className="w-4 h-4 mr-2" />
                 Upload File
@@ -391,12 +391,12 @@ function NewProposalContent() {
             {uploadedDocuments.length > 0 && (
               <div className="space-y-2">
                 {uploadedDocuments.map((doc) => (
-                  <div key={doc.id} className="flex items-center justify-between p-3 rounded-lg bg-slate-800/50">
+                  <div key={doc.id} className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-200">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <FileText className="w-5 h-5 text-blue-400 flex-shrink-0" />
+                      <FileText className="w-5 h-5 text-blue-600 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm text-white truncate">{doc.name}</p>
-                        <p className="text-xs text-slate-500">{formatFileSize(doc.size)}</p>
+                        <p className="text-sm text-slate-900 truncate font-medium">{doc.name}</p>
+                        <p className="text-xs text-slate-600">{formatFileSize(doc.size)}</p>
                       </div>
                     </div>
                     <Button
@@ -404,7 +404,7 @@ function NewProposalContent() {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleRemoveDocument(doc.id)}
-                      className="text-slate-400 hover:text-red-400 hover:bg-red-950/20"
+                      className="text-slate-600 hover:text-red-600 hover:bg-red-50"
                     >
                       <X className="w-4 h-4" />
                     </Button>
@@ -412,21 +412,23 @@ function NewProposalContent() {
                 ))}
               </div>
             )}
+
           </div>
 
           {/* AI Summary Generator */}
-          <div className="space-y-4 pt-4 border-t border-slate-800">
+          <div className="space-y-4 pt-4 border-t border-slate-200">
             <div className="flex items-center justify-between">
               <div>
-                <Label className="text-slate-200">Ringkasan AI</Label>
-                <p className="text-xs text-slate-500 mt-1">Generate ringkasan otomatis menggunakan AI</p>
+                <Label className="text-slate-900 font-medium">Ringkasan AI</Label>
+                <p className="text-sm text-slate-600 mt-1">Generate ringkasan otomatis menggunakan AI</p>
               </div>
               <Button
                 type="button"
                 onClick={handleGenerateSummary}
                 disabled={isGeneratingSummary}
                 size="sm"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                variant="outline"
+                className="bg-amber-500/10 text-amber-700 border-amber-300 hover:bg-amber-50"
               >
                 {isGeneratingSummary ? (
                   <>
@@ -444,8 +446,8 @@ function NewProposalContent() {
           </div>
 
           {error && (
-            <Alert variant="destructive" className="bg-red-950/50 border-red-900">
-              <AlertDescription>{error}</AlertDescription>
+            <Alert variant="destructive" className="bg-red-50 border-red-200">
+              <AlertDescription className="text-red-900">{error}</AlertDescription>
             </Alert>
           )}
 
@@ -454,17 +456,17 @@ function NewProposalContent() {
               onClick={() => handleSubmit("draft")}
               disabled={isSubmitting}
               variant="outline"
-              className="border-slate-700 text-slate-200 hover:bg-slate-800"
+              className="bg-white border-slate-300 text-slate-700 hover:bg-slate-50 py-6 px-8 text-base"
             >
-              <Save className="w-4 h-4 mr-2" />
+              <Save className="w-5 h-5 mr-2" />
               Simpan sebagai Draft
             </Button>
             <Button
               onClick={() => handleSubmit("submitted")}
               disabled={isSubmitting}
-              className="bg-white text-slate-900 hover:bg-slate-100"
+              className="bg-[#e10000] text-white hover:bg-[#c10000] py-6 px-8 text-base font-semibold"
             >
-              <Send className="w-4 h-4 mr-2" />
+              <Send className="w-5 h-5 mr-2" />
               Ajukan Proposal
             </Button>
           </div>
