@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Presentation, Building2, Users, FileText, CheckCircle, ArrowRight, Zap } from 'lucide-react';
+import { Presentation, Building2, Users, FileText, CheckCircle, ArrowRight, Zap, BarChart3 } from 'lucide-react';
 
 export default function LandingPage() {
   return (
@@ -37,7 +37,7 @@ export default function LandingPage() {
         </div>
 
         {/* Features Section */}
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
+        <div className="grid md:grid-cols-4 gap-6 mb-16">
           <Card className="border-2 hover:shadow-lg transition-shadow">
             <CardHeader>
               <div className="h-12 w-12 rounded-lg bg-orange-100 flex items-center justify-center mb-4">
@@ -58,10 +58,30 @@ export default function LandingPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-2 hover:shadow-lg transition-shadow">
+          <Card className="border-2 hover:shadow-lg transition-shadow border-blue-200 bg-gradient-to-br from-blue-50 to-white">
             <CardHeader>
               <div className="h-12 w-12 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
-                <FileText className="h-6 w-6 text-blue-600" />
+                <BarChart3 className="h-6 w-6 text-blue-600" />
+              </div>
+              <CardTitle>Dashboard Statistik</CardTitle>
+              <CardDescription>
+                Statistik lengkap kerja sama: total, internasional vs nasional, per fakultas, durasi & sisa waktu
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/dashboard">
+                <Button variant="ghost" className="w-full justify-between group">
+                  Lihat Statistik
+                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="border-2 hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="h-12 w-12 rounded-lg bg-green-100 flex items-center justify-center mb-4">
+                <FileText className="h-6 w-6 text-green-600" />
               </div>
               <CardTitle>Manajemen Proposal</CardTitle>
               <CardDescription>
