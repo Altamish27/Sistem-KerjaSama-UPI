@@ -41,7 +41,8 @@ import {
   XCircle,
   AlertTriangle,
   FileEdit,
-  MessageSquare
+  MessageSquare,
+  Lightbulb
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -62,7 +63,7 @@ function MonitoringBar({ currentStep, totalSteps, timeline }: any) {
           
           <Progress value={progress} className="h-3" />
           
-          <div className="grid grid-cols-5 gap-2 text-xs">
+          <div className="grid grid-cols-8 gap-1 text-xs">
             {timeline.map((phase: any, idx: number) => (
               <div 
                 key={idx}
@@ -74,10 +75,10 @@ function MonitoringBar({ currentStep, totalSteps, timeline }: any) {
                     : 'bg-gray-100 text-gray-500'
                 }`}
               >
-                <div className="font-semibold">{phase.label}</div>
-                <div className="text-xs mt-1">{phase.actor}</div>
+                <div className="font-semibold text-[10px]">{phase.label}</div>
+                <div className="text-[9px] mt-1">{phase.actor}</div>
                 {phase.timestamp && (
-                  <div className="text-xs opacity-75 mt-1">{phase.timestamp}</div>
+                  <div className="text-[8px] opacity-75 mt-1">{phase.timestamp}</div>
                 )}
               </div>
             ))}
@@ -124,9 +125,9 @@ function DemoFlowFakultasContent() {
       approveNext: 8, rejectNext: 98 },
     
     // APPROVE PATH - LEGAL (DKUI)
-    { id: 8, actor: 'LEGAL', label: 'Susun & Periksa Dokumen', icon: FilePlus, type: 'activity', nextStep: 9 },
-    { id: 9, actor: 'LEGAL', label: 'Paraf Kepala Divisi Legal', icon: PenTool, type: 'paraf', nextStep: 10 },
-    { id: 10, actor: 'LEGAL', label: 'Kirim ke Biro Hukum', icon: Send, type: 'activity', nextStep: 11 },
+    { id: 8, actor: 'LEGAL', label: 'Legal Susun & Periksa Dokumen', icon: FilePlus, type: 'activity', nextStep: 9 },
+    { id: 9, actor: 'DKUI', label: 'Paraf Kepala Divisi DKUI', icon: PenTool, type: 'paraf', nextStep: 10 },
+    { id: 10, actor: 'DKUI', label: 'Kirim ke Biro Hukum', icon: Send, type: 'activity', nextStep: 11 },
     
     // BIRO HUKUM
     { id: 11, actor: 'BIRO_HUKUM', label: 'Validasi dan Paraf Biro Hukum', icon: CheckSquare, type: 'paraf', nextStep: 12 },
@@ -134,28 +135,30 @@ function DemoFlowFakultasContent() {
       approveNext: 13, rejectNext: 8 }, // reject = kembali ke susun dokumen
     
     // DKUI Paralel Gateway
-    { id: 13, actor: 'DKUI', label: 'Paralel Pengiriman Dokumen', icon: Repeat, type: 'activity', nextStep: 14 },
+    { id: 13, actor: 'DKUI', label: 'Gateway Paralel (Split)', icon: Repeat, type: 'parallel_gateway', nextStep: 14, parallelNext: 18 },
     
-    // PARALEL A: MITRA
-    { id: 14, actor: 'MITRA', label: 'Review Dokumen', icon: Eye, type: 'activity', nextStep: 15 },
-    { id: 15, actor: 'MITRA', label: 'Keputusan Dokumen: Valid?', icon: CheckCircle, type: 'gateway',
-      approveNext: 16, rejectNext: 99 }, // reject = feedback penolakan dokumen
-    { id: 16, actor: 'MITRA', label: 'TTD & Materai', icon: PenTool, type: 'sign', nextStep: 17 },
-    { id: 17, actor: 'MITRA', label: 'Kirim Dokumen Bermaterai ke DKUI', icon: Send, type: 'activity', nextStep: 23 },
+    // JALUR PARALEL A: MITRA
+    { id: 14, actor: 'MITRA', label: '[Paralel A] Review Dokumen', icon: Eye, type: 'activity', nextStep: 15 },
+    // JALUR PARALEL A: MITRA
+    { id: 14, actor: 'MITRA', label: '[Paralel A] Review Dokumen', icon: Eye, type: 'activity', nextStep: 15 },
+    { id: 15, actor: 'MITRA', label: '[Paralel A] Keputusan: Valid?', icon: CheckCircle, type: 'gateway',
+      approveNext: 16, rejectNext: 99 },
+    { id: 16, actor: 'MITRA', label: '[Paralel A] TTD & Materai', icon: PenTool, type: 'sign', nextStep: 17 },
+    { id: 17, actor: 'MITRA', label: '[Paralel A] Kirim ke DKUI', icon: Send, type: 'activity', nextStep: 23 },
     
-    // PARALEL B: SUPERVISI
-    { id: 18, actor: 'SUPERVISI', label: 'Review Wakil Rektor', icon: UserCheck, type: 'activity', nextStep: 19 },
-    { id: 19, actor: 'SUPERVISI', label: 'Keputusan Warek: Disetujui?', icon: CheckCircle, type: 'gateway',
-      approveNext: 20, rejectNext: 97 }, // reject = feedback ke fakultas
-    { id: 20, actor: 'SUPERVISI', label: 'Digital Signing Warek', icon: PenTool, type: 'sign', nextStep: 21 },
-    { id: 21, actor: 'SUPERVISI', label: 'Review Rektor', icon: UserCheck, type: 'activity', nextStep: 22 },
-    { id: 22, actor: 'SUPERVISI', label: 'Keputusan Rektor: Disetujui?', icon: CheckCircle, type: 'gateway',
-      approveNext: 25, rejectNext: 96 }, // reject = feedback ke fakultas
-    { id: 25, actor: 'SUPERVISI', label: 'Digital Signing & Materai Rektor', icon: Stamp, type: 'sign', nextStep: 26 },
-    { id: 26, actor: 'SUPERVISI', label: 'Kirim Dokumen Bermaterai ke DKUI', icon: Send, type: 'activity', nextStep: 23 },
+    // JALUR PARALEL B: WAREK → REKTOR (Dilakukan Bersamaan dengan Jalur A)
+    { id: 18, actor: 'SUPERVISI', label: '[Paralel B] Review Wakil Rektor', icon: UserCheck, type: 'activity', nextStep: 19 },
+    { id: 19, actor: 'SUPERVISI', label: '[Paralel B] Keputusan Warek: Disetujui?', icon: CheckCircle, type: 'gateway',
+      approveNext: 20, rejectNext: 97 },
+    { id: 20, actor: 'SUPERVISI', label: '[Paralel B] Digital Signing Warek', icon: PenTool, type: 'sign', nextStep: 21 },
+    { id: 21, actor: 'SUPERVISI', label: '[Paralel B] Review Rektor', icon: UserCheck, type: 'activity', nextStep: 22 },
+    { id: 22, actor: 'SUPERVISI', label: '[Paralel B] Keputusan Rektor: Disetujui?', icon: CheckCircle, type: 'gateway',
+      approveNext: 25, rejectNext: 96 },
+    { id: 25, actor: 'SUPERVISI', label: '[Paralel B] Digital Signing & Materai Rektor', icon: Stamp, type: 'sign', nextStep: 26 },
+    { id: 26, actor: 'SUPERVISI', label: '[Paralel B] Kirim ke DKUI', icon: Send, type: 'activity', nextStep: 23 },
     
-    // GABUNG PARALEL
-    { id: 23, actor: 'DKUI', label: 'Terima Dokumen Bermaterai (Mitra & Rektor)', icon: Inbox, type: 'activity', nextStep: 24 },
+    // JOIN GATEWAY - Menunggu Jalur A & B Selesai
+    { id: 23, actor: 'DKUI', label: 'Gateway Join (Terima dari Mitra & Rektor)', icon: Inbox, type: 'activity', nextStep: 24 },
     { id: 24, actor: 'DKUI', label: 'Pertukaran Dokumen Final', icon: Repeat, type: 'activity', nextStep: 27 },
     { id: 27, actor: 'DKUI', label: 'Arsipkan Dokumen', icon: Archive, type: 'activity', nextStep: 28 },
     { id: 28, actor: 'DKUI', label: '✅ Proses Selesai', icon: CheckCircle, type: 'end', nextStep: null },
@@ -176,8 +179,11 @@ function DemoFlowFakultasContent() {
       { label: 'Pengajuan', actor: 'FAKULTAS', status: currentStep >= 1 ? 'completed' : 'pending', timestamp: currentStep >= 1 ? '09:00' : '' },
       { label: 'Proses DKUI', actor: 'DKUI', status: currentStep >= 2 && currentStep <= 5 ? 'active' : currentStep > 5 ? 'completed' : 'pending', timestamp: currentStep > 5 ? '10:30' : '' },
       { label: 'Review Mitra', actor: 'MITRA', status: currentStep >= 6 && currentStep <= 7 ? 'active' : currentStep > 7 ? 'completed' : 'pending', timestamp: currentStep > 7 ? '14:00' : '' },
-      { label: 'Legal & Biro Hukum', actor: 'Legal + Biro', status: currentStep >= 8 && currentStep <= 12 ? 'active' : currentStep > 12 ? 'completed' : 'pending', timestamp: currentStep > 12 ? '16:00' : '' },
-      { label: 'Finalisasi', actor: 'Paralel + Arsip', status: currentStep >= 13 ? 'active' : 'pending', timestamp: '' }
+      { label: 'Legal Draft', actor: 'LEGAL', status: currentStep >= 8 && currentStep <= 8 ? 'active' : currentStep > 8 ? 'completed' : 'pending', timestamp: currentStep >= 8 ? '15:00' : '' },
+      { label: 'Kepala Divisi', actor: 'DKUI', status: currentStep >= 9 && currentStep <= 10 ? 'active' : currentStep > 10 ? 'completed' : 'pending', timestamp: currentStep >= 9 ? '15:45' : '' },
+      { label: 'Biro Hukum', actor: 'BIRO HUKUM', status: currentStep >= 11 && currentStep <= 12 ? 'active' : currentStep > 12 ? 'completed' : 'pending', timestamp: currentStep >= 11 ? '16:30' : '' },
+      { label: 'Paralel', actor: 'Mitra & Warek', status: currentStep >= 13 && currentStep <= 26 ? 'active' : currentStep > 26 ? 'completed' : 'pending', timestamp: currentStep >= 13 ? '09:00+1d' : '' },
+      { label: 'Arsip', actor: 'Finalisasi', status: currentStep >= 27 ? 'active' : 'pending', timestamp: '' }
     ]);
   }, [currentStep]);
 
@@ -501,6 +507,106 @@ function DemoFlowFakultasContent() {
       );
     }
 
+    // Parallel Gateway (Split into two paths)
+    if (currentStepData?.type === 'parallel_gateway') {
+      return (
+        <Card className="border-4 border-teal-500">
+          <CardHeader className="bg-gradient-to-r from-teal-50 to-cyan-50">
+            <CardTitle className="flex items-center gap-2">
+              <Repeat className="h-6 w-6" />
+              {currentStepData.label}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6 space-y-4">
+            <Alert className="bg-teal-50 border-teal-300">
+              <AlertCircle className="h-4 w-4 text-teal-600" />
+              <AlertDescription className="text-teal-900">
+                <strong>Gateway Paralel:</strong> Dokumen akan dikirim ke DUA jalur secara bersamaan
+              </AlertDescription>
+            </Alert>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              {/* Jalur A: Mitra */}
+              <div className="border-2 border-orange-300 rounded-lg p-4 bg-orange-50">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="h-3 w-3 rounded-full bg-orange-500 animate-pulse"></div>
+                  <h4 className="font-bold text-orange-900">JALUR A: MITRA</h4>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Eye className="h-4 w-4 text-orange-600" />
+                    <span>Review Dokumen</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-orange-600" />
+                    <span>Keputusan Validitas</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <PenTool className="h-4 w-4 text-orange-600" />
+                    <span>TTD & Materai Mitra</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Send className="h-4 w-4 text-orange-600" />
+                    <span>Kirim kembali ke DKUI</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Jalur B: Warek → Rektor */}
+              <div className="border-2 border-purple-300 rounded-lg p-4 bg-purple-50">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="h-3 w-3 rounded-full bg-purple-500 animate-pulse"></div>
+                  <h4 className="font-bold text-purple-900">JALUR B: WAREK → REKTOR</h4>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <UserCheck className="h-4 w-4 text-purple-600" />
+                    <span>Warek Review & Keputusan</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <PenTool className="h-4 w-4 text-purple-600" />
+                    <span>Warek Digital Sign</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <UserCheck className="h-4 w-4 text-purple-600" />
+                    <span>Rektor Review & Keputusan</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Stamp className="h-4 w-4 text-purple-600" />
+                    <span>Rektor Sign & Materai</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Send className="h-4 w-4 text-purple-600" />
+                    <span>Kirim ke DKUI</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <Alert className="bg-blue-50 border-blue-200">
+              <Lightbulb className="h-4 w-4 text-blue-600" />
+              <AlertDescription className="text-sm">
+                💡 <strong>Proses Paralel:</strong> Kedua jalur akan berjalan bersamaan. Proses akan berlanjut setelah KEDUA jalur selesai (Gateway Join di step berikutnya).
+              </AlertDescription>
+            </Alert>
+
+            <Button 
+              onClick={() => handleNext()} 
+              className="w-full bg-teal-600" 
+              size="lg"
+            >
+              <Repeat className="mr-2 h-5 w-5" />
+              Kirim ke Kedua Jalur
+            </Button>
+
+            <p className="text-xs text-center text-muted-foreground">
+              Demo akan menampilkan Jalur A dulu (Mitra). Gunakan tombol navigasi untuk melihat Jalur B (Warek → Rektor).
+            </p>
+          </CardContent>
+        </Card>
+      );
+    }
+
     // Gateway (Decision Points)
     if (currentStepData?.type === 'gateway') {
       return (
@@ -811,6 +917,41 @@ function DemoFlowFakultasContent() {
                 </p>
               </CardContent>
             </Card>
+            
+            {/* Parallel Path Navigation */}
+            {currentStep >= 13 && currentStep <= 26 && (
+              <Card className="border-teal-200 bg-teal-50">
+                <CardHeader>
+                  <CardTitle className="text-xs">Navigasi Jalur Paralel</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <Button 
+                    onClick={() => setCurrentStep(14)}
+                    variant={currentStep >= 14 && currentStep <= 17 ? "default" : "outline"}
+                    size="sm"
+                    className="w-full text-xs"
+                  >
+                    🟠 Jalur A: Mitra
+                  </Button>
+                  <Button 
+                    onClick={() => setCurrentStep(18)}
+                    variant={currentStep >= 18 && currentStep <= 26 ? "default" : "outline"}
+                    size="sm"
+                    className="w-full text-xs"
+                  >
+                    🟣 Jalur B: Warek→Rektor
+                  </Button>
+                  <Button 
+                    onClick={() => setCurrentStep(23)}
+                    variant="outline"
+                    size="sm"
+                    className="w-full text-xs mt-2"
+                  >
+                    🔄 Gateway Join (Step 23)
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
