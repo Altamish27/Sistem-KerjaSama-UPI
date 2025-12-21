@@ -12,11 +12,15 @@ export interface WorkflowStep {
   type: 'start' | 'activity' | 'gateway' | 'end';
   color: string;
   uiMockup?: 'login' | 'upload' | 'review' | 'sign' | 'tracking' | 'archive' | 'feedback' | 'processing' | 'simple';
-  nextSteps?: string[]; // ID step selanjutnya
+  duration?: string; // Estimasi durasi
+  nextSteps?: string[]; // ID step selanjutnya (legacy)
+  nextStepId?: string; // Single next step ID (untuk non-gateway)
   conditions?: {
     label: string;
     nextStep: string;
+    nextStepId: string; // Tambahkan nextStepId di kondisi juga
     type: 'approve' | 'reject';
+    condition: 'approve' | 'reject' | 'revise'; // Untuk styling di NextStepPreview
   }[];
 }
 
@@ -45,8 +49,10 @@ export const externalMitraWorkflow: WorkflowData = {
       icon: 'play-circle',
       type: 'start',
       color: '#f97316',
+      duration: '5 menit',
       uiMockup: 'login',
-      nextSteps: ['ext-2']
+      nextSteps: ['ext-2'],
+      nextStepId: 'ext-2'
     },
     {
       id: 'ext-2',
@@ -57,8 +63,10 @@ export const externalMitraWorkflow: WorkflowData = {
       icon: 'upload',
       type: 'activity',
       color: '#f97316',
+      duration: '30 menit',
       uiMockup: 'upload',
-      nextSteps: ['ext-3']
+      nextSteps: ['ext-3'],
+      nextStepId: 'ext-3'
     },
 
     // === DKUI ===
@@ -71,7 +79,9 @@ export const externalMitraWorkflow: WorkflowData = {
       icon: 'inbox',
       type: 'activity',
       color: '#3b82f6',
-      nextSteps: ['ext-4']
+      duration: '1 hari',
+      nextSteps: ['ext-4'],
+      nextStepId: 'ext-4'
     },
     {
       id: 'ext-4',
@@ -82,8 +92,10 @@ export const externalMitraWorkflow: WorkflowData = {
       icon: 'cpu',
       type: 'activity',
       color: '#3b82f6',
+      duration: '5 menit (otomatis)',
       uiMockup: 'processing',
-      nextSteps: ['ext-5']
+      nextSteps: ['ext-5'],
+      nextStepId: 'ext-5'
     },
     {
       id: 'ext-5',
@@ -94,7 +106,9 @@ export const externalMitraWorkflow: WorkflowData = {
       icon: 'save',
       type: 'activity',
       color: '#3b82f6',
-      nextSteps: ['ext-6']
+      duration: '1 menit',
+      nextSteps: ['ext-6'],
+      nextStepId: 'ext-6'
     },
     {
       id: 'ext-6',
@@ -105,7 +119,9 @@ export const externalMitraWorkflow: WorkflowData = {
       icon: 'share-2',
       type: 'activity',
       color: '#3b82f6',
-      nextSteps: ['ext-7']
+      duration: '1 hari',
+      nextSteps: ['ext-7'],
+      nextStepId: 'ext-7'
     },
 
     // === FAKULTAS/UNIT ===
@@ -118,8 +134,10 @@ export const externalMitraWorkflow: WorkflowData = {
       icon: 'check-square',
       type: 'activity',
       color: '#22c55e',
+      duration: '3-5 hari kerja',
       uiMockup: 'review',
-      nextSteps: ['ext-8']
+      nextSteps: ['ext-8'],
+      nextStepId: 'ext-8'
     },
     {
       id: 'ext-8',
@@ -130,16 +148,21 @@ export const externalMitraWorkflow: WorkflowData = {
       icon: 'git-branch',
       type: 'gateway',
       color: '#22c55e',
+      duration: '1 hari',
       conditions: [
         {
-          label: 'Tidak Disetujui',
+          label: '❌ Tidak Disetujui - Tolak Proposal',
           nextStep: 'ext-9',
-          type: 'reject'
+          nextStepId: 'ext-9',
+          type: 'reject',
+          condition: 'reject'
         },
         {
-          label: 'Disetujui',
+          label: '✅ Disetujui - Lanjutkan ke Legal Draft',
           nextStep: 'ext-11',
-          type: 'approve'
+          nextStepId: 'ext-11',
+          type: 'approve',
+          condition: 'approve'
         }
       ]
     },
@@ -263,12 +286,16 @@ export const externalMitraWorkflow: WorkflowData = {
         {
           label: 'Tidak Disetujui',
           nextStep: 'ext-17',
-          type: 'reject'
+          nextStepId: 'ext-17',
+          type: 'reject',
+          condition: 'reject'
         },
         {
           label: 'Disetujui',
           nextStep: 'ext-19',
-          type: 'approve'
+          nextStepId: 'ext-19',
+          type: 'approve',
+          condition: 'approve'
         }
       ]
     },
@@ -414,12 +441,16 @@ export const externalMitraWorkflow: WorkflowData = {
         {
           label: 'Tidak Disetujui - Perlu Revisi',
           nextStep: 'ext-33',
-          type: 'reject'
+          nextStepId: 'ext-33',
+          type: 'reject',
+          condition: 'revise'
         },
         {
           label: 'Disetujui',
           nextStep: 'ext-35',
-          type: 'approve'
+          nextStepId: 'ext-35',
+          type: 'approve',
+          condition: 'approve'
         }
       ]
     },
@@ -507,12 +538,16 @@ export const externalMitraWorkflow: WorkflowData = {
         {
           label: 'Tidak Disetujui',
           nextStep: 'ext-33',
-          type: 'reject'
+          nextStepId: 'ext-33',
+          type: 'reject',
+          condition: 'reject'
         },
         {
           label: 'Disetujui',
           nextStep: 'ext-40',
-          type: 'approve'
+          nextStepId: 'ext-40',
+          type: 'approve',
+          condition: 'approve'
         }
       ]
     },

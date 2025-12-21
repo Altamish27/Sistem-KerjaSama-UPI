@@ -44,6 +44,9 @@ import {
 } from '@/components/workflow-ui-mockups';
 import { WorkflowFlowDiagram } from '@/components/workflow-flow-diagram';
 import { WorkflowTrackingDashboard } from '@/components/workflow-tracking-dashboard';
+import { SimplifiedBPMN } from '@/components/simplified-bpmn';
+import { NextStepPreview } from '@/components/next-step-preview';
+import { BreadcrumbTrail } from '@/components/breadcrumb-trail';
 import { RefreshCw } from 'lucide-react';
 
 interface WorkflowViewerProps {
@@ -207,8 +210,15 @@ export function WorkflowViewer({ workflow }: WorkflowViewerProps) {
   };
   return (
     <div className="space-y-6">
-      {/* Flow Diagram Visualization */}
-      <WorkflowFlowDiagram 
+      {/* Breadcrumb Trail - Jejak Perjalanan */}
+      <BreadcrumbTrail 
+        allSteps={workflow.steps}
+        visitedSteps={visitedSteps}
+        currentStepId={currentStep?.id || ''}
+      />
+
+      {/* BPMN Simplified Diagram - Peta Alur Lengkap */}
+      <SimplifiedBPMN 
         allSteps={workflow.steps}
         currentStepId={currentStep?.id || ''}
         visitedSteps={visitedSteps}
@@ -323,6 +333,16 @@ export function WorkflowViewer({ workflow }: WorkflowViewerProps) {
       {renderUIMockup() && (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
           {renderUIMockup()}
+        </div>
+      )}
+
+      {/* Next Step Preview - Kemana Selanjutnya? */}
+      {currentStep && (
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <NextStepPreview 
+            currentStep={currentStep}
+            allSteps={workflow.steps}
+          />
         </div>
       )}
 

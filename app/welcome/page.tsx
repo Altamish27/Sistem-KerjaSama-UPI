@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Presentation, Building2, Users, FileText, CheckCircle, ArrowRight, Zap, BarChart3 } from 'lucide-react';
+import { Presentation, Building2, Users, FileText, CheckCircle, ArrowRight, Zap, BarChart3, Play } from 'lucide-react';
 
 export default function LandingPage() {
   return (
@@ -20,11 +20,17 @@ export default function LandingPage() {
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
             Platform terintegrasi untuk mengelola proposal, tracking, dan dokumentasi kerja sama universitas
           </p>
-          <div className="flex gap-4 justify-center">
-            <Link href="/presentation">
-              <Button size="lg" className="gap-2 text-lg px-8 py-6">
+          <div className="flex gap-4 justify-center flex-wrap">
+            <Link href="/demo/flow?step=1">
+              <Button size="lg" className="gap-2 text-lg px-8 py-6 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 shadow-xl">
+                <Play className="h-5 w-5" />
+                Demo Dashboard (TERBARU!)
+              </Button>
+            </Link>
+            <Link href="/demo">
+              <Button size="lg" variant="outline" className="gap-2 text-lg px-8 py-6 border-2 border-orange-300 hover:bg-orange-50">
                 <Presentation className="h-5 w-5" />
-                Demo Presentasi Interaktif
+                Pilih Skenario Demo
               </Button>
             </Link>
             <Link href="/login">
@@ -38,12 +44,57 @@ export default function LandingPage() {
 
         {/* Features Section */}
         <div className="grid md:grid-cols-4 gap-6 mb-16">
-          <Card className="border-2 hover:shadow-lg transition-shadow">
+          <Card className="border-2 hover:shadow-lg transition-shadow border-blue-200 bg-gradient-to-br from-blue-50 to-cyan-50">
+            <CardHeader>
+              <div className="h-12 w-12 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
+                <Play className="h-6 w-6 text-blue-600" />
+              </div>
+              <CardTitle className="flex items-center gap-2">
+                Demo Dashboard
+                <span className="text-xs bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-2 py-0.5 rounded-full">TERBARU</span>
+              </CardTitle>
+              <CardDescription>
+                Dashboard interaktif LENGKAP dengan monitoring real-time, paraf digital, approve/reject gateway - PERSIS seperti aplikasi asli!
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/demo/flow?step=1">
+                <Button variant="default" className="w-full justify-between group bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700">
+                  Mulai Demo Dashboard
+                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="border-2 hover:shadow-lg transition-shadow border-orange-200 bg-gradient-to-br from-orange-50 to-white">
             <CardHeader>
               <div className="h-12 w-12 rounded-lg bg-orange-100 flex items-center justify-center mb-4">
                 <Presentation className="h-6 w-6 text-orange-600" />
               </div>
-              <CardTitle>Demo Presentasi</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                Demo Multi-Page
+              </CardTitle>
+              <CardDescription>
+                Pilih skenario approve atau reject untuk melihat alur multi-halaman dengan tutorial per-step
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/demo">
+                <Button variant="ghost" className="w-full justify-between group">
+                  Pilih Skenario
+                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="border-2 hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center mb-4">
+                <FileText className="h-6 w-6 text-purple-600" />
+              </div>
+              <CardTitle>Workflow Presentasi</CardTitle>
               <CardDescription>
                 Lihat alur kerja sama secara interaktif dengan UI mockup lengkap untuk setiap tahapan proses
               </CardDescription>
@@ -51,14 +102,14 @@ export default function LandingPage() {
             <CardContent>
               <Link href="/presentation">
                 <Button variant="ghost" className="w-full justify-between group">
-                  Coba Sekarang
+                  Lihat Workflow
                   <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
             </CardContent>
           </Card>
 
-          <Card className="border-2 hover:shadow-lg transition-shadow border-blue-200 bg-gradient-to-br from-blue-50 to-white">
+          <Card className="border-2 hover:shadow-lg transition-shadow border-green-200 bg-gradient-to-br from-green-50 to-white">
             <CardHeader>
               <div className="h-12 w-12 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
                 <BarChart3 className="h-6 w-6 text-blue-600" />
