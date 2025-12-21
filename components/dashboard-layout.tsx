@@ -25,13 +25,13 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     if (proposal.status === "completed" || proposal.status === "rejected") {
       return false
     }
-    return canUserApprove(proposal.status, user!.role)
+    return canUserApprove(proposal.status, user!.role, proposal.initiator)
   }).length
 
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: Home },
     { name: "Proposal", href: "/dashboard/proposals", icon: FileText },
-    ...(user?.role !== "dosen"
+    ...(user?.role !== "mitra"
       ? [{ name: "Review", href: "/dashboard/review", icon: Users, badge: pendingReviewsCount }]
       : []),
   ]
