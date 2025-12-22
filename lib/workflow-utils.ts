@@ -66,7 +66,7 @@ export function getWorkflowSteps(initiator: InitiatorType) {
   if (initiator === "mitra") {
     return [
       { status: "submitted", label: "Diajukan MITRA", role: "mitra", description: "MITRA mengajukan proposal" },
-      { status: "dkui_summarized", label: "Diringkas DKUI", role: "dkui", description: "DKUI meringkas dengan LLM" },
+      { status: "dkui_summarized", label: "Ditinjau oleh DKUI", role: "dkui", description: "DKUI meringkas dengan LLM" },
       {
         status: "verification_approved",
         label: "Verifikasi Fakultas",
@@ -119,7 +119,7 @@ export function getWorkflowSteps(initiator: InitiatorType) {
         role: "fakultas",
         description: "Fakultas mengajukan proposal",
       },
-      { status: "dkui_summarized", label: "Diringkas DKUI", role: "dkui", description: "DKUI meringkas dengan LLM" },
+      { status: "dkui_summarized", label: "Ditinjau oleh DKUI", role: "dkui", description: "DKUI meringkas dengan LLM" },
       {
         status: "verification_approved",
         label: "Verifikasi MITRA",

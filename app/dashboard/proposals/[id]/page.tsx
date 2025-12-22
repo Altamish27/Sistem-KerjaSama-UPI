@@ -131,30 +131,30 @@ function ProposalDetailContent() {
   }
 
   return (
-    <div className="space-y-10 max-w-7xl mx-auto">
+    <div className="space-y-6 sm:space-y-8 lg:space-y-10 max-w-7xl mx-auto">
       {/* Header Section - Executive spacing */}
-      <div className="flex items-center gap-6">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
         <Link href="/dashboard/proposals">
           <Button
             variant="outline"
             size="sm"
-            className="border-slate-300 text-slate-700 hover:bg-slate-50 bg-white shadow-sm px-4 py-5"
+            className="border-slate-300 text-slate-700 hover:bg-slate-50 bg-white shadow-sm px-4 py-3 sm:py-5 w-full sm:w-auto"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Kembali
+            <ArrowLeft className="w-4 h-4 sm:mr-2" />
+            <span className="hidden sm:inline">Kembali</span>
           </Button>
         </Link>
         <div className="flex-1">
-          <div className="flex items-center gap-3 mb-3">
-            <Badge className="text-sm bg-slate-100 text-slate-700 border-slate-200 font-medium px-3 py-1">
+          <div className="flex items-center gap-2 sm:gap-3 mb-3 flex-wrap">
+            <Badge className="text-xs sm:text-sm bg-slate-100 text-slate-700 border-slate-200 font-medium px-2 sm:px-3 py-0.5 sm:py-1">
               {proposal.initiator?.toUpperCase() || "UNKNOWN"}
             </Badge>
-            <Badge className={`text-sm border font-medium px-3 py-1 ${getStatusColor(proposal.status)}`}>
+            <Badge className={`text-xs sm:text-sm border font-medium px-2 sm:px-3 py-0.5 sm:py-1 ${getStatusColor(proposal.status)}`}>
               {STATUS_LABELS[proposal.status]}
             </Badge>
           </div>
-          <h1 className="text-4xl font-bold text-slate-900 leading-tight">{proposal.title}</h1>
-          <p className="text-slate-600 mt-2 text-lg">{proposal.partnerName}</p>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight">{proposal.title}</h1>
+          <p className="text-slate-600 mt-2 text-base lg:text-lg">{proposal.partnerName}</p>
         </div>
       </div>
 
@@ -183,35 +183,35 @@ function ProposalDetailContent() {
       {/* Workflow Progress */}
       <ProposalTracker proposal={proposal} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
         {/* Proposal Details */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
           {/* Executive Information Grid - Generous spacing */}
           <Card className="bg-white border border-slate-200 shadow-sm">
-            <CardHeader className="pb-5">
-              <CardTitle className="text-2xl font-bold text-slate-900">Informasi Proposal</CardTitle>
+            <CardHeader className="pb-3 sm:pb-5">
+              <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900">Informasi Proposal</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-8">
-              <div className="grid grid-cols-2 gap-8">
-                <div className="space-y-2">
-                  <p className="text-sm text-slate-500 font-medium uppercase tracking-wide">Nomor Proposal</p>
-                  <p className="text-lg text-slate-900 font-semibold">{proposal.proposalNumber || "-"}</p>
+            <CardContent className="space-y-6 sm:space-y-8 pt-4 sm:pt-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+                <div className="space-y-1 sm:space-y-2">
+                  <p className="text-xs sm:text-sm text-slate-500 font-medium uppercase tracking-wide">Nomor Proposal</p>
+                  <p className="text-base sm:text-lg text-slate-900 font-semibold">{proposal.proposalNumber || "-"}</p>
                 </div>
-                <div className="space-y-2">
-                  <p className="text-sm text-slate-500 font-medium uppercase tracking-wide">Pengajuan</p>
-                  <p className="text-lg text-slate-900 font-semibold">
+                <div className="space-y-1 sm:space-y-2">
+                  <p className="text-xs sm:text-sm text-slate-500 font-medium uppercase tracking-wide">Pengajuan</p>
+                  <p className="text-base sm:text-lg text-slate-900 font-semibold">
                     {proposal.initiator === "mitra" ? "Eksternal (MITRA)" : "Internal (Fakultas)"}
                   </p>
                 </div>
-                <div className="space-y-2">
-                  <p className="text-sm text-slate-500 font-medium uppercase tracking-wide">Jenis Mitra</p>
-                  <p className="text-lg text-slate-900 font-semibold">
+                <div className="space-y-1 sm:space-y-2">
+                  <p className="text-xs sm:text-sm text-slate-500 font-medium uppercase tracking-wide">Jenis Mitra</p>
+                  <p className="text-base sm:text-lg text-slate-900 font-semibold">
                     {proposal.partnerType === "dalam_negeri" ? "Dalam Negeri" : "Luar Negeri"}
                   </p>
                 </div>
-                <div className="space-y-2">
-                  <p className="text-sm text-slate-500 font-medium uppercase tracking-wide">Durasi</p>
-                  <p className="text-lg text-slate-900 font-semibold">{proposal.duration} Bulan</p>
+                <div className="space-y-1 sm:space-y-2">
+                  <p className="text-xs sm:text-sm text-slate-500 font-medium uppercase tracking-wide">Durasi</p>
+                  <p className="text-base sm:text-lg text-slate-900 font-semibold">{proposal.duration} Bulan</p>
                 </div>
               </div>
 
@@ -332,10 +332,10 @@ function ProposalDetailContent() {
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Additional Info Card */}
           <Card className="bg-white border border-gray-200 shadow-sm">
-            <CardHeader className="pb-4">
+            <CardHeader className="pb-3 sm:pb-4">
               <CardTitle className="text-xl font-bold text-black">Info Tambahan</CardTitle>
             </CardHeader>
             <CardContent className="space-y-5">
@@ -389,11 +389,11 @@ function ProposalDetailContent() {
           {/* Actionable Decision Card - Clean with red button only */}
           {canApprove && proposal.status !== "completed" && proposal.status !== "rejected" && (
             <Card className="bg-white border border-slate-200 shadow-sm">
-              <CardHeader className="pb-5 bg-slate-50/50">
-                <CardTitle className="text-2xl font-bold text-slate-900">Tindakan</CardTitle>
-                <CardDescription className="text-slate-600 text-base">Review dan berikan keputusan</CardDescription>
+              <CardHeader className="pb-3 sm:pb-5 bg-slate-50/50">
+                <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900">Tindakan</CardTitle>
+                <CardDescription className="text-slate-600 text-sm sm:text-base">Review dan berikan keputusan</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6 pt-6">
+              <CardContent className="space-y-4 sm:space-y-6 pt-4 sm:pt-6">
                 <div className="space-y-3">
                   <Label htmlFor="comment" className="text-slate-900 font-semibold text-base">
                     Komentar <span className="text-[#e10000]">*</span>
@@ -408,21 +408,21 @@ function ProposalDetailContent() {
                   />
                 </div>
 
-                <div className="flex gap-4 pt-3">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-3">
                   <Button
                     onClick={handleApprove}
                     disabled={isProcessing || !comment.trim()}
-                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-6 text-base shadow-sm"
+                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 sm:py-5 text-sm sm:text-base shadow-sm"
                   >
-                    <CheckCircle2 className="w-5 h-5 mr-2" />
+                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                     Setujui
                   </Button>
                   <Button
                     onClick={handleReject}
                     disabled={isProcessing || !comment.trim()}
-                    className="flex-1 bg-[#e10000] hover:bg-[#c10000] text-white font-semibold py-6 text-base shadow-sm"
+                    className="flex-1 bg-[#e10000] hover:bg-[#c10000] text-white font-semibold py-3 sm:py-5 text-sm sm:text-base shadow-sm"
                   >
-                    <XCircle className="w-5 h-5 mr-2" />
+                    <XCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                     Tolak
                   </Button>
                 </div>

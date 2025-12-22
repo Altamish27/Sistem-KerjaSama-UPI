@@ -25,26 +25,26 @@ export function ProposalTracker({ proposal, compact = false }: ProposalTrackerPr
 
   return (
     <Card className="bg-white border border-slate-200 shadow-sm">
-      <CardHeader className="pb-6">
-        <div className="flex items-center justify-between">
+      <CardHeader className="pb-4 sm:pb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <CardTitle className="text-2xl font-bold text-slate-900">Status Tracking</CardTitle>
-            <CardDescription className="text-slate-600 text-base mt-2">
+            <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900">Status Tracking</CardTitle>
+            <CardDescription className="text-slate-600 text-sm sm:text-base mt-1 sm:mt-2">
               Progress dan riwayat persetujuan proposal
             </CardDescription>
           </div>
           {nextStep && (
-            <Badge className="bg-amber-50 text-amber-800 border border-amber-200 font-medium px-3 py-1.5 text-sm">
-              <ArrowRight className="w-3.5 h-3.5 mr-1.5" />
+            <Badge className="bg-amber-50 text-amber-800 border border-amber-200 font-medium px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm w-fit">
+              <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1 sm:mr-1.5" />
               Selanjutnya: {nextStep.label}
             </Badge>
           )}
         </div>
       </CardHeader>
-      <CardContent className="space-y-6 pt-2">
+      <CardContent className="space-y-4 sm:space-y-6 pt-2">
         {/* Timeline Progress - Vertical with solid lines */}
         <div className="relative">
-          <div className={`space-y-1 ${compact ? "max-h-96 overflow-y-auto pr-2" : ""}`}>
+          <div className={`space-y-1 ${compact ? "max-h-96 overflow-y-auto pr-2" : ""}  `}>
             {workflowSteps.map((step, index) => {
               const isCompleted = index < currentStepIndex
               const isCurrent = index === currentStepIndex
@@ -65,11 +65,11 @@ export function ProposalTracker({ proposal, compact = false }: ProposalTrackerPr
               const displayHistory = historyForStep || completedHistory
 
               return (
-                <div key={step.status} className="flex gap-5 relative">
+                <div key={step.status} className="flex gap-3 sm:gap-5 relative">
                   {/* Connector Line - Subtle and professional */}
                   {index < workflowSteps.length - 1 && (
                     <div
-                      className={`absolute left-5 top-14 w-0.5 h-[calc(100%-16px)] -ml-px ${
+                      className={`absolute left-[18px] sm:left-5 top-12 sm:top-14 w-0.5 h-[calc(100%-16px)] -ml-px ${
                         isCompleted 
                           ? "bg-emerald-200" 
                           : isRejectedAtThis 
@@ -82,32 +82,32 @@ export function ProposalTracker({ proposal, compact = false }: ProposalTrackerPr
                   {/* Icon - Timeline Node: Completed = green subtle, Current = amber accent, Rejected = red */}
                   <div className="flex-shrink-0 z-10">
                     <div
-                      className={`w-11 h-11 rounded-full flex items-center justify-center border-2 transition-all ${
+                      className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full flex items-center justify-center border-2 transition-all ${
                         isRejectedAtThis
                           ? "bg-red-50 border-red-500 text-red-600"
                           : isCompleted
                             ? "bg-emerald-50 border-emerald-500 text-emerald-700"
                             : isCurrent
-                              ? "bg-amber-50 border-amber-400 text-amber-700 ring-4 ring-amber-100"
+                              ? "bg-amber-50 border-amber-400 text-amber-700 ring-2 sm:ring-4 ring-amber-100"
                               : "bg-slate-50 border-slate-300 text-slate-400"
                       }`}
                     >
                       {isRejectedAtThis ? (
-                        <XCircle className="w-5 h-5" />
+                        <XCircle className="w-4 h-4 sm:w-5 sm:h-5" />
                       ) : isCompleted ? (
-                        <CheckCircle2 className="w-5 h-5" />
+                        <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
                       ) : isCurrent ? (
-                        <Clock className="w-5 h-5" />
+                        <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
                       ) : (
-                        <AlertCircle className="w-5 h-5" />
+                        <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5" />
                       )}
                     </div>
                   </div>
 
                   {/* Content Card with soft shadow */}
-                  <div className="flex-1 pb-6">
+                  <div className="flex-1 pb-4 sm:pb-6">
                     <div
-                      className={`rounded-xl p-6 border transition-all ${
+                      className={`rounded-lg sm:rounded-xl p-4 sm:p-6 border transition-all ${
                         isCurrent
                           ? "bg-amber-50/30 border-amber-200 shadow-sm"
                           : isCompleted
@@ -117,10 +117,10 @@ export function ProposalTracker({ proposal, compact = false }: ProposalTrackerPr
                               : "bg-white border-slate-150"
                       }`}
                     >
-                      <div className="flex items-start justify-between gap-4 mb-4">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4 mb-3 sm:mb-4">
                         <div>
-                          <h4 className="text-lg font-bold text-slate-900">{step.label}</h4>
-                          <p className="text-sm text-slate-600 mt-1">
+                          <h4 className="text-base sm:text-lg font-bold text-slate-900">{step.label}</h4>
+                          <p className="text-xs sm:text-sm text-slate-600 mt-0.5 sm:mt-1">
                             {isCompleted 
                               ? "Selesai" 
                               : isCurrent 
@@ -132,7 +132,7 @@ export function ProposalTracker({ proposal, compact = false }: ProposalTrackerPr
                         </div>
                         <Badge
                           variant="outline"
-                          className={`text-xs font-medium px-2.5 py-1 ${
+                          className={`text-[10px] sm:text-xs font-medium px-2 sm:px-2.5 py-0.5 sm:py-1 w-fit ${
                             isCompleted
                               ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                               : isCurrent
@@ -189,16 +189,16 @@ export function ProposalTracker({ proposal, compact = false }: ProposalTrackerPr
         </div>
 
         {/* Summary Info with emphasized progress */}
-        <div className="flex items-center justify-between pt-5 border-t border-gray-200">
-          <div className="text-sm">
+        <div className="flex items-center justify-between pt-4 sm:pt-5 border-t border-gray-200">
+          <div className="text-xs sm:text-sm">
             <span className="text-gray-500">Progress: </span>
-            <span className="text-black font-bold text-base">
+            <span className="text-black font-bold text-sm sm:text-base">
               {Math.round((currentStepIndex / (workflowSteps.length - 1)) * 100)}%
             </span>
           </div>
-          <div className="text-sm">
+          <div className="text-xs sm:text-sm">
             <span className="text-gray-500">Step: </span>
-            <span className="text-black font-bold text-base">
+            <span className="text-black font-bold text-sm sm:text-base">
               {currentStepIndex + 1} dari {workflowSteps.length}
             </span>
           </div>

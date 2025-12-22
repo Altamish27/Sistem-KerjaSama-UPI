@@ -173,30 +173,30 @@ function NewProposalContent() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
         <Link href="/dashboard/proposals">
           <Button
             variant="outline"
             size="sm"
-            className="border-slate-300 text-slate-700 hover:bg-slate-50 bg-white"
+            className="border-slate-300 text-slate-700 hover:bg-slate-50 bg-white w-full sm:w-auto"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Kembali
+            <ArrowLeft className="w-4 h-4 sm:mr-2" />
+            <span className="hidden sm:inline">Kembali</span>
           </Button>
         </Link>
         <div>
-          <h1 className="text-4xl font-bold text-slate-900">Buat Proposal Baru</h1>
-          <p className="text-slate-600 mt-2 text-lg">Isi form di bawah untuk mengajukan proposal kerja sama</p>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">Buat Proposal Baru</h1>
+          <p className="text-slate-600 mt-2 text-base lg:text-lg">Isi form di bawah untuk mengajukan proposal kerja sama</p>
         </div>
       </div>
 
       <Card className="bg-white border-slate-200 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-slate-900 text-2xl font-bold">Informasi Proposal</CardTitle>
-          <CardDescription className="text-slate-600 text-base">Lengkapi data proposal kerja sama dengan mitra</CardDescription>
+        <CardHeader className="pb-3 sm:pb-5">
+          <CardTitle className="text-slate-900 text-xl sm:text-2xl font-bold">Informasi Proposal</CardTitle>
+          <CardDescription className="text-slate-600 text-sm sm:text-base">Lengkapi data proposal kerja sama dengan mitra</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4 sm:space-y-6 pt-4 sm:pt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="partnerType" className="text-slate-900 font-medium">
@@ -305,7 +305,7 @@ function NewProposalContent() {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             <div className="space-y-2">
               <Label htmlFor="duration" className="text-slate-900 font-medium">
                 Durasi (Bulan) *
@@ -451,22 +451,22 @@ function NewProposalContent() {
             </Alert>
           )}
 
-          <div className="flex items-center gap-4 pt-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-4">
             <Button
               onClick={() => handleSubmit("draft")}
               disabled={isSubmitting}
               variant="outline"
-              className="bg-white border-slate-300 text-slate-700 hover:bg-slate-50 py-6 px-8 text-base"
+              className="bg-white border-slate-300 text-slate-700 hover:bg-slate-50 py-3 sm:py-5 px-4 sm:px-6 text-sm sm:text-base w-full sm:w-auto"
             >
-              <Save className="w-5 h-5 mr-2" />
+              <Save className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               Simpan sebagai Draft
             </Button>
             <Button
               onClick={() => handleSubmit("submitted")}
               disabled={isSubmitting}
-              className="bg-[#e10000] text-white hover:bg-[#c10000] py-6 px-8 text-base font-semibold"
+              className="bg-[#e10000] text-white hover:bg-[#c10000] py-3 sm:py-5 px-4 sm:px-6 text-sm sm:text-base font-semibold w-full sm:w-auto"
             >
-              <Send className="w-5 h-5 mr-2" />
+              <Send className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               Ajukan Proposal
             </Button>
           </div>
