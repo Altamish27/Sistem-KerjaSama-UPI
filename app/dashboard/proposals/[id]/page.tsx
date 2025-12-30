@@ -8,8 +8,6 @@ import { useDataStore } from "@/lib/data-store"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
   ArrowLeft,
@@ -25,9 +23,11 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { STATUS_LABELS } from "@/lib/mock-data"
-import { canUserApprove, getNextStatus, getCurrentStepIndex, getWorkflowSteps } from "@/lib/workflow-utils"
-import { useState } from "react"
-import { ProposalTracker } from "@/components/proposal-tracker"
+import { useState, useEffect } from "react"
+import { SimpleTracker } from "@/components/simple-tracker"
+import { WorkflowActions } from "@/components/workflow-actions"
+import { getNextStatus } from "@/lib/workflow-engine"
+import type { ApprovalHistory } from "@/lib/mock-data"
 
 export default function ProposalDetailPage() {
   return (
@@ -43,9 +43,16 @@ function ProposalDetailContent() {
   const params = useParams()
   const router = useRouter()
   const { user } = useAuth()
-  const { getProposalById, addApprovalHistory, updateProposalStatus, refreshData } = useDataStore()
-  const [comment, setComment] = useState("")
-  const [isProcessing, setIsProcessing] = useState(false)
+  const { getProposalById, addApprovalHistory, updateProposal, refreshData } = useDataStore()
+  const [isRefreshing, setIsRefreshing] = useState(false)
+
+  // Auto-refresh data setiap 5 detik
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refreshData()
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [refreshData])
 
   const proposal = getProposalById(params.id as string)
 
@@ -54,67 +61,70 @@ function ProposalDetailContent() {
       <div className="text-center py-12">
         <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
         <p className="text-gray-600">Proposal tidak ditemukan</p>
+        <Link href="/dashboard">
+          <Button className="mt-4">Kembali ke Dashboard</Button>
+        </Link>
       </div>
     )
   }
 
-  const canApprove = canUserApprove(proposal.status, user!.role, proposal.initiator)
-  const workflowSteps = getWorkflowSteps(proposal.initiator)
-  const currentStepIndex = getCurrentStepIndex(proposal.status, proposal.initiator)
+  const handleWorkflowAction = async (actionLabel: string, comment?: string, extraData?: any) => {
+    setIsRefreshing(true)
+    try {
+      // Dapatkan status berikutnya
+      const nextStatus = getNextStatus(proposal.status, actionLabel)
 
-  const handleApprove = async () => {
-    if (!comment.trim()) {
-      alert("Mohon berikan komentar atau catatan")
-      return
+      // Update proposal dengan status baru dan data tambahan
+      const updates: any = {
+        status: nextStatus,
+        ...extraData,
+      }
+
+      await updateProposal(proposal.id, updates)
+
+      // Tentukan action type untuk history
+      let actionType: ApprovalHistory["action"] = "dkui_receive"
+      if (actionLabel.includes("AI")) actionType = "dkui_trigger_ai_summary"
+      else if (actionLabel.includes("Pilih") && actionLabel.includes("Fakultas")) actionType = "dkui_select_faculty"
+      else if (actionLabel.includes("Kirim") && actionLabel.includes("Fakultas")) actionType = "dkui_send_to_faculty"
+      else if (actionLabel.includes("Substansi Disetujui")) actionType = "faculty_approve_substansi"
+      else if (actionLabel.includes("Substansi Ditolak")) actionType = "faculty_reject_substansi"
+      else if (actionLabel.includes("Evaluasi")) actionType = "dkui_evaluate_feedback"
+      else if (actionLabel.includes("Revisi oleh Mitra")) actionType = "dkui_decide_revision_mitra"
+      else if (actionLabel.includes("Revisi oleh DKUI")) actionType = "dkui_decide_revision_self"
+      else if (actionLabel.includes("Upload")) actionType = "mitra_upload_revision"
+      else if (actionLabel.includes("Legal") && actionLabel.includes("1")) actionType = "dkui_legal_review_1"
+      else if (actionLabel.includes("Biro Hukum") && actionLabel.includes("Approve")) actionType = "biro_hukum_approve"
+      else if (actionLabel.includes("Biro Hukum") && actionLabel.includes("Reject")) actionType = "biro_hukum_reject"
+      else if (actionLabel.includes("Paraf") && user!.role === "biro_hukum") actionType = "biro_hukum_paraf"
+      else if (actionLabel.includes("Paraf") && user!.role === "dkui") actionType = "dkui_paraf"
+      else if (actionLabel.includes("Approval Akhir")) actionType = "faculty_final_approve"
+      else if (actionLabel.includes("Materai") && user!.role === "mitra") actionType = "mitra_stamp"
+      else if (actionLabel.includes("Tanda Tangan") && user!.role === "mitra") actionType = "mitra_sign"
+      else if (actionLabel.includes("Warek") && actionLabel.includes("Materai")) actionType = "warek_stamp"
+      else if (actionLabel.includes("Warek") && actionLabel.includes("Tanda Tangan")) actionType = "warek_sign"
+      else if (actionLabel.includes("Rektor") && actionLabel.includes("Materai")) actionType = "rektor_stamp"
+      else if (actionLabel.includes("Rektor") && actionLabel.includes("Tanda Tangan")) actionType = "rektor_sign"
+      else if (actionLabel.includes("Pertukaran")) actionType = "document_exchange"
+      else if (actionLabel.includes("Arsip")) actionType = "archive"
+
+      // Tambahkan ke history
+      await addApprovalHistory(proposal.id, {
+        id: `HIST-${Date.now()}`,
+        proposalId: proposal.id,
+        action: actionType,
+        actor: user!.id,
+        actorName: user!.name,
+        actorRole: user!.role,
+        comment: comment || actionLabel,
+        timestamp: new Date().toISOString(),
+      })
+
+      await refreshData()
+      router.refresh()
+    } finally {
+      setIsRefreshing(false)
     }
-
-    setIsProcessing(true)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    const nextStatus = getNextStatus(proposal.status, proposal.initiator)
-    updateProposalStatus(proposal.id, nextStatus)
-    addApprovalHistory(proposal.id, {
-      id: `HIST-${Date.now()}`,
-      proposalId: proposal.id,
-      action: "verify_approve",
-      actor: user!.id,
-      actorName: user!.name,
-      actorRole: user!.role,
-      comment,
-      timestamp: new Date().toISOString(),
-    })
-
-    setIsProcessing(false)
-    setComment("")
-    refreshData()
-    router.refresh()
-  }
-
-  const handleReject = async () => {
-    if (!comment.trim()) {
-      alert("Mohon berikan alasan penolakan")
-      return
-    }
-
-    setIsProcessing(true)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    updateProposalStatus(proposal.id, "rejected")
-    addApprovalHistory(proposal.id, {
-      id: `HIST-${Date.now()}`,
-      proposalId: proposal.id,
-      action: "verify_reject",
-      actor: user!.id,
-      actorName: user!.name,
-      actorRole: user!.role,
-      comment,
-      timestamp: new Date().toISOString(),
-    })
-
-    setIsProcessing(false)
-    setComment("")
-    refreshData()
-    router.refresh()
   }
 
   const getStatusColor = (status: string) => {
@@ -181,7 +191,7 @@ function ProposalDetailContent() {
       )}
 
       {/* Workflow Progress */}
-      <ProposalTracker proposal={proposal} />
+      <SimpleTracker proposal={proposal} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
         {/* Proposal Details */}
@@ -386,67 +396,14 @@ function ProposalDetailContent() {
             </CardContent>
           </Card>
 
-          {/* Actionable Decision Card - Clean with red button only */}
-          {canApprove && proposal.status !== "completed" && proposal.status !== "rejected" && (
-            <Card className="bg-white border border-slate-200 shadow-sm">
-              <CardHeader className="pb-3 sm:pb-5 bg-slate-50/50">
-                <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900">Tindakan</CardTitle>
-                <CardDescription className="text-slate-600 text-sm sm:text-base">Review dan berikan keputusan</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4 sm:space-y-6 pt-4 sm:pt-6">
-                <div className="space-y-3">
-                  <Label htmlFor="comment" className="text-slate-900 font-semibold text-base">
-                    Komentar <span className="text-[#e10000]">*</span>
-                  </Label>
-                  <Textarea
-                    id="comment"
-                    placeholder="Berikan komentar atau catatan..."
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    rows={5}
-                    className="bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-[#e10000] focus:ring-2 focus:ring-[#e10000]/10 text-base leading-relaxed"
-                  />
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-3">
-                  <Button
-                    onClick={handleApprove}
-                    disabled={isProcessing || !comment.trim()}
-                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 sm:py-5 text-sm sm:text-base shadow-sm"
-                  >
-                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                    Setujui
-                  </Button>
-                  <Button
-                    onClick={handleReject}
-                    disabled={isProcessing || !comment.trim()}
-                    className="flex-1 bg-[#e10000] hover:bg-[#c10000] text-white font-semibold py-3 sm:py-5 text-sm sm:text-base shadow-sm"
-                  >
-                    <XCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                    Tolak
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {proposal.status === "completed" && (
-            <Alert className="bg-emerald-50 border border-emerald-200 shadow-sm">
-              <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-              <AlertDescription className="text-emerald-800 font-medium ml-2">
-                Proposal telah disetujui dan selesai diproses.
-              </AlertDescription>
-            </Alert>
-          )}
-
-          {proposal.status === "rejected" && (
-            <Alert className="bg-red-50 border border-red-200 shadow-sm">
-              <XCircle className="h-5 w-5 text-[#e10000]" />
-              <AlertDescription className="text-red-800 font-medium ml-2">
-                Proposal ditolak dan tidak dapat diproses lebih lanjut.
-              </AlertDescription>
-            </Alert>
-          )}
+          {/* Workflow Actions Component */}
+          <WorkflowActions
+            proposal={proposal}
+            userRole={user!.role}
+            userId={user!.id}
+            userName={user!.name}
+            onAction={handleWorkflowAction}
+          />
         </div>
       </div>
     </div>

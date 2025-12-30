@@ -9,8 +9,9 @@ import { Badge } from "@/components/ui/badge"
 import { LogOut, FileText, Home, Users, Menu, ChevronLeft } from "lucide-react"
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
-import { ROLE_LABELS, MOCK_PROPOSALS } from "@/lib/mock-data"
-import { canUserApprove } from "@/lib/workflow-utils"
+import { ROLE_LABELS } from "@/lib/mock-data"
+import { useDataStore } from "@/lib/data-store"
+import { canUserTakeAction } from "@/lib/workflow-engine"
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth()
@@ -18,6 +19,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [isMobile, setIsMobile] = useState(false)
+  const { proposals } = useDataStore()
 
   // Detect mobile screen
   useEffect(() => {
@@ -39,11 +41,11 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     router.push("/login")
   }
 
-  const pendingReviewsCount = MOCK_PROPOSALS.filter((proposal) => {
+  const pendingReviewsCount = proposals.filter((proposal) => {
     if (proposal.status === "completed" || proposal.status === "rejected") {
       return false
     }
-    return canUserApprove(proposal.status, user!.role, proposal.initiator)
+    return canUserTakeAction(proposal.status, user!.role)
   }).length
 
   const navigation = [

@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { FileText, Clock, CheckCircle2, AlertCircle, Plus, TrendingUp, Building2 } from "lucide-react"
 import Link from "next/link"
-import { MOCK_PROPOSALS, STATUS_LABELS } from "@/lib/mock-data"
-import { canUserApprove } from "@/lib/workflow-utils"
-import { ProposalTracker } from "@/components/proposal-tracker"
+import { useDataStore } from "@/lib/data-store"
+import { STATUS_LABELS } from "@/lib/mock-data"
+import { canUserTakeAction } from "@/lib/workflow-engine"
+import { SimpleTracker } from "@/components/simple-tracker"
 import { DKUIStatisticsDashboard } from "@/components/dkui-statistics-dashboard"
 
 export default function DashboardPage() {
@@ -45,8 +46,9 @@ function DashboardContent() {
 
 function MitraDashboard() {
   const { user } = useAuth()
+  const { proposals } = useDataStore()
 
-  const userProposals = MOCK_PROPOSALS.filter((p) => p.initiator === "mitra" && p.createdBy === user?.id)
+  const userProposals = proposals.filter((p) => p.initiator === "mitra" && p.createdBy === user?.id)
   const draftCount = userProposals.filter((p) => p.status === "draft").length
   const pendingCount = userProposals.filter(
     (p) => p.status !== "draft" && p.status !== "completed" && p.status !== "rejected",
@@ -55,7 +57,7 @@ function MitraDashboard() {
   const rejectedCount = userProposals.filter((p) => p.status === "rejected").length
 
   // Proposals yang memerlukan tindakan dari MITRA
-  const actionNeeded = userProposals.filter((p) => canUserApprove(p.status, user!.role, p.initiator))
+  const actionNeeded = userProposals.filter((p) => canUserTakeAction(p.status, user!.role))
 
   const getStatusColor = (status: string) => {
     if (status === "draft") return "bg-slate-100 text-slate-700 border-slate-200"
@@ -168,7 +170,7 @@ function MitraDashboard() {
                     <p className="text-base text-slate-600">{proposal.partnerName}</p>
                   </div>
                 </Link>
-                <ProposalTracker proposal={proposal} compact />
+                <SimpleTracker proposal={proposal} />
               </div>
             ))}
         </div>
@@ -217,14 +219,15 @@ function MitraDashboard() {
 
 function FakultasDashboard() {
   const { user } = useAuth()
+  const { proposals } = useDataStore()
 
   // Proposals dari fakultas ini (baik yang diajukan fakultas atau ditujukan ke fakultas)
-  const fakultasProposals = MOCK_PROPOSALS.filter(
+  const fakultasProposals = proposals.filter(
     (p) => p.fakultas === user?.fakultas || (p.createdBy === user?.id && p.initiator === "fakultas"),
   )
 
   // Proposals yang memerlukan verifikasi dari fakultas
-  const actionNeeded = fakultasProposals.filter((p) => canUserApprove(p.status, user!.role, p.initiator))
+  const actionNeeded = fakultasProposals.filter((p) => canUserTakeAction(p.status, user!.role))
 
   const totalProposals = fakultasProposals.length
   const activeProposals = fakultasProposals.filter(
@@ -351,7 +354,7 @@ function FakultasDashboard() {
                     <p className="text-sm sm:text-base text-slate-600">{proposal.partnerName}</p>
                   </div>
                 </Link>
-                <ProposalTracker proposal={proposal} compact />
+                <SimpleTracker proposal={proposal} />
               </div>
             ))}
         </div>
@@ -406,18 +409,17 @@ function DKUIDashboard() {
 
 function BiroHukumDashboard() {
   const { user } = useAuth()
+  const { proposals } = useDataStore()
 
   // Proposals yang di Biro Hukum
-  const biroProposals = MOCK_PROPOSALS.filter(
+  const biroProposals = proposals.filter(
     (p) =>
-      p.status === "biro_hukum_review" ||
-      p.status === "biro_hukum_approved" ||
-      p.status === "biro_hukum_rejected" ||
+      p.status.includes("biro_hukum") ||
       (p.status !== "draft" && p.status !== "rejected" && p.approvalHistory.some((h) => h.actorRole === "biro_hukum")),
   )
 
   // Proposals yang memerlukan validasi hukum
-  const actionNeeded = biroProposals.filter((p) => canUserApprove(p.status, user!.role, p.initiator))
+  const actionNeeded = biroProposals.filter((p) => canUserTakeAction(p.status, user!.role))
 
   const totalReviewed = biroProposals.length
   const pendingReview = actionNeeded.length
@@ -539,7 +541,7 @@ function BiroHukumDashboard() {
                     <p className="text-sm sm:text-base text-slate-600">{proposal.partnerName}</p>
                   </div>
                 </Link>
-                <ProposalTracker proposal={proposal} compact />
+                <SimpleTracker proposal={proposal} />
               </div>
             ))}
         </div>
@@ -588,25 +590,24 @@ function BiroHukumDashboard() {
 
 function SupervisiDashboard() {
   const { user } = useAuth()
+  const { proposals } = useDataStore()
 
   // Proposals yang sudah sampai ke tahap supervisi
-  const supervisiProposals = MOCK_PROPOSALS.filter(
+  const supervisiProposals = proposals.filter(
     (p) =>
-      p.status === "warek_review" ||
-      p.status === "warek_approved" ||
-      p.status === "rektor_review" ||
-      p.status === "rektor_approved" ||
+      p.status.includes("warek") ||
+      p.status.includes("rektor") ||
       p.status === "completed",
   )
 
   // Proposals yang memerlukan tindakan dari user
-  const actionNeeded = supervisiProposals.filter((p) => canUserApprove(p.status, user!.role, p.initiator))
+  const actionNeeded = supervisiProposals.filter((p) => canUserTakeAction(p.status, user!.role))
 
   const totalProposals = supervisiProposals.length
   const pendingReview = actionNeeded.length
   const approved = supervisiProposals.filter((p) => p.status === "completed").length
   const inReview = supervisiProposals.filter(
-    (p) => p.status === "warek_review" || p.status === "warek_approved" || p.status === "rektor_review",
+    (p) => p.status.includes("warek") || p.status.includes("rektor") && p.status !== "completed",
   ).length
 
   const getStatusColor = (status: string) => {
@@ -718,7 +719,7 @@ function SupervisiDashboard() {
                     <p className="text-sm sm:text-base text-slate-600">{proposal.partnerName}</p>
                   </div>
                 </Link>
-                <ProposalTracker proposal={proposal} compact />
+                <SimpleTracker proposal={proposal} />
               </div>
             ))}
         </div>

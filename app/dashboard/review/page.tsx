@@ -7,8 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { FileText } from "lucide-react"
 import Link from "next/link"
-import { MOCK_PROPOSALS, STATUS_LABELS } from "@/lib/mock-data"
-import { canUserApprove } from "@/lib/workflow-utils"
+import { STATUS_LABELS } from "@/lib/mock-data"
+import { useDataStore } from "@/lib/data-store"
+import { canUserTakeAction } from "@/lib/workflow-engine"
 
 export default function ReviewPage() {
   return (
@@ -22,15 +23,16 @@ export default function ReviewPage() {
 
 function ReviewContent() {
   const { user } = useAuth()
+  const { proposals } = useDataStore()
 
   // Get proposals that need current user's approval
-  const pendingReviews = MOCK_PROPOSALS.filter((proposal) => {
+  const pendingReviews = proposals.filter((proposal) => {
     // Skip completed and rejected proposals
     if (proposal.status === "completed" || proposal.status === "rejected") {
       return false
     }
 
-    return canUserApprove(proposal.status, user!.role, proposal.initiator)
+    return canUserTakeAction(proposal.status, user!.role)
   })
 
   const getStatusColor = (status: string) => {

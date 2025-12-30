@@ -70,26 +70,51 @@ function NewProposalContent() {
     return Math.max(0, months)
   }
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (!files || files.length === 0) return
 
-    // Only allow 1 file
-    const file = files[0]
-    const newDocument: ProposalDocument = {
-      id: `DOC-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      name: file.name,
-      type: file.type,
-      size: file.size,
-      uploadedAt: new Date().toISOString(),
-      url: URL.createObjectURL(file),
+    setIsSubmitting(true)
+    setError("")
+
+    try {
+      // Only allow 1 file
+      const file = files[0]
+
+      // Upload file to server
+      const formData = new FormData()
+      formData.append("file", file)
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      })
+
+      if (!response.ok) {
+        throw new Error("Upload failed")
+      }
+
+      const result = await response.json()
+
+      const newDocument: ProposalDocument = {
+        id: result.file.id,
+        name: result.file.name,
+        type: result.file.type,
+        size: result.file.size,
+        uploadedAt: result.file.uploadedAt,
+        url: result.file.url,
+      }
+
+      // Replace existing document with new one
+      setUploadedDocuments([newDocument])
+    } catch (error) {
+      console.error("Upload error:", error)
+      setError("Gagal mengupload file. Silakan coba lagi.")
+    } finally {
+      setIsSubmitting(false)
+      // Reset input value to allow re-uploading the same file
+      e.target.value = ""
     }
-
-    // Replace existing document with new one
-    setUploadedDocuments([newDocument])
-
-    // Reset input value to allow re-uploading the same file
-    e.target.value = ''
   }
 
   const handleRemoveDocument = (docId: string) => {

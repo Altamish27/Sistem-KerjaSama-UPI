@@ -1,0 +1,245 @@
+[
+  {
+    "id": "PROP-1767082108408",
+    "initiator": "mitra",
+    "title": "Kerja sama contoh",
+    "partnerName": "PT Abhiraja",
+    "partnerType": "dalam_negeri",
+    "description": "Kerja Sama ",
+    "objectives": "Pertukaran Pelajar",
+    "benefits": "Menambah Pengalaman Mahasiswa",
+    "scopeOfWork": "Universitas",
+    "duration": 1,
+    "startDate": "2025-12-23",
+    "endDate": "2026-01-10",
+    "documents": [
+      {
+        "id": "FILE-1767082105151-a6tw4tf",
+        "name": "LIDM 2025 - Divisi Inovasi Teknologi Digital Pendidikan - 001034 - INFO MAGANG - Laporan Akhir.pdf",
+        "type": "application/pdf",
+        "size": 1535454,
+        "uploadedAt": "2025-12-30T08:08:25.214Z",
+        "url": "/uploads/1767082105151-a6tw4tf.pdf"
+      }
+    ],
+    "status": "completed",
+    "createdBy": "1",
+    "createdByName": "PT. Global Education Indonesia",
+    "createdByRole": "mitra",
+    "fakultas": "Fakultas Pendidikan Bahasa dan Sastra",
+    "createdAt": "2025-12-30T08:08:28.408Z",
+    "updatedAt": "2025-12-30T08:24:05.597Z",
+    "approvalHistory": [
+      {
+        "id": "HIST-1767082108408",
+        "proposalId": "PROP-1767082108408",
+        "action": "submit",
+        "actor": "1",
+        "actorName": "PT. Global Education Indonesia",
+        "actorRole": "mitra",
+        "comment": "Proposal diajukan",
+        "timestamp": "2025-12-30T08:08:28.408Z"
+      },
+      {
+        "id": "HIST-1767082146875",
+        "proposalId": "PROP-1767082108408",
+        "action": "dkui_receive",
+        "actor": "3",
+        "actorName": "Divisi Kerja Sama Universitas Indonesia",
+        "actorRole": "dkui",
+        "comment": "Terima Proposal",
+        "timestamp": "2025-12-30T08:09:06.875Z"
+      },
+      {
+        "id": "HIST-1767082845411",
+        "proposalId": "PROP-1767082108408",
+        "action": "dkui_receive",
+        "actor": "2",
+        "actorName": "Fakultas Pendidikan Teknologi dan Kejuruan",
+        "actorRole": "fakultas",
+        "comment": "Mulai Verifikasi Substansi",
+        "timestamp": "2025-12-30T08:20:45.411Z"
+      },
+      {
+        "id": "HIST-1767082855902",
+        "proposalId": "PROP-1767082108408",
+        "action": "faculty_approve_substansi",
+        "actor": "2",
+        "actorName": "Fakultas Pendidikan Teknologi dan Kejuruan",
+        "actorRole": "fakultas",
+        "comment": "setuji",
+        "timestamp": "2025-12-30T08:20:55.902Z"
+      },
+      {
+        "id": "HIST-1767082875635",
+        "proposalId": "PROP-1767082108408",
+        "action": "dkui_receive",
+        "actor": "3",
+        "actorName": "Divisi Kerja Sama Universitas Indonesia",
+        "actorRole": "dkui",
+        "comment": "Mulai Review Hukum Tahap 1",
+        "timestamp": "2025-12-30T08:21:15.635Z"
+      },
+      {
+        "id": "HIST-1767082879299",
+        "proposalId": "PROP-1767082108408",
+        "action": "dkui_legal_review_1",
+        "actor": "3",
+        "actorName": "Divisi Kerja Sama Universitas Indonesia",
+        "actorRole": "dkui",
+        "comment": "app",
+        "timestamp": "2025-12-30T08:21:19.299Z"
+      },
+      {
+        "id": "HIST-1767082899076",
+        "proposalId": "PROP-1767082108408",
+        "action": "dkui_receive",
+        "actor": "4",
+        "actorName": "Biro Hukum UPI",
+        "actorRole": "biro_hukum",
+        "comment": "Mulai Review Biro Hukum",
+        "timestamp": "2025-12-30T08:21:39.076Z"
+      },
+      {
+        "id": "HIST-1767082902657",
+        "proposalId": "PROP-1767082108408",
+        "action": "dkui_receive",
+        "actor": "4",
+        "actorName": "Biro Hukum UPI",
+        "actorRole": "biro_hukum",
+        "comment": "stu",
+        "timestamp": "2025-12-30T08:21:42.657Z"
+      },
+      {
+        "id": "HIST-1767082904143",
+        "proposalId": "PROP-1767082108408",
+        "action": "biro_hukum_paraf",
+        "actor": "4",
+        "actorName": "Biro Hukum UPI",
+        "actorRole": "biro_hukum",
+        "comment": "Paraf Biro Hukum",
+        "timestamp": "2025-12-30T08:21:44.143Z"
+      },
+      {
+        "id": "HIST-1767082923027",
+        "proposalId": "PROP-1767082108408",
+        "action": "dkui_paraf",
+        "actor": "3",
+        "actorName": "Divisi Kerja Sama Universitas Indonesia",
+        "actorRole": "dkui",
+        "comment": "Paraf DKUI",
+        "timestamp": "2025-12-30T08:22:03.027Z"
+      },
+      {
+        "id": "HIST-1767082941363",
+        "proposalId": "PROP-1767082108408",
+        "action": "faculty_final_approve",
+        "actor": "2",
+        "actorName": "Fakultas Pendidikan Teknologi dan Kejuruan",
+        "actorRole": "fakultas",
+        "comment": "okey",
+        "timestamp": "2025-12-30T08:22:21.363Z"
+      },
+      {
+        "id": "HIST-1767082955261",
+        "proposalId": "PROP-1767082108408",
+        "action": "dkui_receive",
+        "actor": "3",
+        "actorName": "Divisi Kerja Sama Universitas Indonesia",
+        "actorRole": "dkui",
+        "comment": "Mulai Proses Tanda Tangan (Parallel)",
+        "timestamp": "2025-12-30T08:22:35.261Z"
+      },
+      {
+        "id": "HIST-1767082977829",
+        "proposalId": "PROP-1767082108408",
+        "action": "dkui_receive",
+        "actor": "1",
+        "actorName": "PT. Global Education Indonesia",
+        "actorRole": "mitra",
+        "comment": "Warek: Mulai Review",
+        "timestamp": "2025-12-30T08:22:57.829Z"
+      },
+      {
+        "id": "HIST-1767082998705",
+        "proposalId": "PROP-1767082108408",
+        "action": "dkui_receive",
+        "actor": "5",
+        "actorName": "Prof. Dr. Wakil Rektor",
+        "actorRole": "wakil_rektor",
+        "comment": "as",
+        "timestamp": "2025-12-30T08:23:18.705Z"
+      },
+      {
+        "id": "HIST-1767082999888",
+        "proposalId": "PROP-1767082108408",
+        "action": "dkui_receive",
+        "actor": "5",
+        "actorName": "Prof. Dr. Wakil Rektor",
+        "actorRole": "wakil_rektor",
+        "comment": "Tanda Tangan Elektronik",
+        "timestamp": "2025-12-30T08:23:19.888Z"
+      },
+      {
+        "id": "HIST-1767083015849",
+        "proposalId": "PROP-1767082108408",
+        "action": "dkui_receive",
+        "actor": "6",
+        "actorName": "Prof. Dr. Rektor UPI",
+        "actorRole": "rektor",
+        "comment": "Rektor: Mulai Review",
+        "timestamp": "2025-12-30T08:23:35.849Z"
+      },
+      {
+        "id": "HIST-1767083019378",
+        "proposalId": "PROP-1767082108408",
+        "action": "dkui_receive",
+        "actor": "6",
+        "actorName": "Prof. Dr. Rektor UPI",
+        "actorRole": "rektor",
+        "comment": "as",
+        "timestamp": "2025-12-30T08:23:39.378Z"
+      },
+      {
+        "id": "HIST-1767083021390",
+        "proposalId": "PROP-1767082108408",
+        "action": "dkui_receive",
+        "actor": "6",
+        "actorName": "Prof. Dr. Rektor UPI",
+        "actorRole": "rektor",
+        "comment": "Tanda Tangan Elektronik",
+        "timestamp": "2025-12-30T08:23:41.390Z"
+      },
+      {
+        "id": "HIST-1767083040468",
+        "proposalId": "PROP-1767082108408",
+        "action": "document_exchange",
+        "actor": "3",
+        "actorName": "Divisi Kerja Sama Universitas Indonesia",
+        "actorRole": "dkui",
+        "comment": "Pertukaran Dokumen Final",
+        "timestamp": "2025-12-30T08:24:00.468Z"
+      },
+      {
+        "id": "HIST-1767083043962",
+        "proposalId": "PROP-1767082108408",
+        "action": "archive",
+        "actor": "3",
+        "actorName": "Divisi Kerja Sama Universitas Indonesia",
+        "actorRole": "dkui",
+        "comment": "Arsipkan Dokumen",
+        "timestamp": "2025-12-30T08:24:03.962Z"
+      },
+      {
+        "id": "HIST-1767083045568",
+        "proposalId": "PROP-1767082108408",
+        "action": "dkui_receive",
+        "actor": "3",
+        "actorName": "Divisi Kerja Sama Universitas Indonesia",
+        "actorRole": "dkui",
+        "comment": "Tandai Selesai",
+        "timestamp": "2025-12-30T08:24:05.568Z"
+      }
+    ]
+  }
+]

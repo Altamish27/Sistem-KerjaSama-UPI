@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Plus, FileText } from "lucide-react"
 import Link from "next/link"
-import { MOCK_PROPOSALS, STATUS_LABELS } from "@/lib/mock-data"
+import { STATUS_LABELS } from "@/lib/mock-data"
+import { useDataStore } from "@/lib/data-store"
 
 export default function ProposalsPage() {
   return (
@@ -22,14 +23,26 @@ export default function ProposalsPage() {
 
 function ProposalsContent() {
   const { user } = useAuth()
+  const { proposals, isLoading } = useDataStore()
 
-  const userProposals = MOCK_PROPOSALS.filter((p) => p.createdBy === user?.id)
+  const userProposals = proposals.filter((p) => p.createdBy === user?.id)
 
   const getStatusColor = (status: string) => {
     if (status === "draft") return "bg-slate-100 text-slate-700 border-slate-200"
     if (status === "completed") return "bg-emerald-50 text-emerald-700 border-emerald-200"
     if (status === "rejected") return "bg-red-50 text-red-700 border-red-200"
     return "bg-amber-50 text-amber-700 border-amber-200"
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-[#e10000] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-600">Memuat data...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
