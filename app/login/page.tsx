@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { GraduationCap, Loader2 } from "lucide-react"
+import Link from "next/link"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -102,6 +103,15 @@ export default function LoginPage() {
                   "Login"
                 )}
               </Button>
+
+              <div className="mt-4 text-center">
+                <p className="text-sm text-slate-600">
+                  Belum punya akun?{' '}
+                  <Link href="/register" className="text-[#e10000] hover:text-[#c10000] font-semibold hover:underline">
+                    Daftar di sini
+                  </Link>
+                </p>
+              </div>
             </form>
 
             <div className="mt-6 p-4 rounded-lg bg-amber-50 border border-amber-200">

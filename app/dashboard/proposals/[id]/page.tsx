@@ -8,26 +8,19 @@ import { useDataStore } from "@/lib/data-store"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
   ArrowLeft,
-  CheckCircle2,
-  XCircle,
   Building2,
   Calendar,
-  DollarSign,
   FileText,
   User,
   Download,
   Sparkles,
 } from "lucide-react"
 import Link from "next/link"
-import { STATUS_LABELS } from "@/lib/mock-data"
-import { canUserApprove, getNextStatus, getCurrentStepIndex, getWorkflowSteps } from "@/lib/workflow-utils"
-import { useState } from "react"
-import { ProposalTracker } from "@/components/proposal-tracker"
+import { ProposalTrackerEnhanced } from "@/components/proposal-tracker-enhanced"
+import { WorkflowActions } from "@/components/workflow-actions"
+import { getStageLabel } from "@/lib/workflow-engine"
 
 export default function ProposalDetailPage() {
   return (
@@ -43,9 +36,7 @@ function ProposalDetailContent() {
   const params = useParams()
   const router = useRouter()
   const { user } = useAuth()
-  const { getProposalById, addApprovalHistory, updateProposalStatus, refreshData } = useDataStore()
-  const [comment, setComment] = useState("")
-  const [isProcessing, setIsProcessing] = useState(false)
+  const { getProposalById, refreshData } = useDataStore()
 
   const proposal = getProposalById(params.id as string)
 
@@ -58,65 +49,6 @@ function ProposalDetailContent() {
     )
   }
 
-  const canApprove = canUserApprove(proposal.status, user!.role, proposal.initiator)
-  const workflowSteps = getWorkflowSteps(proposal.initiator)
-  const currentStepIndex = getCurrentStepIndex(proposal.status, proposal.initiator)
-
-  const handleApprove = async () => {
-    if (!comment.trim()) {
-      alert("Mohon berikan komentar atau catatan")
-      return
-    }
-
-    setIsProcessing(true)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    const nextStatus = getNextStatus(proposal.status, proposal.initiator)
-    updateProposalStatus(proposal.id, nextStatus)
-    addApprovalHistory(proposal.id, {
-      id: `HIST-${Date.now()}`,
-      proposalId: proposal.id,
-      action: "verify_approve",
-      actor: user!.id,
-      actorName: user!.name,
-      actorRole: user!.role,
-      comment,
-      timestamp: new Date().toISOString(),
-    })
-
-    setIsProcessing(false)
-    setComment("")
-    refreshData()
-    router.refresh()
-  }
-
-  const handleReject = async () => {
-    if (!comment.trim()) {
-      alert("Mohon berikan alasan penolakan")
-      return
-    }
-
-    setIsProcessing(true)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    updateProposalStatus(proposal.id, "rejected")
-    addApprovalHistory(proposal.id, {
-      id: `HIST-${Date.now()}`,
-      proposalId: proposal.id,
-      action: "verify_reject",
-      actor: user!.id,
-      actorName: user!.name,
-      actorRole: user!.role,
-      comment,
-      timestamp: new Date().toISOString(),
-    })
-
-    setIsProcessing(false)
-    setComment("")
-    refreshData()
-    router.refresh()
-  }
-
   const getStatusColor = (status: string) => {
     if (status === "draft") return "bg-slate-100 text-slate-700 border-slate-200"
     if (status === "completed") return "bg-emerald-50 text-emerald-700 border-emerald-200"
@@ -124,15 +56,9 @@ function ProposalDetailContent() {
     return "bg-amber-50 text-amber-700 border-amber-200"
   }
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return bytes + " B"
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB"
-    return (bytes / (1024 * 1024)).toFixed(1) + " MB"
-  }
-
   return (
     <div className="space-y-6 sm:space-y-8 lg:space-y-10 max-w-7xl mx-auto">
-      {/* Header Section - Executive spacing */}
+      {/* Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
         <Link href="/dashboard/proposals">
           <Button
@@ -147,7 +73,7 @@ function ProposalDetailContent() {
         <div className="flex-1">
           <div className="flex items-center gap-2 sm:gap-3 mb-3 flex-wrap">
             <Badge className="text-xs sm:text-sm bg-slate-100 text-slate-700 border-slate-200 font-medium px-2 sm:px-3 py-0.5 sm:py-1">
-              {proposal.initiator?.toUpperCase() || "UNKNOWN"}
+              {proposal.document_type}
             </Badge>
             <Badge className={`text-xs sm:text-sm border font-medium px-2 sm:px-3 py-0.5 sm:py-1 ${getStatusColor(proposal.status)}`}>
               {STATUS_LABELS[proposal.status]}
