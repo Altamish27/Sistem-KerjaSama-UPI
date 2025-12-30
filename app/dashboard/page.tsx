@@ -66,110 +66,83 @@ function MitraDashboard() {
 
   return (
     <div className="space-y-6 sm:space-y-8">
-      {/* Header Section */}
-      <div className="bg-gradient-to-br from-[#e10000] to-[#b30000] rounded-2xl p-6 sm:p-8 text-white shadow-lg">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold">Dashboard MITRA</h1>
-            <p className="text-white/90 mt-2 sm:mt-3 text-lg lg:text-xl">Selamat datang, {user?.name}</p>
-            <p className="text-white/80 mt-1 text-sm sm:text-base">Kelola proposal kerja sama Anda dengan universitas</p>
-          </div>
-          <Link href="/dashboard/proposals/new">
-            <Button className="bg-white text-[#e10000] hover:bg-gray-100 shadow-md px-6 py-6 text-base font-semibold w-full sm:w-auto transition-all hover:shadow-xl">
-              <Plus className="w-5 h-5 mr-2" />
-              Ajukan Proposal Baru
-            </Button>
-          </Link>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">Dashboard MITRA</h1>
+          <p className="text-slate-600 mt-1 sm:mt-2 text-base lg:text-lg">Selamat datang, {user?.name}</p>
         </div>
+        <Link href="/dashboard/proposals/new">
+          <Button className="bg-[#e10000] text-white hover:bg-[#c10000] shadow-sm px-4 sm:px-6 py-3 sm:py-5 text-sm sm:text-base w-full sm:w-auto">
+            <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+            Ajukan Proposal Kerja Sama
+          </Button>
+        </Link>
       </div>
 
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <Card className="bg-gradient-to-br from-slate-50 to-white border-slate-200 shadow-md hover:shadow-lg transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm sm:text-base font-semibold text-slate-700">Draft</CardTitle>
-            <div className="p-3 bg-slate-100 rounded-full">
-              <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-slate-600" />
-            </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 sm:pb-3">
+            <CardTitle className="text-sm sm:text-base font-semibold text-slate-900">Draft</CardTitle>
+            <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-slate-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl sm:text-4xl font-bold text-slate-900">{draftCount}</div>
-            <p className="text-xs sm:text-sm text-slate-600 mt-2 font-medium">Belum diajukan</p>
+            <div className="text-2xl sm:text-3xl font-bold text-slate-900">{draftCount}</div>
+            <p className="text-xs sm:text-sm text-slate-600 mt-1 sm:mt-2">Proposal belum diajukan</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-amber-50 to-white border-amber-200 shadow-md hover:shadow-lg transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm sm:text-base font-semibold text-amber-700">Dalam Proses</CardTitle>
-            <div className="p-3 bg-amber-100 rounded-full">
-              <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-amber-600" />
-            </div>
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 sm:pb-3">
+            <CardTitle className="text-sm sm:text-base font-semibold text-slate-900">Dalam Proses</CardTitle>
+            <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl sm:text-4xl font-bold text-amber-900">{pendingCount}</div>
-            <p className="text-xs sm:text-sm text-amber-700 mt-2 font-medium">Sedang direview</p>
+            <div className="text-2xl sm:text-3xl font-bold text-slate-900">{pendingCount}</div>
+            <p className="text-xs sm:text-sm text-slate-600 mt-1 sm:mt-2">Sedang dalam review</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-emerald-50 to-white border-emerald-200 shadow-md hover:shadow-lg transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm sm:text-base font-semibold text-emerald-700">Selesai</CardTitle>
-            <div className="p-3 bg-emerald-100 rounded-full">
-              <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600" />
-            </div>
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 sm:pb-3">
+            <CardTitle className="text-sm sm:text-base font-semibold text-slate-900">Selesai</CardTitle>
+            <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl sm:text-4xl font-bold text-emerald-900">{completedCount}</div>
-            <p className="text-xs sm:text-sm text-emerald-700 mt-2 font-medium">Disetujui</p>
+            <div className="text-2xl sm:text-3xl font-bold text-slate-900">{completedCount}</div>
+            <p className="text-xs sm:text-sm text-slate-600 mt-1 sm:mt-2">Proposal disetujui</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-red-50 to-white border-red-200 shadow-md hover:shadow-lg transition-shadow">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm sm:text-base font-semibold text-red-700">Ditolak</CardTitle>
-            <div className="p-3 bg-red-100 rounded-full">
-              <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6 text-[#e10000]" />
-            </div>
+        <Card className="bg-white border-slate-200 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 sm:pb-3">
+            <CardTitle className="text-sm sm:text-base font-semibold text-slate-900">Ditolak</CardTitle>
+            <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-[#e10000]" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl sm:text-4xl font-bold text-red-900">{rejectedCount}</div>
-            <p className="text-xs sm:text-sm text-red-700 mt-2 font-medium">Perlu perbaikan</p>
+            <div className="text-3xl font-bold text-slate-900">{rejectedCount}</div>
+            <p className="text-sm text-slate-600 mt-2">Proposal tidak disetujui</p>
           </CardContent>
         </Card>
       </div>
 
       {actionNeeded.length > 0 && (
-        <Card className="bg-gradient-to-br from-amber-50 via-amber-25 to-white border-2 border-amber-300 shadow-lg">
-          <CardHeader className="pb-5 border-b border-amber-200">
-            <div className="flex items-start gap-3">
-              <div className="p-3 bg-amber-100 rounded-full">
-                <AlertCircle className="h-6 w-6 text-amber-600" />
-              </div>
-              <div>
-                <CardTitle className="text-2xl font-bold text-slate-900">Memerlukan Tindakan Anda</CardTitle>
-                <CardDescription className="text-slate-700 text-base mt-1">
-                  {actionNeeded.length} proposal menunggu tindakan dari Anda
-                </CardDescription>
-              </div>
-            </div>
+        <Card className="bg-amber-50/30 border-amber-200 shadow-sm">
+          <CardHeader className="pb-5">
+            <CardTitle className="text-2xl font-bold text-slate-900">Memerlukan Tindakan Anda</CardTitle>
+            <CardDescription className="text-slate-600 text-base">Proposal yang menunggu tindakan dari Anda</CardDescription>
           </CardHeader>
-          <CardContent className="pt-6">
+          <CardContent>
             <div className="space-y-4">
               {actionNeeded.map((proposal) => (
                 <Link key={proposal.id} href={`/dashboard/proposals/${proposal.id}`}>
-                  <div className="p-6 rounded-xl border-2 border-amber-200 hover:border-amber-400 hover:bg-amber-50/50 transition-all bg-white shadow-md hover:shadow-xl">
+                  <div className="p-6 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors bg-white shadow-sm">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-3">
-                          <Badge className={`${getStatusColor(proposal.status)} font-semibold text-sm px-3 py-1`}>
-                            {STATUS_LABELS[proposal.status]}
-                          </Badge>
+                        <div className="flex items-center gap-3 mb-2">
+                          <Badge className={getStatusColor(proposal.status)}>{STATUS_LABELS[proposal.status]}</Badge>
                         </div>
-                        <h3 className="font-bold text-slate-900 text-xl mb-2">{proposal.title}</h3>
-                        <p className="text-base text-slate-600">
-                          <Building2 className="inline w-4 h-4 mr-1" />
-                          UPI - {proposal.fakultas}
-                        </p>
+                        <h3 className="font-semibold text-slate-900 text-lg">{proposal.title}</h3>
+                        <p className="text-base text-slate-600 mt-2">UPI - {proposal.fakultas}</p>
                       </div>
                     </div>
                   </div>
@@ -183,24 +156,16 @@ function MitraDashboard() {
       {userProposals.filter((p) => p.status !== "draft" && p.status !== "completed" && p.status !== "rejected").length >
         0 && (
         <div className="space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <TrendingUp className="h-6 w-6 text-blue-600" />
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">Tracking Proposal Aktif</h2>
-          </div>
+          <h2 className="text-2xl font-bold text-slate-900">Tracking Proposal Aktif</h2>
           {userProposals
             .filter((p) => p.status !== "draft" && p.status !== "completed" && p.status !== "rejected")
             .slice(0, 2)
             .map((proposal) => (
               <div key={proposal.id} className="space-y-4">
                 <Link href={`/dashboard/proposals/${proposal.id}`}>
-                  <div className="p-6 rounded-xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:border-blue-400 hover:shadow-lg transition-all shadow-md">
-                    <h3 className="font-bold text-slate-900 mb-2 text-xl">{proposal.title}</h3>
-                    <p className="text-base text-slate-600 flex items-center gap-2">
-                      <Building2 className="w-4 h-4" />
-                      {proposal.partnerName}
-                    </p>
+                  <div className="p-6 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors shadow-sm">
+                    <h3 className="font-semibold text-slate-900 mb-2 text-lg">{proposal.title}</h3>
+                    <p className="text-base text-slate-600">{proposal.partnerName}</p>
                   </div>
                 </Link>
                 <ProposalTracker proposal={proposal} compact />
@@ -209,31 +174,18 @@ function MitraDashboard() {
         </div>
       )}
 
-      <Card className="bg-white border-slate-200 shadow-lg">
-        <CardHeader className="pb-5 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white">
-          <div className="flex items-start gap-3">
-            <div className="p-3 bg-slate-100 rounded-full">
-              <FileText className="h-6 w-6 text-slate-600" />
-            </div>
-            <div>
-              <CardTitle className="text-2xl font-bold text-slate-900">Proposal Terbaru</CardTitle>
-              <CardDescription className="text-slate-600 text-base mt-1">
-                Daftar semua proposal kerja sama Anda
-              </CardDescription>
-            </div>
-          </div>
+      <Card className="bg-white border-slate-200 shadow-sm">
+        <CardHeader className="pb-5">
+          <CardTitle className="text-2xl font-bold text-slate-900">Proposal Terbaru</CardTitle>
+          <CardDescription className="text-slate-600 text-base">Daftar proposal kerja sama terbaru Anda</CardDescription>
         </CardHeader>
-        <CardContent className="pt-6">
+        <CardContent>
           {userProposals.length === 0 ? (
-            <div className="text-center py-20">
-              <div className="p-6 bg-slate-100 rounded-full w-24 h-24 mx-auto mb-6 flex items-center justify-center">
-                <FileText className="w-12 h-12 text-slate-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-slate-700 mb-2">Belum ada proposal</h3>
-              <p className="text-slate-600 mb-6 text-base">Mulai dengan mengajukan proposal kerja sama pertama Anda</p>
+            <div className="text-center py-16">
+              <FileText className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+              <p className="text-slate-600 mb-6 text-lg">Belum ada proposal</p>
               <Link href="/dashboard/proposals/new">
-                <Button className="bg-[#e10000] text-white hover:bg-[#c10000] px-8 py-6 text-base font-semibold shadow-md hover:shadow-lg transition-all">
-                  <Plus className="w-5 h-5 mr-2" />
+                <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-50 bg-white px-6 py-5">
                   Buat Proposal Pertama
                 </Button>
               </Link>
@@ -242,19 +194,14 @@ function MitraDashboard() {
             <div className="space-y-4">
               {userProposals.slice(0, 5).map((proposal) => (
                 <Link key={proposal.id} href={`/dashboard/proposals/${proposal.id}`}>
-                  <div className="p-6 rounded-xl border border-slate-200 hover:border-slate-400 hover:shadow-lg transition-all bg-white shadow-sm">
+                  <div className="p-6 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors shadow-sm">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-3">
-                          <Badge className={`${getStatusColor(proposal.status)} font-semibold px-3 py-1`}>
-                            {STATUS_LABELS[proposal.status]}
-                          </Badge>
+                        <div className="flex items-center gap-3 mb-2">
+                          <Badge className={getStatusColor(proposal.status)}>{STATUS_LABELS[proposal.status]}</Badge>
                         </div>
-                        <h3 className="font-bold text-slate-900 text-lg mb-2">{proposal.title}</h3>
-                        <p className="text-base text-slate-600 flex items-center gap-2">
-                          <Building2 className="w-4 h-4" />
-                          UPI - {proposal.fakultas}
-                        </p>
+                        <h3 className="font-semibold text-slate-900 text-lg">{proposal.title}</h3>
+                        <p className="text-base text-slate-600 mt-2">UPI - {proposal.fakultas}</p>
                       </div>
                     </div>
                   </div>
