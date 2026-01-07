@@ -7,56 +7,13 @@ export interface User {
   password: string
   name: string
   role: UserRole
-  fakultas?: string
+  fakultas?: string // deprecated - use unit instead
+  unit?: string // unified field untuk fakultas/unit
   institution?: string // untuk mitra
 }
 
-export const MOCK_USERS: User[] = [
-  {
-    id: "1",
-    email: "mitra@partner.com",
-    password: "password",
-    name: "PT. Global Education Indonesia",
-    role: "mitra",
-    institution: "PT. Global Education Indonesia",
-  },
-  {
-    id: "2",
-    email: "fakultas@upi.edu",
-    password: "password",
-    name: "Fakultas Pendidikan Teknologi dan Kejuruan",
-    role: "fakultas",
-    fakultas: "Fakultas Pendidikan Teknologi dan Kejuruan",
-  },
-  {
-    id: "3",
-    email: "dkui@upi.edu",
-    password: "password",
-    name: "Divisi Kerja Sama Universitas Indonesia",
-    role: "dkui",
-  },
-  {
-    id: "4",
-    email: "biro.hukum@upi.edu",
-    password: "password",
-    name: "Biro Hukum UPI",
-    role: "biro_hukum",
-  },
-  {
-    id: "5",
-    email: "warek@upi.edu",
-    password: "password",
-    name: "Prof. Dr. Wakil Rektor",
-    role: "wakil_rektor",
-  },
-  {
-    id: "6",
-    email: "rektor@upi.edu",
-    password: "password",
-    name: "Prof. Dr. Rektor UPI",
-    role: "rektor",
-  },
-]
+// Mock users sudah tidak digunakan - semua data dari Supabase
+export const MOCK_USERS: User[] = []
 
 export const ROLE_LABELS: Record<UserRole, string> = {
   mitra: "MITRA (Eksternal)",
@@ -83,6 +40,7 @@ export type ProposalStatus =
   // Fakultas/Unit Flow - Verifikasi Substansi
   | "faculty_reviewing" // Fakultas/Unit sedang review substansi
   | "faculty_substansi_approved" // Gateway: Substansi OK = Ya
+  | "dkui_notifying_mitra" // DKUI kirim email notifikasi + buat akun mitra
   | "faculty_substansi_rejected" // Gateway: Substansi OK = Tidak
   
   // DKUI Evaluasi Feedback (setelah penolakan dari mana pun)
@@ -205,6 +163,7 @@ export interface ApprovalHistory {
     | "dkui_evaluate_feedback" // DKUI evaluasi feedback
     | "dkui_decide_revision_mitra" // DKUI putuskan revisi oleh mitra
     | "dkui_decide_revision_self" // DKUI putuskan revisi sendiri
+    | "final_rejection" // DKUI tolak proposal secara final
     | "dkui_request_mitra_revision" // DKUI minta mitra revisi
     | "mitra_upload_revision" // Mitra upload revisi
     | "dkui_self_revise" // DKUI revisi sendiri
@@ -398,6 +357,7 @@ export const STATUS_LABELS: Record<ProposalStatus, string> = {
   dkui_sent_to_faculty: "DKUI: Dikirim ke Fakultas/Unit",
   faculty_reviewing: "Fakultas: Verifikasi Substansi",
   faculty_substansi_approved: "Fakultas: Substansi Disetujui",
+  dkui_notifying_mitra: "DKUI: Notifikasi Mitra & Buat Akun",
   faculty_substansi_rejected: "Fakultas: Substansi Ditolak",
   dkui_evaluating_feedback: "DKUI: Evaluasi Feedback",
   dkui_deciding_revision: "DKUI: Menentukan Revisi",
