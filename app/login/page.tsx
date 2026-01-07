@@ -2,8 +2,9 @@
 
 import type React from "react"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -16,9 +17,17 @@ export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
+  const [successMessage, setSuccessMessage] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const { login } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    if (searchParams.get('registered') === 'true') {
+      setSuccessMessage('Registrasi berhasil! Silakan login dengan akun Anda.')
+    }
+  }, [searchParams])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -86,6 +95,12 @@ export default function LoginPage() {
                 />
               </div>
 
+              {successMessage && (
+                <Alert className="bg-green-50 border-green-200">
+                  <AlertDescription className="text-green-800 text-sm">{successMessage}</AlertDescription>
+                </Alert>
+              )}
+
               {error && (
                 <Alert variant="destructive" className="bg-red-50 border-red-200">
                   <AlertDescription className="text-red-800 text-sm">{error}</AlertDescription>
@@ -104,19 +119,13 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            <div className="mt-6 p-4 rounded-lg bg-amber-50 border border-amber-200">
-              <p className="text-xs text-gray-700 mb-2 font-semibold">Demo Accounts:</p>
-              <div className="space-y-1 text-xs text-gray-600">
-                <p>MITRA: mitra@partner.com</p>
-                <p>Fakultas: fakultas@upi.edu</p>
-                <p>DKUI: dkui@upi.edu</p>
-                <p>Biro Hukum: biro.hukum@upi.edu</p>
-                <p>Wakil Rektor: warek@upi.edu</p>
-                <p>Rektor: rektor@upi.edu</p>
-                <p>
-                  Password untuk semua: <span className="text-black font-semibold">password</span>
-                </p>
-              </div>
+            <div className="mt-6 text-center">
+              <p className="text-sm text-slate-600">
+                Belum punya akun?{" "}
+                <Link href="/register" className="text-[#e10000] hover:underline font-semibold">
+                  Daftar di sini
+                </Link>
+              </p>
             </div>
           </CardContent>
         </Card>

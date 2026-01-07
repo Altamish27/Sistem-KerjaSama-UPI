@@ -10,7 +10,7 @@ interface DataStoreContextType {
   updateProposal: (id: string, updates: Partial<Proposal>) => Promise<void>
   addProposal: (proposal: Proposal) => Promise<void>
   deleteProposal: (id: string) => Promise<void>
-  addApprovalHistory: (proposalId: string, history: ApprovalHistory) => Promise<void>
+  addApprovalHistory: (proposalId: string, history: ApprovalHistory, sendEmail?: boolean) => Promise<void>
   updateProposalStatus: (proposalId: string, status: Proposal["status"]) => Promise<void>
   refreshData: () => Promise<void>
 }
@@ -87,24 +87,47 @@ export function DataStoreProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  const addApprovalHistory = useCallback(async (proposalId: string, history: ApprovalHistory) => {
-    const proposal = proposals.find((p) => p.id === proposalId)
-    if (!proposal) return
+  const refreshData = useCallback(async () => {
+    await loadProposals()
+  }, [])
 
-    const updates = {
-      approvalHistory: [...proposal.approvalHistory, history],
+  const addApprovalHistory = useCallback(async (proposalId: string, history: ApprovalHistory, sendEmail = true) => {
+    try {
+      // Gunakan API route yang handle approval history + email
+      const response = await fetch("/api/approval", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          proposalId, 
+          history,
+          sendEmail 
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to add approval history")
+      }
+
+      // Refresh data untuk sync dengan database
+      await refreshData()
+    } catch (error) {
+      console.error("Error adding approval history:", error)
+      
+      // Fallback ke update lokal
+      const proposal = proposals.find((p) => p.id === proposalId)
+      if (!proposal) return
+
+      const updates = {
+        approvalHistory: [...proposal.approvalHistory, history],
+      }
+
+      await updateProposal(proposalId, updates)
     }
-
-    await updateProposal(proposalId, updates)
-  }, [proposals, updateProposal])
+  }, [proposals, updateProposal, refreshData])
 
   const updateProposalStatus = useCallback(async (proposalId: string, status: Proposal["status"]) => {
     await updateProposal(proposalId, { status })
   }, [updateProposal])
-
-  const refreshData = useCallback(async () => {
-    await loadProposals()
-  }, [])
 
   return (
     <DataStoreContext.Provider

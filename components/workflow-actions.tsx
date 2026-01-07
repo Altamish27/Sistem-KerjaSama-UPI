@@ -266,6 +266,17 @@ export function WorkflowActions({ proposal, userRole, userId, userName, onAction
       <CardContent className="space-y-6 pt-6">
         {renderSpecialInputs()}
 
+        {/* Alert khusus untuk penolakan final */}
+        {availableActions.some((a) => a.label.includes("Tolak Proposal (Final)")) && (
+          <Alert className="bg-red-50 border border-red-200">
+            <XCircle className="h-5 w-5 text-[#e10000]" />
+            <AlertDescription className="text-red-800 ml-2">
+              <strong>Peringatan:</strong> Menolak proposal secara final akan menghentikan seluruh proses. Proposal
+              tidak dapat diproses lebih lanjut dan akan ditandai sebagai DITOLAK.
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Komentar textarea - hanya tampil jika diperlukan */}
         {availableActions.some((a) => a.requiresComment) &&
           proposal.status !== "dkui_need_summary" &&

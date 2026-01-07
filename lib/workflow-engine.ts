@@ -129,7 +129,19 @@ export const WORKFLOW_ACTIONS: Record<ProposalStatus, WorkflowAction> = {
     allowedRoles: ["dkui"],
     actions: [
       {
-        label: "Mulai Review Hukum Tahap 1",
+        label: "📧 Kirim Notifikasi & Buat Akun Mitra",
+        nextStatus: "dkui_notifying_mitra",
+        actionType: "process",
+        requiresComment: false,
+      },
+    ],
+  },
+  dkui_notifying_mitra: {
+    status: "dkui_notifying_mitra",
+    allowedRoles: ["dkui"],
+    actions: [
+      {
+        label: "Lanjut ke Review Hukum Tahap 1",
         nextStatus: "dkui_legal_review_1",
         actionType: "process",
         requiresComment: false,
@@ -164,6 +176,12 @@ export const WORKFLOW_ACTIONS: Record<ProposalStatus, WorkflowAction> = {
         label: "Revisi oleh DKUI",
         nextStatus: "dkui_self_revising",
         actionType: "gateway",
+        requiresComment: true,
+      },
+      {
+        label: "❌ Tolak Proposal (Final)",
+        nextStatus: "rejected",
+        actionType: "reject",
         requiresComment: true,
       },
     ],

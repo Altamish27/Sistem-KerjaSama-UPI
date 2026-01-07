@@ -26,6 +26,7 @@ import { STATUS_LABELS } from "@/lib/mock-data"
 import { useState, useEffect } from "react"
 import { SimpleTracker } from "@/components/simple-tracker"
 import { WorkflowActions } from "@/components/workflow-actions"
+import { PdfViewer } from "@/components/pdf-viewer"
 import { getNextStatus } from "@/lib/workflow-engine"
 import type { ApprovalHistory } from "@/lib/mock-data"
 
@@ -92,6 +93,7 @@ function ProposalDetailContent() {
       else if (actionLabel.includes("Evaluasi")) actionType = "dkui_evaluate_feedback"
       else if (actionLabel.includes("Revisi oleh Mitra")) actionType = "dkui_decide_revision_mitra"
       else if (actionLabel.includes("Revisi oleh DKUI")) actionType = "dkui_decide_revision_self"
+      else if (actionLabel.includes("Tolak Proposal (Final)")) actionType = "final_rejection"
       else if (actionLabel.includes("Upload")) actionType = "mitra_upload_revision"
       else if (actionLabel.includes("Legal") && actionLabel.includes("1")) actionType = "dkui_legal_review_1"
       else if (actionLabel.includes("Biro Hukum") && actionLabel.includes("Approve")) actionType = "biro_hukum_approve"
@@ -108,7 +110,7 @@ function ProposalDetailContent() {
       else if (actionLabel.includes("Pertukaran")) actionType = "document_exchange"
       else if (actionLabel.includes("Arsip")) actionType = "archive"
 
-      // Tambahkan ke history
+      // Tambahkan ke history DAN kirim email notification otomatis
       await addApprovalHistory(proposal.id, {
         id: `HIST-${Date.now()}`,
         proposalId: proposal.id,
@@ -118,7 +120,32 @@ function ProposalDetailContent() {
         actorRole: user!.role,
         comment: comment || actionLabel,
         timestamp: new Date().toISOString(),
-      })
+      }, true) // sendEmail = true → otomatis kirim email ke mitra
+
+      // Jika action "Kirim Notifikasi & Buat Akun Mitra", trigger create account
+      if (actionLabel.includes("Kirim Notifikasi & Buat Akun Mitra") && proposal.isPublicSubmission && !proposal.createdBy) {
+        try {
+          const createAccountResponse = await fetch("/api/create-mitra-account", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              proposalId: proposal.id,
+              email: proposal.contactEmail,
+              name: proposal.contactPerson,
+              institution: proposal.partnerName,
+            }),
+          })
+
+          if (!createAccountResponse.ok) {
+            console.error("Failed to create mitra account")
+          } else {
+            const accountData = await createAccountResponse.json()
+            console.log("✅ Mitra account created:", accountData)
+          }
+        } catch (error) {
+          console.error("Error creating mitra account:", error)
+        }
+      }
 
       await refreshData()
       router.refresh()
@@ -132,12 +159,6 @@ function ProposalDetailContent() {
     if (status === "completed") return "bg-emerald-50 text-emerald-700 border-emerald-200"
     if (status === "rejected") return "bg-red-50 text-red-700 border-red-200"
     return "bg-amber-50 text-amber-700 border-amber-200"
-  }
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return bytes + " B"
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB"
-    return (bytes / (1024 * 1024)).toFixed(1) + " MB"
   }
 
   return (
@@ -248,7 +269,7 @@ function ProposalDetailContent() {
           </Card>
 
           {/* Documents Section */}
-          {proposal.documents.length > 0 && (
+          {proposal.documents && proposal.documents.length > 0 && (
             <Card className="bg-white border border-gray-200 shadow-sm">
               <CardHeader className="pb-4">
                 <CardTitle className="text-xl font-bold text-black">Dokumen Pendukung</CardTitle>
@@ -257,27 +278,12 @@ function ProposalDetailContent() {
               <CardContent>
                 <div className="space-y-3">
                   {proposal.documents.map((doc) => (
-                    <div
+                    <PdfViewer
                       key={doc.id}
-                      className="flex items-center justify-between p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors border border-slate-200"
-                    >
-                      <div className="flex items-center gap-4 flex-1 min-w-0">
-                        <div className="w-11 h-11 rounded-lg bg-white border border-slate-300 flex items-center justify-center">
-                          <FileText className="w-5 h-5 text-slate-600" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-base text-slate-900 font-medium truncate">{doc.name}</p>
-                          <p className="text-sm text-slate-500">{formatFileSize(doc.size)}</p>
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-slate-600 hover:text-[#e10000] hover:bg-red-50"
-                      >
-                        <Download className="w-4 h-4" />
-                      </Button>
-                    </div>
+                      url={doc.url}
+                      fileName={doc.name}
+                      fileSize={doc.size}
+                    />
                   ))}
                 </div>
               </CardContent>
@@ -291,11 +297,12 @@ function ProposalDetailContent() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {proposal.approvalHistory
-                  .slice()
-                  .reverse()
-                  .map((history) => (
-                    <div key={history.id} className="flex gap-4 pb-4 border-b border-gray-100 last:border-0 last:pb-0">
+                {proposal.approvalHistory && proposal.approvalHistory.length > 0 ? (
+                  proposal.approvalHistory
+                    .slice()
+                    .reverse()
+                    .map((history) => (
+                      <div key={history.id} className="flex gap-4 pb-4 border-b border-gray-100 last:border-0 last:pb-0">
                       <div className="flex-shrink-0">
                         <div
                           className={`w-10 h-10 rounded-full flex items-center justify-center ${
@@ -335,7 +342,10 @@ function ProposalDetailContent() {
                         </p>
                       </div>
                     </div>
-                  ))}
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500 text-center py-4">Belum ada riwayat persetujuan</p>
+                )}
               </div>
             </CardContent>
           </Card>

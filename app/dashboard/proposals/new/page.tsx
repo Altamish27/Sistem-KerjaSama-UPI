@@ -192,7 +192,30 @@ function NewProposalContent() {
       ],
     }
 
-    addProposal(newProposal)
+    // Save proposal to database via DataStore
+    await addProposal(newProposal)
+    
+    // Send welcome email to mitra (jika role mitra & status submitted)
+    if (user!.role === "partner" && status === "submitted") {
+      try {
+        // Generate temporary password (atau bisa skip karena user sudah login)
+        // Welcome email akan berisi info proposal number dan link dashboard
+        await fetch("/api/send-welcome", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            proposalId: newProposal.id,
+            mitraEmail: user!.email,
+            mitraName: user!.name,
+            tempPassword: "Password sudah Anda miliki", // User sudah punya password
+          }),
+        })
+      } catch (emailError) {
+        console.error("Email notification error:", emailError)
+        // Don't fail proposal submission if email fails
+      }
+    }
+    
     setIsSubmitting(false)
     router.push("/dashboard/proposals")
   }
