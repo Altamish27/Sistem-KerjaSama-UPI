@@ -13,6 +13,7 @@ import { STATUS_LABELS } from "@/lib/mock-data"
 import { canUserTakeAction } from "@/lib/workflow-engine"
 import { SimpleTracker } from "@/components/simple-tracker"
 import { DKUIStatisticsDashboard } from "@/components/dkui-statistics-dashboard"
+import { CommentsCard } from "@/components/comments-card"
 
 export default function DashboardPage() {
   return (
@@ -175,6 +176,9 @@ function MitraDashboard() {
             ))}
         </div>
       )}
+
+      {/* Catatan & Komentar */}
+      <CommentsCard />
 
       <Card className="bg-white border-slate-200 shadow-sm">
         <CardHeader className="pb-5">

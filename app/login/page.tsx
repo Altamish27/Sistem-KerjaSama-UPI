@@ -32,17 +32,25 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
+    setSuccessMessage("")
     setIsLoading(true)
 
-    const success = await login(email, password)
+    try {
+      const success = await login(email, password)
 
-    if (success) {
-      router.push("/dashboard")
-    } else {
-      setError("Email atau password salah")
+      if (success) {
+        // Wait a moment for auth state to update
+        await new Promise(resolve => setTimeout(resolve, 500))
+        router.push("/dashboard")
+      } else {
+        setError("Email atau password salah. Silakan coba lagi.")
+      }
+    } catch (error) {
+      console.error("Login error:", error)
+      setError("Terjadi kesalahan saat login. Silakan coba lagi.")
+    } finally {
+      setIsLoading(false)
     }
-
-    setIsLoading(false)
   }
 
   return (
