@@ -82,8 +82,6 @@ export function CommentsCard() {
             title,
             created_by,
             fakultas,
-            dkui_assigned_to,
-            legal_reviewer_id
           )
         `)
         .not('comment', 'is', null)
@@ -106,10 +104,10 @@ export function CommentsCard() {
         if (proposal.created_by === user.id) return true
         
         // Show if user is assigned (DKUI)
-        if (user.role === 'dkui' && proposal.dkui_assigned_to === user.id) return true
+        if (user.role === 'dkui' ) return true
         
         // Show if user is legal reviewer (Biro Hukum)
-        if (user.role === 'biro_hukum' && proposal.legal_reviewer_id === user.id) return true
+        if (user.role === 'biro_hukum') return true
         
         // Show if user is from the same fakultas
         if (user.role === 'fakultas' && proposal.fakultas === user.unit) return true

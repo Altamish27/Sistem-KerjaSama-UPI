@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
       email,
       name,
       role,
-      account_status: 'active',
+      is_active: true,
       created_at: new Date().toISOString(),
     }
 
