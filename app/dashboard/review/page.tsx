@@ -10,6 +10,7 @@ import Link from "next/link"
 import { STATUS_LABELS } from "@/lib/mock-data"
 import { useDataStore } from "@/lib/data-store"
 import { canUserTakeAction } from "@/lib/workflow-engine"
+import { determineWorkflowPath } from "@/lib/workflow-utils"
 
 export default function ReviewPage() {
   return (
@@ -32,7 +33,8 @@ function ReviewContent() {
       return false
     }
 
-    return canUserTakeAction(proposal.status, user!.role)
+    const path = determineWorkflowPath(proposal.fileSuratKuasa)
+    return canUserTakeAction(proposal.status, user!.role, path)
   })
 
   const getStatusColor = (status: string) => {
@@ -78,10 +80,10 @@ function ReviewContent() {
                           </Badge>
                         </div>
                         <h3 className="font-bold text-slate-900 mb-2 text-base sm:text-lg">{proposal.title}</h3>
-                        <p className="text-sm sm:text-base text-slate-600 mb-3">{proposal.partnerName}</p>
+                        <p className="text-sm sm:text-base text-slate-600 mb-3">{proposal.mitraName}</p>
                         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
                           <p className="text-sm text-slate-500">Pengaju: {proposal.createdByName}</p>
-                          <p className="text-sm text-slate-500">Fakultas: {proposal.fakultas}</p>
+                          <p className="text-sm text-slate-500">Unit: {proposal.unitName}</p>
                         </div>
                       </div>
                     </div>

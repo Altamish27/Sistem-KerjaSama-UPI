@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           try {
             const userPromise = supabase
               .from('users')
-              .select('id, name, email, role, fakultas, institution')
+              .select('id, name, email, role, unit_id, institution, unit_kerja(nama_unit)')
               .eq('id', session.user.id)
               .single()
             
@@ -58,7 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const userResult = await Promise.race([
               userPromise,
               userTimeout
-            ])
+            ]) as any
             
             if (userResult.error) {
               console.error("Error fetching user data:", userResult.error.message || userResult.error)
@@ -74,7 +74,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 name: userResult.data.name,
                 email: userResult.data.email,
                 role: userResult.data.role as User['role'],
-                unit: userResult.data.fakultas || userResult.data.institution || '',
+                unitId: userResult.data.unit_id || undefined,
+                unitName: userResult.data.unit_kerja?.nama_unit || userResult.data.institution || '',
+                institution: userResult.data.institution || undefined,
                 password: '', // Don't store password
               })
             }
@@ -123,7 +125,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               // Fetch updated user data with increased timeout
               const userPromise = supabase
                 .from('users')
-                .select('id, name, email, role, fakultas, institution')
+                .select('id, name, email, role, unit_id, institution, unit_kerja(nama_unit)')
                 .eq('id', session.user.id)
                 .single()
               
@@ -134,7 +136,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               const userResult = await Promise.race([
                 userPromise,
                 timeout
-              ])
+              ]) as any
               
               if (userResult.error) {
                 console.error('Error fetching user:', userResult.error.message || userResult.error)
@@ -145,7 +147,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                   name: userResult.data.name,
                   email: userResult.data.email,
                   role: userResult.data.role as User['role'],
-                  unit: userResult.data.fakultas || userResult.data.institution || '',
+                  unitId: userResult.data.unit_id || undefined,
+                  unitName: userResult.data.unit_kerja?.nama_unit || userResult.data.institution || '',
+                  institution: userResult.data.institution || undefined,
                   password: '',
                 })
               }
@@ -207,7 +211,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           try {
             const userPromise = supabase
               .from('users')
-              .select('id, name, email, role, fakultas, institution')
+              .select('id, name, email, role, unit_id, institution, unit_kerja(nama_unit)')
               .eq('id', result.data.user.id)
               .single()
             
@@ -218,7 +222,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const userResult = await Promise.race([
               userPromise,
               userTimeout
-            ])
+            ]) as any
             
             if (userResult.error) {
               console.warn('⚠️ Error fetching user:', userResult.error.message || userResult.error)
@@ -258,7 +262,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             name: userData.name,
             email: userData.email,
             role: userData.role as User['role'],
-            unit: userData.fakultas || userData.institution || '',
+            unitId: userData.unit_id || undefined,
+            unitName: userData.unit_kerja?.nama_unit || userData.institution || '',
+            institution: userData.institution || undefined,
             password: '',
           })
           return true

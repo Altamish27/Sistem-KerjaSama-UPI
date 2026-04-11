@@ -81,9 +81,8 @@ export function CommentsCard() {
             proposal_number,
             title,
             created_by,
-            fakultas,
-            dkui_assigned_to,
-            legal_reviewer_id
+            unit_terkait_id,
+            mitra_id
           )
         `)
         .not('comment', 'is', null)
@@ -92,7 +91,10 @@ export function CommentsCard() {
         .limit(20)
 
       if (error) {
-        console.error('Error fetching comments:', error)
+        // Ignore empty errors (e.g. no approval_history rows yet)
+        if (error.message) {
+          console.error('Error fetching comments:', error.message)
+        }
         return
       }
 
@@ -105,17 +107,14 @@ export function CommentsCard() {
         // Show if user created the proposal
         if (proposal.created_by === user.id) return true
         
-        // Show if user is assigned (DKUI)
-        if (user.role === 'dkui' && proposal.dkui_assigned_to === user.id) return true
+        // Show if user is from the same unit (pimpinan_unit / operator_unit)
+        if ((user.role === 'pimpinan_unit' || user.role === 'operator_unit') && proposal.unit_terkait_id === user.unitId) return true
         
-        // Show if user is legal reviewer (Biro Hukum)
-        if (user.role === 'biro_hukum' && proposal.legal_reviewer_id === user.id) return true
+        // Show for mitra
+        if (user.role === 'mitra') return true
         
-        // Show if user is from the same fakultas
-        if (user.role === 'fakultas' && proposal.fakultas === user.unit) return true
-        
-        // Show for rektor and wakil_rektor
-        if (user.role === 'rektor' || user.role === 'wakil_rektor') return true
+        // Show for DKUI, Biro Hukum, SU, WR, Rektor (central roles see all)
+        if (['dkui', 'biro_hukum', 'sekretaris_universitas', 'wakil_rektor', 'rektor'].includes(user.role)) return true
         
         return false
       })
@@ -151,15 +150,30 @@ export function CommentsCard() {
 
   const getActionLabel = (action: string) => {
     const labels: Record<string, string> = {
-      'faculty_reject_substansi': 'Ditolak oleh Fakultas',
-      'dkui_request_mitra_revision': 'Perlu Revisi',
-      'biro_hukum_legalitas_rejected': 'Ditolak Biro Hukum',
-      'warek_rejected': 'Ditolak Wakil Rektor',
-      'rektor_rejected': 'Ditolak Rektor',
-      'faculty_review_substansi': 'Review Substansi',
-      'dkui_evaluate_feedback': 'Evaluasi Feedback',
-      'dkui_legal_review_1': 'Review Legal',
-      'biro_hukum_reviewing': 'Review Legalitas'
+      'pimpinan_unit_reject': 'Ditolak oleh Pimpinan Unit',
+      'pimpinan_unit_approve': 'Disetujui Pimpinan Unit',
+      'pimpinan_unit_review': 'Review Pimpinan Unit',
+      'dkui_reject': 'Ditolak DKUI',
+      'dkui_approve': 'Disetujui DKUI',
+      'dkui_review': 'Review DKUI',
+      'dkui_self_revise': 'Revisi Draf',
+      'biro_hukum_reject': 'Ditolak Biro Hukum',
+      'biro_hukum_approve': 'Disetujui Biro Hukum',
+      'biro_hukum_review': 'Review Legalitas',
+      'su_reject': 'Ditolak Sekretaris Universitas',
+      'su_approve': 'Paraf Sekretaris Universitas',
+      'su_review': 'Review Sekretaris Universitas',
+      'wr_reject': 'Ditolak Wakil Rektor',
+      'wr_approve': 'Paraf Wakil Rektor',
+      'wr_review': 'Review Wakil Rektor',
+      'rektor_sign': 'Tanda Tangan Rektor',
+      'pimpinan_unit_sign': 'Tanda Tangan Pimpinan Unit',
+      'mitra_sign': 'Tanda Tangan Mitra',
+      'mitra_resubmit': 'Persetujuan Ulang Mitra',
+      'archive': 'Diarsipkan',
+      'complete': 'Selesai',
+      'final_rejection': 'Ditolak Final',
+      'submit': 'Diajukan',
     }
     return labels[action] || action.replace(/_/g, ' ')
   }
@@ -167,9 +181,10 @@ export function CommentsCard() {
   const getRoleLabel = (role: string) => {
     const labels: Record<string, string> = {
       'mitra': 'Mitra',
-      'fakultas': 'Fakultas',
+      'pimpinan_unit': 'Pimpinan Unit',
       'dkui': 'DKUI',
       'biro_hukum': 'Biro Hukum',
+      'sekretaris_universitas': 'Sekretaris Universitas',
       'wakil_rektor': 'Wakil Rektor',
       'rektor': 'Rektor'
     }

@@ -6,7 +6,7 @@ import { useState, useEffect } from "react"
 import { useAuth } from "@/lib/auth-context"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { LogOut, FileText, Home, Users, Menu, ChevronLeft } from "lucide-react"
+import { LogOut, FileText, Home, Users, Menu, ChevronLeft, Database, Handshake } from "lucide-react"
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
 import { ROLE_LABELS } from "@/lib/mock-data"
@@ -51,8 +51,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: Home },
     { name: "Proposal", href: "/dashboard/proposals", icon: FileText },
-    ...(user?.role !== "mitra"
+    ...(user?.role !== "operator_unit"
       ? [{ name: "Review", href: "/dashboard/review", icon: Users, badge: pendingReviewsCount }]
+      : []),
+    ...(["mitra", "dkui", "pimpinan_unit"].includes(user?.role || "")
+      ? [{ name: "Penjajakan", href: "/dashboard/penjajakan", icon: Handshake }]
+      : []),
+    ...(user?.role === "dkui"
+      ? [{ name: "Migrasi Data", href: "/dashboard/proposals/migrate", icon: Database }]
       : []),
   ]
 

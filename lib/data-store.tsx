@@ -31,6 +31,11 @@ export function DataStoreProvider({ children }: { children: ReactNode }) {
     try {
       setIsLoading(true)
       const response = await fetch("/api/proposals")
+      if (!response.ok) {
+        console.error("API error loading proposals:", response.status, response.statusText)
+        setProposals([])
+        return
+      }
       const data = await response.json()
       setProposals(data)
     } catch (error) {

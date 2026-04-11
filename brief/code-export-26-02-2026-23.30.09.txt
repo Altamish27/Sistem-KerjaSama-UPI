@@ -1,0 +1,80 @@
+title Proses Persetujuan Kerja Sama Universitas (MoU/MoA/IA) - Pengusul Internal (Tanda Tangan Rektor)
+
+Mitra [color: purple] {
+  Penjajakan Kerja Sama [type: activity, icon: users]
+  Tanda Tangan Naskah [type: activity, icon: edit-3]
+}
+
+Kelompok Inisiator [color: blue] {
+  Penjajakan Kerja Sama_1 [type: activity, icon: message-circle, label: Penjajakan Kerja Sama]
+  Susun Draf Awal [type: activity, icon: file-text]
+  Ajukan Draf ke Sistem [type: activity, icon: send]
+  Persetujuan Ulang Substansi [type: activity, icon: refresh-cw, label: "Persetujuan Ulang (Inisiator & Mitra)"]
+  Mulai [icon: play, type: event]
+}
+
+Pimpinan Unit & Verifikator [color: orange] {
+  Review & Analisis oleh Pimpinan Unit [type: activity, icon: user-check]
+  Setuju? [type: gateway, icon: help-circle]
+  Verifikasi oleh Pimpinan DKUI [type: activity, icon: clipboard]
+  Review Hukum [type: activity, icon: shield, label: "Review Legalitas (Kantor Hukum)"]
+  Review Sekretaris [type: activity, icon: file, label: "Review Sekretaris Universitas"]
+  Perlu Revisi [type: gateway, icon: x, label: "Ada Koreksi?"]
+  Eksekusi Perbaikan [type: activity, icon: tool]
+  Paraf Sekretaris [type: activity, icon: check-square, label: "Paraf Sekretaris Universitas"]
+  Pengarsipan [type: activity, icon: archive]
+  Selesai [type: event, icon: check-circle, color: green]
+  DKUI menerima dan verifikasi Draft yang Masuk [type: activity, icon: check-square]
+  DKUI Menyalurkan Draft kepada Unit Terkait [type: activity, icon: send]
+  Setuju?_1 [type: gateway, icon: help-circle, label: Setuju?]
+  Setuju?_2 [type: gateway, icon: help-circle, label: Setuju?]
+  Lolos? [type: gateway, icon: help-circle]
+  Selesai_1 [type: event, icon: check-circle, label: Selesai, color: red]
+  Sistem Kirim Akun ke Mitra [type: activity, icon: send]
+}
+
+Pimpinan Eksekutif Universitas [color: green] {
+  Paraf Wakil Rektor [type: activity, icon: check-square, label: "Paraf Wakil Rektor (WR RUK)"]
+  TTE Rektor [type: activity, icon: award, label: "Tanda Tangan Digital Rektor"]
+  Setuju?_3 [type: gateway, label: Setuju?, icon: help-circle]
+}
+
+// Alur Utama
+Penjajakan Kerja Sama <--> Penjajakan Kerja Sama_1 : Proses Penjajakan [cite: 196]
+Penjajakan Kerja Sama_1 > Susun Draf Awal [cite: 236]
+Susun Draf Awal > Ajukan Draf ke Sistem [cite: 138]
+Ajukan Draf ke Sistem --> DKUI menerima dan verifikasi Draft yang Masuk
+
+// Keputusan Dekan
+Review & Analisis oleh Pimpinan Unit > Setuju? 
+Setuju? > Verifikasi oleh Pimpinan DKUI : Ya [cite: 138]
+Setuju? --> Eksekusi Perbaikan: Tidak [color: red]
+
+// Alur Verifikasi Rektorat
+Review Hukum > Setuju?_2
+Review Sekretaris > Perlu Revisi
+
+// Logika Revisi Berdasarkan Pasal 17 ayat (2)
+Perlu Revisi > Paraf Sekretaris : Tidak 
+Perlu Revisi --> Eksekusi Perbaikan : Ya [color: red, cite: 243]
+Eksekusi Perbaikan > Persetujuan Ulang Substansi 
+Persetujuan Ulang Substansi --> Review & Analisis oleh Pimpinan Unit: Draf Diperbaiki
+
+// Rantai Pengesahan Akhir
+Paraf Sekretaris --> Paraf Wakil Rektor 
+TTE Rektor --> Tanda Tangan Naskah : Naskah Disahkan [cite: 246, color: green]
+Tanda Tangan Naskah --> Pengarsipan : Penyerahan Naskah [cite: 246]
+Pengarsipan > Selesai
+Mulai > Penjajakan Kerja Sama_1
+Verifikasi oleh Pimpinan DKUI > Setuju?_1
+Setuju?_1 > Review Hukum: Ya [color: black]
+Setuju?_2 > Review Sekretaris
+Setuju?_2 --> Eksekusi Perbaikan: [color: red]
+Setuju?_1 --> Eksekusi Perbaikan: [color: red]
+DKUI Menyalurkan Draft kepada Unit Terkait > Review & Analisis oleh Pimpinan Unit
+Setuju?_3 > TTE Rektor: Ya
+Paraf Wakil Rektor > Setuju?_3
+DKUI menerima dan verifikasi Draft yang Masuk > Lolos?
+Lolos? > Sistem Kirim Akun ke Mitra: Ya
+Lolos? > Selesai_1: Tidak
+Sistem Kirim Akun ke Mitra > DKUI Menyalurkan Draft kepada Unit Terkait

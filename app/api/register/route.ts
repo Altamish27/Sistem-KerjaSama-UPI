@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
 import { supabaseAdmin } from "@/lib/supabase/admin"
+import type { UserRole } from "@/lib/supabase/database.types"
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, password, role, institution, fakultas, phone } = await request.json()
+    const { name, email, password, role, institution, unitId, phone } = await request.json()
 
     // Validasi input
     if (!name || !email || !password || !role) {
@@ -20,8 +21,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validasi role
-    const validRoles = ["mitra", "dkui", "fakultas", "biro_hukum", "wakil_rektor", "rektor"]
+    // Validasi role — matches UserRole enum
+    const validRoles: UserRole[] = [
+      "mitra",
+      "pimpinan_unit",
+      "dkui",
+      "biro_hukum",
+      "sekretaris_universitas",
+      "wakil_rektor",
+      "rektor",
+    ]
     if (!validRoles.includes(role)) {
       return NextResponse.json(
         { error: "Role tidak valid" },
@@ -47,7 +56,7 @@ export async function POST(request: NextRequest) {
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
-      email_confirm: true, // Auto-confirm email
+      email_confirm: true,
       user_metadata: {
         name,
         role,
@@ -63,12 +72,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert user data to users table
-    const userData: any = {
+    const userData: Record<string, unknown> = {
       id: authData.user.id,
       email,
       name,
       role,
       account_status: 'active',
+      is_active: true,
+      email_verified: true,
       created_at: new Date().toISOString(),
     }
 
@@ -76,9 +87,10 @@ export async function POST(request: NextRequest) {
     if (role === "mitra" && institution) {
       userData.institution = institution
     }
-    
-    if (["fakultas", "biro_hukum"].includes(role) && fakultas) {
-      userData.fakultas = fakultas
+
+    // Internal roles can be linked to a unit_kerja
+    if (unitId && role !== "mitra") {
+      userData.unit_id = unitId
     }
 
     if (phone) {
@@ -87,14 +99,14 @@ export async function POST(request: NextRequest) {
 
     const { error: insertError } = await supabaseAdmin
       .from('users')
-      .insert(userData)
+      .insert(userData as any)
 
     if (insertError) {
       console.error("Error inserting user data:", insertError)
-      
+
       // Rollback: delete auth user if database insert fails
       await supabaseAdmin.auth.admin.deleteUser(authData.user.id)
-      
+
       return NextResponse.json(
         { error: "Gagal menyimpan data user" },
         { status: 500 }

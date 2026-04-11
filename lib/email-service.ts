@@ -94,7 +94,7 @@ export async function sendEmail({ to, subject, html, text, proposalId, templateN
  * Render email template dengan variables
  */
 async function renderTemplate(templateName: string, variables: Record<string, string>) {
-  const { data, error } = await supabaseAdmin.rpc('render_email_template', {
+  const { data, error } = await (supabaseAdmin.rpc as any)('render_email_template', {
     template_name: templateName,
     variables: variables as any,
   })
@@ -414,7 +414,7 @@ async function getMitraEmailFromProposal(proposalId: string) {
     throw new Error('Proposal not found')
   }
 
-  const { data: user } = await supabaseAdmin.from('users').select('email, name').eq('id', proposal.created_by).single()
+  const { data: user } = await supabaseAdmin.from('users').select('email, name').eq('id', proposal.created_by!).single()
 
   if (!user) {
     throw new Error('User not found')
@@ -431,7 +431,7 @@ export async function notifyMitraStatusChange(proposalId: string, oldStatus: str
     const mitra = await getMitraEmailFromProposal(proposalId)
     const { data: proposal } = await supabaseAdmin
       .from('proposals')
-      .select('title, proposal_number, partner_name')
+      .select('title, proposal_number')
       .eq('id', proposalId)
       .single()
 
@@ -439,7 +439,7 @@ export async function notifyMitraStatusChange(proposalId: string, oldStatus: str
 
     await sendStatusUpdateEmail({
       email: mitra.email,
-      partnerName: proposal.partner_name,
+      partnerName: mitra.name,
       proposalId,
       proposalTitle: proposal.title,
       proposalNumber: proposal.proposal_number || '',

@@ -25,7 +25,23 @@ function ProposalsContent() {
   const { user } = useAuth()
   const { proposals, isLoading } = useDataStore()
 
-  const userProposals = proposals.filter((p) => p.createdBy === user?.id)
+  // Role-based filtering:
+  // - mitra & operator_unit: hanya proposal yang mereka buat sendiri
+  // - pimpinan_unit: hanya proposal dari unit-nya
+  // - dkui, biro_hukum, sekretaris_universitas, wakil_rektor, rektor: semua proposal
+  const GLOBAL_VIEW_ROLES = ["dkui", "biro_hukum", "sekretaris_universitas", "wakil_rektor", "rektor"]
+
+  const filteredProposals = (() => {
+    if (!user) return []
+    if (GLOBAL_VIEW_ROLES.includes(user.role)) return proposals
+    if (user.role === "pimpinan_unit") return proposals.filter((p) => p.unitTerkaitId === user.unitId)
+    // mitra: proposal sendiri + proposal yg butuh tanda tangan mitra
+    if (user.role === "mitra") return proposals.filter((p) => p.createdBy === user.id || p.status === "mitra_signing")
+    // operator_unit: hanya milik sendiri
+    return proposals.filter((p) => p.createdBy === user.id)
+  })()
+
+  const canCreateProposal = user?.role === "operator_unit"
 
   const getStatusColor = (status: string) => {
     if (status === "draft") return "bg-slate-100 text-slate-700 border-slate-200"
@@ -52,7 +68,7 @@ function ProposalsContent() {
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">Proposal Saya</h1>
           <p className="text-slate-600 mt-2 text-base lg:text-lg">Kelola proposal kerja sama Anda</p>
         </div>
-        {user?.role === "mitra" && (
+        {canCreateProposal && (
           <Link href="/dashboard/proposals/new">
             <Button className="bg-[#e10000] text-white hover:bg-[#c10000] font-semibold py-3 sm:py-5 px-4 sm:px-6 text-sm sm:text-base shadow-sm w-full sm:w-auto">
               <Plus className="w-5 h-5 mr-2" />
@@ -68,11 +84,11 @@ function ProposalsContent() {
           <CardDescription className="text-slate-600 text-sm sm:text-base">Semua proposal yang telah Anda buat</CardDescription>
         </CardHeader>
         <CardContent>
-          {userProposals.length === 0 ? (
+          {filteredProposals.length === 0 ? (
             <div className="text-center py-10 sm:py-16">
               <FileText className="w-12 h-12 sm:w-16 sm:h-16 text-slate-400 mx-auto mb-4" />
               <p className="text-slate-600 mb-6 text-base sm:text-lg">Belum ada proposal</p>
-              {user?.role === "mitra" && (
+              {canCreateProposal && (
                 <Link href="/dashboard/proposals/new">
                   <Button
                     variant="outline"
@@ -85,7 +101,7 @@ function ProposalsContent() {
             </div>
           ) : (
             <div className="space-y-4">
-              {userProposals.map((proposal) => (
+              {filteredProposals.map((proposal) => (
                 <Link key={proposal.id} href={`/dashboard/proposals/${proposal.id}`}>
                   <div className="p-4 sm:p-6 rounded-lg sm:rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors shadow-sm">
                     <div className="flex items-start justify-between">
@@ -99,7 +115,7 @@ function ProposalsContent() {
                           </Badge>
                         </div>
                         <h3 className="font-bold text-slate-900 mb-2 text-base sm:text-lg">{proposal.title}</h3>
-                        <p className="text-base text-slate-600">{proposal.partnerName}</p>
+                        <p className="text-base text-slate-600">{proposal.mitraName}</p>
                         <p className="text-sm text-slate-500 mt-3">
                           Dibuat: {new Date(proposal.createdAt).toLocaleDateString("id-ID")}
                         </p>

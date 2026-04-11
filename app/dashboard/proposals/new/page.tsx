@@ -15,9 +15,10 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { ArrowLeft, Save, Send, Upload, X, FileText } from "lucide-react"
+import { Switch } from "@/components/ui/switch"
+import { ArrowLeft, Save, Send, Upload, X, FileText, Search, CheckCircle2, Loader2 } from "lucide-react"
 import Link from "next/link"
-import type { Proposal, InitiatorType, ProposalDocument } from "@/lib/mock-data"
+import type { Proposal, InitiatorType, ProposalDocument, JenisDokumen } from "@/lib/mock-data"
 
 export default function NewProposalPage() {
   return (
@@ -36,14 +37,57 @@ function NewProposalContent() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState("")
   const [uploadedDocuments, setUploadedDocuments] = useState<ProposalDocument[]>([])
-  const [agreementLevel, setAgreementLevel] = useState<"universitas" | "fakultas" | "">("")
-  const [selectedFakultas, setSelectedFakultas] = useState("")
-  const [documentType, setDocumentType] = useState<"MoU" | "MoA" | "PKS" | "IA" | "">("")
+  const [jenisDokumen, setJenisDokumen] = useState<JenisDokumen | "">("")
+  const [isIncomeGenerating, setIsIncomeGenerating] = useState(false)
+
+  // Hanya operator_unit yang bisa membuat proposal baru
+  const canCreate = user?.role === "operator_unit"
+
+  // File uploads for specific documents
+  const [fileBeritaAcara, setFileBeritaAcara] = useState<{ url: string; name: string } | null>(null)
+  const [fileSuratKuasa, setFileSuratKuasa] = useState<{ url: string; name: string } | null>(null)
+
+  // Mitra lookup state
+  const [mitraEmail, setMitraEmail] = useState("")
+  const [mitraId, setMitraId] = useState<string | null>(null)
+  const [mitraExisting, setMitraExisting] = useState(false)
+  const [mitraLookupLoading, setMitraLookupLoading] = useState(false)
+  const [mitraLookupDone, setMitraLookupDone] = useState(false)
+  const [mitraPicName, setMitraPicName] = useState("")
+  const [mitraPhone, setMitraPhone] = useState("")
+
+  const handleMitraLookup = async () => {
+    if (!mitraEmail.trim()) return
+    setMitraLookupLoading(true)
+    setMitraLookupDone(false)
+    try {
+      const res = await fetch(`/api/mitra?email=${encodeURIComponent(mitraEmail.trim())}`)
+      const data = await res.json()
+      if (data.found && data.mitra) {
+        setMitraId(data.mitra.id)
+        setMitraExisting(true)
+        setFormData((prev) => ({ ...prev, mitraName: data.mitra.namaInstansi || "" }))
+        setMitraPicName(data.mitra.namaPic || "")
+        setMitraPhone(data.mitra.kontakPic || "")
+      } else {
+        setMitraId(null)
+        setMitraExisting(false)
+        // Reset fields for manual input
+        setFormData((prev) => ({ ...prev, mitraName: "" }))
+        setMitraPicName("")
+        setMitraPhone("")
+      }
+      setMitraLookupDone(true)
+    } catch {
+      setError("Gagal mencari data mitra")
+    } finally {
+      setMitraLookupLoading(false)
+    }
+  }
 
   const [formData, setFormData] = useState({
     title: "",
-    partnerName: "",
-    partnerType: "" as "dalam_negeri" | "luar_negeri" | "",
+    mitraName: "",
     description: "",
     objectives: "",
     benefits: "",
@@ -51,13 +95,12 @@ function NewProposalContent() {
     startDate: "",
     endDate: "",
     budget: "",
+    bentukKegiatanLapkerma: "",
   })
 
-  const fakultasList = ["FPMIPA", "FPOK", "FIP", "FPSD", "FPTI"]
-  const documentTypes = [
+  const documentTypes: { value: JenisDokumen; label: string }[] = [
     { value: "MoU", label: "MoU (Memorandum of Understanding)" },
-    { value: "MoA", label: "MoA (Memorandum of Agreement)" },
-    { value: "PKS", label: "PKS (Perjanjian Kerja Sama)" },
+    { value: "MoA/PKS", label: "MoA/PKS (Memorandum of Agreement / Perjanjian Kerja Sama)" },
     { value: "IA", label: "IA (Implementation Arrangement)" },
   ]
 
@@ -78,16 +121,13 @@ function NewProposalContent() {
     setError("")
 
     try {
-      // Only allow 1 file
       const file = files[0]
-
-      // Upload file to server
-      const formData = new FormData()
-      formData.append("file", file)
+      const formDataUpload = new FormData()
+      formDataUpload.append("file", file)
 
       const response = await fetch("/api/upload", {
         method: "POST",
-        body: formData,
+        body: formDataUpload,
       })
 
       if (!response.ok) {
@@ -105,14 +145,45 @@ function NewProposalContent() {
         url: result.file.url,
       }
 
-      // Replace existing document with new one
       setUploadedDocuments([newDocument])
     } catch (error) {
       console.error("Upload error:", error)
       setError("Gagal mengupload file. Silakan coba lagi.")
     } finally {
       setIsSubmitting(false)
-      // Reset input value to allow re-uploading the same file
+      e.target.value = ""
+    }
+  }
+
+  const handleSpecificFileUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setter: (val: { url: string; name: string } | null) => void,
+  ) => {
+    const files = e.target.files
+    if (!files || files.length === 0) return
+
+    setIsSubmitting(true)
+    setError("")
+
+    try {
+      const file = files[0]
+      const formDataUpload = new FormData()
+      formDataUpload.append("file", file)
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formDataUpload,
+      })
+
+      if (!response.ok) throw new Error("Upload failed")
+
+      const result = await response.json()
+      setter({ url: result.file.url, name: result.file.name })
+    } catch (error) {
+      console.error("Upload error:", error)
+      setError("Gagal mengupload file. Silakan coba lagi.")
+    } finally {
+      setIsSubmitting(false)
       e.target.value = ""
     }
   }
@@ -127,97 +198,111 @@ function NewProposalContent() {
     // Validation
     if (
       !formData.title ||
-      !formData.partnerName ||
-      !formData.partnerType ||
+      !formData.mitraName ||
       !formData.description ||
       !formData.objectives ||
       !formData.benefits ||
       !formData.scopeOfWork ||
       !formData.startDate ||
       !formData.endDate ||
-      !agreementLevel ||
-      !documentType
+      !jenisDokumen
     ) {
       setError("Semua field wajib diisi")
       return
     }
 
-    // Validate fakultas selection if agreement level is fakultas
-    if (agreementLevel === "fakultas" && !selectedFakultas) {
-      setError("Pilih fakultas terlebih dahulu")
+    if (!mitraEmail.trim()) {
+      setError("Email PIC Mitra wajib diisi")
+      return
+    }
+
+    if (!formData.bentukKegiatanLapkerma) {
+      setError("Bentuk Kegiatan Lapkerma wajib diisi")
+      return
+    }
+
+    if (status === "submitted" && !fileBeritaAcara) {
+      setError("File Berita Acara Penjajakan wajib diupload sebelum mengajukan")
       return
     }
 
     setIsSubmitting(true)
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    const initiator: InitiatorType = user!.role === "mitra" ? "mitra" : "fakultas"
-    const duration = calculateDuration(formData.startDate, formData.endDate)
-
-    const newProposal: Proposal = {
-      id: `PROP-${Date.now()}`,
-      initiator: initiator,
-      title: formData.title,
-      partnerName: formData.partnerName,
-      partnerType: formData.partnerType as "dalam_negeri" | "luar_negeri",
-      description: formData.description,
-      objectives: formData.objectives,
-      benefits: formData.benefits,
-      scopeOfWork: formData.scopeOfWork,
-      duration: duration,
-      startDate: formData.startDate,
-      endDate: formData.endDate,
-      budget: formData.budget ? Number.parseFloat(formData.budget) : undefined,
-      documents: uploadedDocuments,
-      status: status,
-      createdBy: user!.id,
-      createdByName: user!.name,
-      createdByRole: user!.role,
-      fakultas: agreementLevel === "fakultas" ? selectedFakultas : user!.fakultas || "",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      approvalHistory: [
-        {
-          id: `HIST-${Date.now()}`,
-          proposalId: `PROP-${Date.now()}`,
-          action: status === "draft" ? "submit" : "submit",
-          actor: user!.id,
-          actorName: user!.name,
-          actorRole: user!.role,
-          comment: status === "draft" ? "Draft disimpan" : "Proposal diajukan",
-          timestamp: new Date().toISOString(),
-        },
-      ],
-    }
-
-    // Save proposal to database via DataStore
-    await addProposal(newProposal)
-    
-    // Send welcome email to mitra (jika role mitra & status submitted)
-    if (user!.role === "partner" && status === "submitted") {
-      try {
-        // Generate temporary password (atau bisa skip karena user sudah login)
-        // Welcome email akan berisi info proposal number dan link dashboard
-        await fetch("/api/send-welcome", {
+    try {
+      // If mitra is new, create mitra record first
+      let resolvedMitraId = mitraId
+      if (!mitraExisting) {
+        const mitraRes = await fetch("/api/mitra", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            proposalId: newProposal.id,
-            mitraEmail: user!.email,
-            mitraName: user!.name,
-            tempPassword: "Password sudah Anda miliki", // User sudah punya password
+            namaInstansi: formData.mitraName,
+            emailPic: mitraEmail.trim(),
+            namaPic: mitraPicName || null,
+            kontakPic: mitraPhone || null,
           }),
         })
-      } catch (emailError) {
-        console.error("Email notification error:", emailError)
-        // Don't fail proposal submission if email fails
+        const mitraData = await mitraRes.json()
+        if (mitraData.success) {
+          resolvedMitraId = mitraData.mitra.id
+        }
       }
+
+      const initiator: InitiatorType = "internal"
+      const duration = calculateDuration(formData.startDate, formData.endDate)
+
+      const newProposal: Proposal = {
+        id: `PROP-${Date.now()}`,
+        initiator: initiator,
+        title: formData.title,
+        mitraId: resolvedMitraId || undefined,
+        mitraName: formData.mitraName,
+        jenisDokumen: jenisDokumen as JenisDokumen,
+        description: formData.description,
+        objectives: formData.objectives,
+        benefits: formData.benefits,
+        scopeOfWork: formData.scopeOfWork,
+        bentukKegiatanLapkerma: formData.bentukKegiatanLapkerma,
+        isIncomeGenerating: isIncomeGenerating,
+        fileBeritaAcaraPenjajakan: fileBeritaAcara?.url,
+        fileSuratKuasa: fileSuratKuasa?.url,
+        duration: duration,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        budget: formData.budget ? Number.parseFloat(formData.budget) : undefined,
+        documents: uploadedDocuments,
+        status: status,
+        createdBy: user!.id,
+        createdByName: user!.name,
+        createdByRole: user!.role,
+        unitTerkaitId: user!.unitId,
+        unitName: user!.unitName || "",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        approvalHistory: [
+          {
+            id: `HIST-${Date.now()}`,
+            proposalId: `PROP-${Date.now()}`,
+            action: "submit",
+            actor: user!.id,
+            actorName: user!.name,
+            actorRole: user!.role,
+            comment: status === "draft" ? "Draft disimpan" : "Proposal diajukan",
+            timestamp: new Date().toISOString(),
+          },
+        ],
+      }
+
+      // Save proposal to database via DataStore
+      await addProposal(newProposal)
+
+      setIsSubmitting(false)
+      router.push("/dashboard/proposals")
+    } catch (err) {
+      console.error("Submit error:", err)
+      setError("Terjadi kesalahan saat menyimpan proposal")
+      setIsSubmitting(false)
     }
-    
-    setIsSubmitting(false)
-    router.push("/dashboard/proposals")
   }
 
   const formatFileSize = (bytes: number) => {
@@ -228,6 +313,19 @@ function NewProposalContent() {
 
   return (
     <div className="space-y-4 sm:space-y-6">
+      {!canCreate ? (
+        <div className="text-center py-16">
+          <FileText className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-slate-900 mb-2">Akses Ditolak</h2>
+          <p className="text-slate-600 mb-6">Role Anda tidak memiliki akses untuk membuat proposal baru.</p>
+          <Link href="/dashboard">
+            <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-50 bg-white">
+              Kembali ke Dashboard
+            </Button>
+          </Link>
+        </div>
+      ) : (
+      <>
       <div className="flex flex-col sm:flex-row sm:items-center gap-4">
         <Link href="/dashboard/proposals">
           <Button
@@ -251,90 +349,14 @@ function NewProposalContent() {
           <CardDescription className="text-slate-600 text-sm sm:text-base">Lengkapi data proposal kerja sama dengan mitra</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 sm:space-y-6 pt-4 sm:pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="partnerType" className="text-slate-900 font-medium">
-                Jenis Mitra *
-              </Label>
-              <Select
-                value={formData.partnerType}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, partnerType: value as "dalam_negeri" | "luar_negeri" })
-                }
-              >
-                <SelectTrigger className="bg-white border-slate-300 text-slate-900 focus:border-[#e10000] focus:ring-2 focus:ring-[#e10000]/10">
-                  <SelectValue placeholder="Pilih jenis mitra" />
-                </SelectTrigger>
-                <SelectContent className="bg-white border-slate-200 shadow-lg">
-                  <SelectItem value="dalam_negeri" className="text-slate-900">
-                    Dalam Negeri
-                  </SelectItem>
-                  <SelectItem value="luar_negeri" className="text-slate-900">
-                    Luar Negeri
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Agreement Level */}
-            <div className="space-y-2">
-              <Label htmlFor="agreementLevel" className="text-slate-900 font-medium">
-                Tingkat Perjanjian *
-              </Label>
-              <Select
-                value={agreementLevel}
-                onValueChange={(value) => {
-                  setAgreementLevel(value as "universitas" | "fakultas")
-                  // Reset fakultas selection when changing agreement level
-                  if (value === "universitas") {
-                    setSelectedFakultas("")
-                  }
-                }}
-              >
-                <SelectTrigger className="bg-white border-slate-300 text-slate-900 focus:border-[#e10000] focus:ring-2 focus:ring-[#e10000]/10">
-                  <SelectValue placeholder="Pilih tingkat perjanjian" />
-                </SelectTrigger>
-                <SelectContent className="bg-white border-slate-200 shadow-lg">
-                  <SelectItem value="universitas" className="text-slate-900">
-                    Universitas
-                  </SelectItem>
-                  <SelectItem value="fakultas" className="text-slate-900">
-                    Fakultas
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Conditional Faculty Dropdown */}
-            {agreementLevel === "fakultas" && (
-              <div className="space-y-2">
-                <Label htmlFor="fakultas" className="text-slate-900 font-medium">
-                  Pilih Fakultas *
-                </Label>
-                <Select value={selectedFakultas} onValueChange={setSelectedFakultas}>
-                  <SelectTrigger className="bg-white border-slate-300 text-slate-900 focus:border-[#e10000] focus:ring-2 focus:ring-[#e10000]/10">
-                    <SelectValue placeholder="Pilih fakultas" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border-slate-200 shadow-lg">
-                    {fakultasList.map((fakultas) => (
-                      <SelectItem key={fakultas} value={fakultas} className="text-slate-900">
-                        {fakultas}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-          </div>
-
-          {/* Document Type Dropdown */}
+          {/* Jenis Dokumen */}
           <div className="space-y-2">
-            <Label htmlFor="documentType" className="text-slate-900 font-medium">
+            <Label htmlFor="jenisDokumen" className="text-slate-900 font-medium">
               Jenis Dokumen *
             </Label>
             <Select
-              value={documentType}
-              onValueChange={(value) => setDocumentType(value as "MoU" | "MoA" | "PKS" | "IA")}
+              value={jenisDokumen}
+              onValueChange={(value) => setJenisDokumen(value as JenisDokumen)}
             >
               <SelectTrigger className="bg-white border-slate-300 text-slate-900 focus:border-[#e10000] focus:ring-2 focus:ring-[#e10000]/10">
                 <SelectValue placeholder="Pilih jenis dokumen" />
@@ -362,17 +384,93 @@ function NewProposalContent() {
             />
           </div>
 
+          {/* Mitra Email Lookup */}
           <div className="space-y-2">
-            <Label htmlFor="partnerName" className="text-slate-900 font-medium">
-              Nama Mitra *
+            <Label htmlFor="mitraEmail" className="text-slate-900 font-medium">
+              Email PIC Mitra *
+            </Label>
+            <div className="flex gap-2">
+              <Input
+                id="mitraEmail"
+                type="email"
+                placeholder="Masukkan email PIC mitra"
+                value={mitraEmail}
+                onChange={(e) => {
+                  setMitraEmail(e.target.value)
+                  setMitraLookupDone(false)
+                  setMitraExisting(false)
+                  setMitraId(null)
+                }}
+                className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:border-[#e10000] focus:ring-2 focus:ring-[#e10000]/10"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleMitraLookup}
+                disabled={mitraLookupLoading || !mitraEmail.trim()}
+                className="shrink-0"
+              >
+                {mitraLookupLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Search className="h-4 w-4" />
+                )}
+                <span className="ml-1">Cari</span>
+              </Button>
+            </div>
+            {mitraLookupDone && mitraExisting && (
+              <p className="text-sm text-green-600 flex items-center gap-1">
+                <CheckCircle2 className="h-4 w-4" /> Mitra ditemukan — data terisi otomatis
+              </p>
+            )}
+            {mitraLookupDone && !mitraExisting && (
+              <p className="text-sm text-amber-600">
+                Mitra belum terdaftar — silakan isi data di bawah. Akun akan dibuat otomatis setelah Pimpinan Unit menyetujui.
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="mitraName" className="text-slate-900 font-medium">
+              Nama Instansi Mitra *
             </Label>
             <Input
-              id="partnerName"
+              id="mitraName"
               placeholder="Nama institusi/organisasi mitra"
-              value={formData.partnerName}
-              onChange={(e) => setFormData({ ...formData, partnerName: e.target.value })}
-              className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:border-[#e10000] focus:ring-2 focus:ring-[#e10000]/10"
+              value={formData.mitraName}
+              onChange={(e) => setFormData({ ...formData, mitraName: e.target.value })}
+              disabled={mitraExisting}
+              className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:border-[#e10000] focus:ring-2 focus:ring-[#e10000]/10 disabled:opacity-70"
             />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="mitraPicName" className="text-slate-900 font-medium">
+                Nama PIC Mitra
+              </Label>
+              <Input
+                id="mitraPicName"
+                placeholder="Nama person in charge"
+                value={mitraPicName}
+                onChange={(e) => setMitraPicName(e.target.value)}
+                disabled={mitraExisting}
+                className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:border-[#e10000] focus:ring-2 focus:ring-[#e10000]/10 disabled:opacity-70"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="mitraPhone" className="text-slate-900 font-medium">
+                No. Telepon PIC Mitra
+              </Label>
+              <Input
+                id="mitraPhone"
+                placeholder="08xxxxxxxxxx"
+                value={mitraPhone}
+                onChange={(e) => setMitraPhone(e.target.value)}
+                disabled={mitraExisting}
+                className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:border-[#e10000] focus:ring-2 focus:ring-[#e10000]/10 disabled:opacity-70"
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -431,6 +529,37 @@ function NewProposalContent() {
             />
           </div>
 
+          {/* Bentuk Kegiatan Lapkerma */}
+          <div className="space-y-2">
+            <Label htmlFor="bentukKegiatanLapkerma" className="text-slate-900 font-medium">
+              Bentuk Kegiatan Lapkerma *
+            </Label>
+            <Input
+              id="bentukKegiatanLapkerma"
+              placeholder="Contoh: Penelitian Bersama, Pertukaran Mahasiswa, Magang, dll."
+              value={formData.bentukKegiatanLapkerma}
+              onChange={(e) => setFormData({ ...formData, bentukKegiatanLapkerma: e.target.value })}
+              className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:border-[#e10000] focus:ring-2 focus:ring-[#e10000]/10"
+            />
+          </div>
+
+          {/* Income Generating Toggle */}
+          <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200 bg-slate-50">
+            <div className="space-y-0.5">
+              <Label htmlFor="isIncomeGenerating" className="text-slate-900 font-medium">
+                Income Generating?
+              </Label>
+              <p className="text-sm text-slate-600">
+                Apakah kerja sama ini menghasilkan pendapatan bagi universitas?
+              </p>
+            </div>
+            <Switch
+              id="isIncomeGenerating"
+              checked={isIncomeGenerating}
+              onCheckedChange={setIsIncomeGenerating}
+            />
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
 
             <div className="space-y-2">
@@ -484,13 +613,104 @@ function NewProposalContent() {
             />
           </div>
 
-          {/* Document Upload Section */}
+          {/* Berita Acara Penjajakan Upload (Mandatory) */}
+          <div className="space-y-3 pt-4 border-t border-slate-200">
+            <div>
+              <Label className="text-slate-900 font-medium">Berita Acara Penjajakan *</Label>
+              <p className="text-sm text-slate-600 mt-1">
+                Upload dokumen berita acara hasil penjajakan kerja sama (wajib saat submit)
+              </p>
+            </div>
+            {fileBeritaAcara ? (
+              <div className="flex items-center justify-between p-3 rounded-lg bg-emerald-50 border border-emerald-200">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <FileText className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                  <p className="text-sm text-slate-900 truncate font-medium">{fileBeritaAcara.name}</p>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setFileBeritaAcara(null)}
+                  className="text-slate-600 hover:text-red-600 hover:bg-red-50"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            ) : (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => document.getElementById("fileBeritaAcara")?.click()}
+                className="border-slate-300 text-slate-700 hover:bg-slate-50 bg-white"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                Upload Berita Acara
+              </Button>
+            )}
+            <input
+              id="fileBeritaAcara"
+              type="file"
+              onChange={(e) => handleSpecificFileUpload(e, setFileBeritaAcara)}
+              className="hidden"
+              accept=".pdf,.doc,.docx"
+            />
+          </div>
+
+          {/* Surat Kuasa Rektor Upload (Optional — determines workflow path) */}
+          <div className="space-y-3">
+            <div>
+              <Label className="text-slate-900 font-medium">Surat Kuasa Rektor (Opsional)</Label>
+              <p className="text-sm text-slate-600 mt-1">
+                Jika ada surat kuasa dari Rektor, penandatanganan dilakukan oleh Pimpinan Unit.
+                Jika tidak ada, penandatanganan dilakukan oleh Rektor.
+              </p>
+            </div>
+            {fileSuratKuasa ? (
+              <div className="flex items-center justify-between p-3 rounded-lg bg-amber-50 border border-amber-200">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <FileText className="w-5 h-5 text-amber-600 flex-shrink-0" />
+                  <p className="text-sm text-slate-900 truncate font-medium">{fileSuratKuasa.name}</p>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setFileSuratKuasa(null)}
+                  className="text-slate-600 hover:text-red-600 hover:bg-red-50"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            ) : (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => document.getElementById("fileSuratKuasa")?.click()}
+                className="border-slate-300 text-slate-700 hover:bg-slate-50 bg-white"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                Upload Surat Kuasa
+              </Button>
+            )}
+            <input
+              id="fileSuratKuasa"
+              type="file"
+              onChange={(e) => handleSpecificFileUpload(e, setFileSuratKuasa)}
+              className="hidden"
+              accept=".pdf,.doc,.docx"
+            />
+          </div>
+
+          {/* Document Upload Section (general supporting document) */}
           <div className="space-y-4 pt-4 border-t border-slate-200">
             <div className="flex items-center justify-between">
               <div>
                 <Label className="text-slate-900 font-medium">Dokumen Pendukung</Label>
                 <p className="text-sm text-slate-600 mt-1">
-                  Upload 1 dokumen (proposal, MOU/MOA draft, dll.)
+                  Upload 1 dokumen pendukung tambahan (opsional)
                 </p>
               </div>
               <Button
@@ -565,6 +785,8 @@ function NewProposalContent() {
           </div>
         </CardContent>
       </Card>
+      </>
+      )}
     </div>
   )
 }

@@ -1,0 +1,125 @@
+title Proses Persetujuan Kerja Sama - Pengusul Mitra Eksternal (Tanda Tangan Rektor)
+
+Mitra Eksternal (Guest) [color: purple] {
+  Mulai [icon: play, type: event]
+  Isi Form Pengajuan (Guest Mode) [type: activity, icon: file-text]
+  Terima Email Penolakan [type: activity, icon: mail]
+  Selesai_Ditolak [type: event, icon: x-circle, label: "Selesai (Ditolak)", color: red]
+  Penjajakan Kerja Sama_Mitra [type: activity, icon: users, label: "Penjajakan Kerja Sama"]
+  Tanda Tangan Naskah [type: activity, icon: edit-3]
+}
+
+Kelompok Inisiator (Unit Terkait) [color: blue] {
+  Penjajakan Kerja Sama_Internal [type: activity, icon: message-circle, label: "Penjajakan Kerja Sama"]
+  Susun Draf Awal [type: activity, icon: file-text]
+  Ajukan Draf ke Sistem [type: activity, icon: send]
+  Persetujuan Ulang Substansi [type: activity, icon: refresh-cw, label: "Persetujuan Ulang (Inisiator & Mitra)"]
+}
+
+Pimpinan Unit & Verifikator [color: orange] {
+  DKUI Cek Form Pengajuan [type: activity, icon: check-square]
+  Form Lolos? [type: gateway, icon: help-circle]
+  DKUI Salurkan ke Unit Terkait [type: activity, icon: send]
+  Review Awal Kesediaan Unit [type: activity, icon: user-check]
+  Unit Bersedia? [type: gateway, icon: help-circle]
+  DKUI Kirim Email Penolakan [type: activity, icon: mail]
+  DKUI Tetapkan Inisiator & Kirim Kontak [type: activity, icon: user-plus, label: "DKUI Tetapkan Inisiator & Kirim Kontak ke Mitra"]
+  Sistem Kirim Akun ke Mitra [type: activity, icon: send]
+  
+  DKUI Menerima Draf [type: activity, icon: check-square, label: "DKUI Menerima & Verifikasi Draf Masuk"]
+  Review & Analisis oleh Pimpinan Unit [type: activity, icon: user-check]
+  Setuju?_Unit [type: gateway, icon: help-circle, label: "Setuju?"]
+  
+  Verifikasi oleh Pimpinan DKUI [type: activity, icon: clipboard]
+  Setuju?_DKUI [type: gateway, icon: help-circle, label: "Setuju?"]
+  
+  Review Hukum [type: activity, icon: shield, label: "Review Legalitas (Kantor Hukum)"]
+  Setuju?_Hukum [type: gateway, icon: help-circle, label: "Setuju?"]
+  
+  Review Sekretaris [type: activity, icon: file, label: "Review Sekretaris Universitas"]
+  Ada Koreksi? [type: gateway, icon: help-circle]
+  
+  Eksekusi Perbaikan [type: activity, icon: tool]
+  Paraf Sekretaris [type: activity, icon: check-square, label: "Paraf Sekretaris Universitas"]
+  Pengarsipan [type: activity, icon: archive]
+  Selesai_Berhasil [type: event, icon: check-circle, label: "Selesai", color: green]
+}
+
+Pimpinan Eksekutif Universitas [color: green] {
+  Paraf Wakil Rektor [type: activity, icon: check-square, label: "Paraf Wakil Rektor (WR RUK)"]
+  Setuju?_WR [type: gateway, icon: help-circle, label: "Setuju?"]
+  TTE Rektor [type: activity, icon: award, label: "Tanda Tangan Digital Rektor"]
+}
+
+// ==========================================
+// 1. ALUR GUEST MODE (PENGAJUAN MITRA)
+// ==========================================
+Mulai > Isi Form Pengajuan (Guest Mode)
+Isi Form Pengajuan (Guest Mode) > DKUI Cek Form Pengajuan
+DKUI Cek Form Pengajuan > Form Lolos?
+
+// Jika DKUI Menolak Form Awal
+Form Lolos? --> DKUI Kirim Email Penolakan : Tidak [color: red]
+DKUI Kirim Email Penolakan > Terima Email Penolakan
+Terima Email Penolakan > Selesai_Ditolak
+
+// Jika DKUI Menerima Form Awal
+Form Lolos? > DKUI Salurkan ke Unit Terkait : Ya
+DKUI Salurkan ke Unit Terkait > Review Awal Kesediaan Unit
+Review Awal Kesediaan Unit > Unit Bersedia?
+
+// Jika Unit Menolak Tawaran
+Unit Bersedia? --> DKUI Kirim Email Penolakan : Tidak [color: red]
+
+// Jika Unit Menerima (Penetapan Inisiator Internal)
+Unit Bersedia? > DKUI Tetapkan Inisiator & Kirim Kontak : Ya
+DKUI Tetapkan Inisiator & Kirim Kontak > Sistem Kirim Akun ke Mitra
+Sistem Kirim Akun ke Mitra > Penjajakan Kerja Sama_Mitra
+
+// ==========================================
+// 2. ALUR PENJAJAKAN & DRAFTING
+// ==========================================
+Penjajakan Kerja Sama_Mitra <--> Penjajakan Kerja Sama_Internal : Proses Penjajakan
+Penjajakan Kerja Sama_Internal > Susun Draf Awal
+Susun Draf Awal > Ajukan Draf ke Sistem
+Ajukan Draf ke Sistem --> DKUI Menerima Draf
+
+// ==========================================
+// 3. ALUR REVIEW BERJENJANG
+// ==========================================
+DKUI Menerima Draf > Review & Analisis oleh Pimpinan Unit
+Review & Analisis oleh Pimpinan Unit > Setuju?_Unit
+
+Setuju?_Unit > Verifikasi oleh Pimpinan DKUI : Ya
+Setuju?_Unit --> Eksekusi Perbaikan : Tidak [color: red]
+
+Verifikasi oleh Pimpinan DKUI > Setuju?_DKUI
+Setuju?_DKUI > Review Hukum : Ya
+Setuju?_DKUI --> Eksekusi Perbaikan : Tidak [color: red]
+
+Review Hukum > Setuju?_Hukum
+Setuju?_Hukum > Review Sekretaris : Ya
+Setuju?_Hukum --> Eksekusi Perbaikan : Tidak [color: red]
+
+Review Sekretaris > Ada Koreksi?
+Ada Koreksi? --> Eksekusi Perbaikan : Ya [color: red]
+Ada Koreksi? > Paraf Sekretaris : Tidak
+
+// ==========================================
+// 4. LOGIKA REVISI (LOOP)
+// ==========================================
+Eksekusi Perbaikan > Persetujuan Ulang Substansi
+Persetujuan Ulang Substansi --> Review & Analisis oleh Pimpinan Unit : Draf Diperbaiki
+
+// ==========================================
+// 5. RANTAI PENGESAHAN EKSEKUTIF (REKTOR)
+// ==========================================
+Paraf Sekretaris --> Paraf Wakil Rektor
+Paraf Wakil Rektor > Setuju?_WR
+
+Setuju?_WR --> Eksekusi Perbaikan : Tidak [color: red]
+Setuju?_WR > TTE Rektor : Ya
+
+TTE Rektor --> Tanda Tangan Naskah : Naskah Disahkan
+Tanda Tangan Naskah --> Pengarsipan : Penyerahan Naskah
+Pengarsipan > Selesai_Berhasil

@@ -212,7 +212,7 @@ export async function moveFile(bucket: string, fromPath: string, toPath: string)
  * Execute raw SQL (use with caution!)
  */
 export async function executeSQL(query: string) {
-  const { data, error } = await supabaseAdmin.rpc('exec_sql', { query })
+  const { data, error } = await (supabaseAdmin.rpc as any)('exec_sql', { query })
 
   if (error) {
     throw error

@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle2, Clock, XCircle, AlertCircle, ArrowRight } from "lucide-react"
 import type { Proposal } from "@/lib/mock-data"
-import { getWorkflowSteps, getCurrentStepIndex } from "@/lib/workflow-utils"
+import { getWorkflowSteps, getCurrentStepIndex, determineWorkflowPath } from "@/lib/workflow-utils"
+import { ROLE_LABELS } from "@/lib/mock-data"
 
 interface ProposalTrackerProps {
   proposal: Proposal
@@ -12,8 +13,9 @@ interface ProposalTrackerProps {
 }
 
 export function ProposalTracker({ proposal, compact = false }: ProposalTrackerProps) {
-  const workflowSteps = getWorkflowSteps(proposal.initiator)
-  const currentStepIndex = getCurrentStepIndex(proposal.status, proposal.initiator)
+  const path = determineWorkflowPath(proposal.fileSuratKuasa)
+  const workflowSteps = getWorkflowSteps(path)
+  const currentStepIndex = getCurrentStepIndex(proposal.status, path)
   const isRejected = proposal.status === "rejected"
   const isCompleted = proposal.status === "completed"
 
@@ -140,7 +142,7 @@ export function ProposalTracker({ proposal, compact = false }: ProposalTrackerPr
                                 : "bg-slate-100 text-slate-500 border-slate-200"
                           }`}
                         >
-                          {step.role === "system" ? "Sistem" : step.role.replace("_", " ").toUpperCase()}
+                          {ROLE_LABELS[step.role] || step.role.replace("_", " ").toUpperCase()}
                         </Badge>
                       </div>
 

@@ -1,0 +1,77 @@
+title Proses Persetujuan Kerja Sama (MoU/MoA/IA) - Pengusul Internal (Tanda Tangan Pemimpin Unit)
+
+Mitra [color: purple] {
+  Penjajakan Kerja Sama [type: activity, icon: users]
+  Tanda Tangan Naskah [type: activity, icon: edit-3]
+}
+
+Kelompok Inisiator [color: blue] {
+  Mulai [icon: play, type: event]
+  Penjajakan Kerja Sama_1 [type: activity, icon: message-circle, label: Penjajakan Kerja Sama]
+  Susun Draf Awal [type: activity, icon: file-text]
+  Ajukan Draf ke Sistem [type: activity, icon: send]
+  Persetujuan Ulang Substansi [type: activity, icon: refresh-cw, label: "Persetujuan Ulang (Inisiator & Mitra)"]
+}
+
+Pimpinan Unit & Verifikator [color: orange] {
+  DKUI menerima dan verifikasi Draft yang Masuk [type: activity, icon: check-square]
+  Lolos? [type: gateway, icon: help-circle]
+  Selesai_1 [type: event, icon: check-circle, label: Selesai, color: red]
+  Sistem Kirim Akun ke Mitra [type: activity, icon: send]
+  DKUI Menyalurkan Draft kepada Unit Terkait [type: activity, icon: send]
+  
+  Review & Analisis oleh Pimpinan Unit [type: activity, icon: user-check]
+  Setuju? [type: gateway, icon: help-circle]
+  
+  Verifikasi oleh Pimpinan DKUI [type: activity, icon: clipboard]
+  Setuju?_1 [type: gateway, icon: help-circle, label: Setuju?]
+  
+  Review Hukum [type: activity, icon: shield, label: "Review Legalitas (Kantor Hukum)"]
+  Setuju?_2 [type: gateway, icon: help-circle, label: Setuju?]
+  
+  Eksekusi Perbaikan [type: activity, icon: tool]
+  
+  TTE Pimpinan Unit [type: activity, icon: award, label: "Tanda Tangan Digital Pimpinan Unit"]
+  Pengarsipan [type: activity, icon: archive]
+  Selesai [type: event, icon: check-circle, color: green]
+  DKUI Assign Pimipinan Unit untuk Tanda Tangan [type: activity, icon: book]
+}
+
+// Alur Inisiasi
+Mulai > Penjajakan Kerja Sama_1
+Penjajakan Kerja Sama <--> Penjajakan Kerja Sama_1 : Proses Penjajakan [cite: 196]
+Penjajakan Kerja Sama_1 > Susun Draf Awal [cite: 236]
+Susun Draf Awal > Ajukan Draf ke Sistem [cite: 138]
+Ajukan Draf ke Sistem --> DKUI menerima dan verifikasi Draft yang Masuk
+
+// Pengecekan Awal DKUI & Distribusi
+DKUI menerima dan verifikasi Draft yang Masuk > Lolos?
+Lolos? > DKUI Assign Pimipinan Unit untuk Tanda Tangan: Ya
+Lolos? > Selesai_1: Tidak
+Sistem Kirim Akun ke Mitra > DKUI Menyalurkan Draft kepada Unit Terkait
+DKUI Menyalurkan Draft kepada Unit Terkait > Review & Analisis oleh Pimpinan Unit
+
+// Review Pimpinan Unit
+Review & Analisis oleh Pimpinan Unit > Setuju?
+Setuju? > Verifikasi oleh Pimpinan DKUI : Ya [cite: 138]
+Setuju? --> Eksekusi Perbaikan: Tidak [color: red]
+
+// Verifikasi DKUI
+Verifikasi oleh Pimpinan DKUI > Setuju?_1
+Setuju?_1 > Review Hukum: Ya
+Setuju?_1 --> Eksekusi Perbaikan: Tidak [color: red]
+
+// Review Legalitas (Kantor Hukum wajib cek Surat Kuasa)
+Review Hukum > Setuju?_2
+Setuju?_2 --> Eksekusi Perbaikan: Tidak [color: red]
+
+// Logika Revisi (Looping ke Inisiator)
+Eksekusi Perbaikan --> Persetujuan Ulang Substansi [cite: 243]
+Persetujuan Ulang Substansi --> Review & Analisis oleh Pimpinan Unit: Draf Diperbaiki
+
+// Rantai Pengesahan Akhir (Tanpa SU dan WR RUK)
+Setuju?_2 > TTE Pimpinan Unit: Ya 
+TTE Pimpinan Unit --> Tanda Tangan Naskah : Naskah Disahkan 
+Tanda Tangan Naskah --> Pengarsipan : Penyerahan Naskah [cite: 141]
+Pengarsipan > Selesai
+DKUI Assign Pimipinan Unit untuk Tanda Tangan > Sistem Kirim Akun ke Mitra

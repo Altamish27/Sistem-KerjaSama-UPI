@@ -18,7 +18,6 @@ import {
   DollarSign,
   FileText,
   User,
-  Download,
   Sparkles,
 } from "lucide-react"
 import Link from "next/link"
@@ -27,7 +26,9 @@ import { useState, useEffect } from "react"
 import { SimpleTracker } from "@/components/simple-tracker"
 import { WorkflowActions } from "@/components/workflow-actions"
 import { PdfViewer } from "@/components/pdf-viewer"
-import { getNextStatus } from "@/lib/workflow-engine"
+import { PksDocumentViewer } from "@/components/pks-document-viewer"
+import { getNextStatus, getAvailableActions, determineWorkflowPath } from "@/lib/workflow-engine"
+import { getPksFileForStatus } from "@/lib/workflow-utils"
 import type { ApprovalHistory } from "@/lib/mock-data"
 
 export default function ProposalDetailPage() {
@@ -72,10 +73,12 @@ function ProposalDetailContent() {
   const handleWorkflowAction = async (actionLabel: string, comment?: string, extraData?: any) => {
     setIsRefreshing(true)
     try {
-      // Dapatkan status berikutnya
-      const nextStatus = getNextStatus(proposal.status, actionLabel)
+      const path = determineWorkflowPath(proposal.fileSuratKuasa)
 
-      // Update proposal dengan status baru dan data tambahan
+      // Get next status from engine
+      const nextStatus = getNextStatus(proposal.status, actionLabel, path)
+
+      // Update proposal with new status and extra data
       const updates: any = {
         status: nextStatus,
         ...extraData,
@@ -83,34 +86,12 @@ function ProposalDetailContent() {
 
       await updateProposal(proposal.id, updates)
 
-      // Tentukan action type untuk history
-      let actionType: ApprovalHistory["action"] = "dkui_receive"
-      if (actionLabel.includes("AI")) actionType = "dkui_trigger_ai_summary"
-      else if (actionLabel.includes("Pilih") && actionLabel.includes("Fakultas")) actionType = "dkui_select_faculty"
-      else if (actionLabel.includes("Kirim") && actionLabel.includes("Fakultas")) actionType = "dkui_send_to_faculty"
-      else if (actionLabel.includes("Substansi Disetujui")) actionType = "faculty_approve_substansi"
-      else if (actionLabel.includes("Substansi Ditolak")) actionType = "faculty_reject_substansi"
-      else if (actionLabel.includes("Evaluasi")) actionType = "dkui_evaluate_feedback"
-      else if (actionLabel.includes("Revisi oleh Mitra")) actionType = "dkui_decide_revision_mitra"
-      else if (actionLabel.includes("Revisi oleh DKUI")) actionType = "dkui_decide_revision_self"
-      else if (actionLabel.includes("Tolak Proposal (Final)")) actionType = "final_rejection"
-      else if (actionLabel.includes("Upload")) actionType = "mitra_upload_revision"
-      else if (actionLabel.includes("Legal") && actionLabel.includes("1")) actionType = "dkui_legal_review_1"
-      else if (actionLabel.includes("Biro Hukum") && actionLabel.includes("Approve")) actionType = "biro_hukum_approve"
-      else if (actionLabel.includes("Biro Hukum") && actionLabel.includes("Reject")) actionType = "biro_hukum_reject"
-      else if (actionLabel.includes("Paraf") && user!.role === "biro_hukum") actionType = "biro_hukum_paraf"
-      else if (actionLabel.includes("Paraf") && user!.role === "dkui") actionType = "dkui_paraf"
-      else if (actionLabel.includes("Approval Akhir")) actionType = "faculty_final_approve"
-      else if (actionLabel.includes("Materai") && user!.role === "mitra") actionType = "mitra_stamp"
-      else if (actionLabel.includes("Tanda Tangan") && user!.role === "mitra") actionType = "mitra_sign"
-      else if (actionLabel.includes("Warek") && actionLabel.includes("Materai")) actionType = "warek_stamp"
-      else if (actionLabel.includes("Warek") && actionLabel.includes("Tanda Tangan")) actionType = "warek_sign"
-      else if (actionLabel.includes("Rektor") && actionLabel.includes("Materai")) actionType = "rektor_stamp"
-      else if (actionLabel.includes("Rektor") && actionLabel.includes("Tanda Tangan")) actionType = "rektor_sign"
-      else if (actionLabel.includes("Pertukaran")) actionType = "document_exchange"
-      else if (actionLabel.includes("Arsip")) actionType = "archive"
+      // Find the matching action to get the approvalAction type
+      const availableActions = getAvailableActions(proposal.status, user!.role, path)
+      const matchedAction = availableActions.find((a) => a.label === actionLabel)
+      const actionType: ApprovalHistory["action"] = matchedAction?.approvalAction || "submit"
 
-      // Tambahkan ke history DAN kirim email notification otomatis
+      // Add to history AND send email notification
       await addApprovalHistory(proposal.id, {
         id: `HIST-${Date.now()}`,
         proposalId: proposal.id,
@@ -120,32 +101,7 @@ function ProposalDetailContent() {
         actorRole: user!.role,
         comment: comment || actionLabel,
         timestamp: new Date().toISOString(),
-      }, true) // sendEmail = true → otomatis kirim email ke mitra
-
-      // Jika action "Kirim Notifikasi & Buat Akun Mitra", trigger create account
-      if (actionLabel.includes("Kirim Notifikasi & Buat Akun Mitra") && proposal.isPublicSubmission && !proposal.createdBy) {
-        try {
-          const createAccountResponse = await fetch("/api/create-mitra-account", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              proposalId: proposal.id,
-              email: proposal.contactEmail,
-              name: proposal.contactPerson,
-              institution: proposal.partnerName,
-            }),
-          })
-
-          if (!createAccountResponse.ok) {
-            console.error("Failed to create mitra account")
-          } else {
-            const accountData = await createAccountResponse.json()
-            console.log("✅ Mitra account created:", accountData)
-          }
-        } catch (error) {
-          console.error("Error creating mitra account:", error)
-        }
-      }
+      }, true)
 
       await refreshData()
       router.refresh()
@@ -185,7 +141,7 @@ function ProposalDetailContent() {
             </Badge>
           </div>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight">{proposal.title}</h1>
-          <p className="text-slate-600 mt-2 text-base lg:text-lg">{proposal.partnerName}</p>
+          <p className="text-slate-600 mt-2 text-base lg:text-lg">{proposal.mitraName}</p>
         </div>
       </div>
 
@@ -231,13 +187,13 @@ function ProposalDetailContent() {
                 <div className="space-y-1 sm:space-y-2">
                   <p className="text-xs sm:text-sm text-slate-500 font-medium uppercase tracking-wide">Pengajuan</p>
                   <p className="text-base sm:text-lg text-slate-900 font-semibold">
-                    {proposal.initiator === "mitra" ? "Eksternal (MITRA)" : "Internal (Fakultas)"}
+                    {proposal.initiator === "mitra" ? "Eksternal (MITRA)" : "Internal (Unit)"}
                   </p>
                 </div>
                 <div className="space-y-1 sm:space-y-2">
-                  <p className="text-xs sm:text-sm text-slate-500 font-medium uppercase tracking-wide">Jenis Mitra</p>
+                  <p className="text-xs sm:text-sm text-slate-500 font-medium uppercase tracking-wide">Jenis Dokumen</p>
                   <p className="text-base sm:text-lg text-slate-900 font-semibold">
-                    {proposal.partnerType === "dalam_negeri" ? "Dalam Negeri" : "Luar Negeri"}
+                    {proposal.jenisDokumen || "-"}
                   </p>
                 </div>
                 <div className="space-y-1 sm:space-y-2">
@@ -267,6 +223,11 @@ function ProposalDetailContent() {
               </div>
             </CardContent>
           </Card>
+
+          {/* PKS Document Viewer — visible from biro_hukum_reviewing onwards */}
+          {getPksFileForStatus(proposal.status) && (
+            <PksDocumentViewer status={proposal.status} />
+          )}
 
           {/* Documents Section */}
           {proposal.documents && proposal.documents.length > 0 && (
@@ -306,16 +267,16 @@ function ProposalDetailContent() {
                       <div className="flex-shrink-0">
                         <div
                           className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                            history.action === "approve" || history.action === "verify_approve"
+                            history.action.includes("approve") || history.action.includes("sign") || history.action === "complete"
                               ? "bg-emerald-100 text-emerald-600"
-                              : history.action === "reject" || history.action === "verify_reject"
+                              : history.action.includes("reject") || history.action === "final_rejection"
                                 ? "bg-red-100 text-[#e10000]"
                                 : "bg-blue-100 text-blue-600"
                           }`}
                         >
-                          {history.action === "approve" || history.action === "verify_approve" ? (
+                          {history.action.includes("approve") || history.action.includes("sign") || history.action === "complete" ? (
                             <CheckCircle2 className="w-5 h-5" />
-                          ) : history.action === "reject" || history.action === "verify_reject" ? (
+                          ) : history.action.includes("reject") || history.action === "final_rejection" ? (
                             <XCircle className="w-5 h-5" />
                           ) : (
                             <User className="w-5 h-5" />
@@ -364,8 +325,8 @@ function ProposalDetailContent() {
                   <Building2 className="w-5 h-5 text-gray-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Fakultas</p>
-                  <p className="text-base text-black font-medium">{proposal.fakultas || "-"}</p>
+                  <p className="text-sm text-gray-500">Unit Terkait</p>
+                  <p className="text-base text-black font-medium">{proposal.unitName || "-"}</p>
                 </div>
               </div>
 
@@ -386,8 +347,8 @@ function ProposalDetailContent() {
                 <div>
                   <p className="text-sm text-gray-500">Periode</p>
                   <p className="text-base text-black font-medium">
-                    {new Date(proposal.startDate).toLocaleDateString("id-ID")} -{" "}
-                    {new Date(proposal.endDate).toLocaleDateString("id-ID")}
+                    {proposal.startDate ? new Date(proposal.startDate).toLocaleDateString("id-ID") : "-"} -{" "}
+                    {proposal.endDate ? new Date(proposal.endDate).toLocaleDateString("id-ID") : "-"}
                   </p>
                 </div>
               </div>

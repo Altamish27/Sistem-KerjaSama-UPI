@@ -85,16 +85,14 @@ export function PdfViewer({ url, fileName, fileSize }: PdfViewerProps) {
               </DialogHeader>
               <div className="flex-1 overflow-auto bg-slate-100">
                 <div className="min-h-full flex items-center justify-center p-4">
-                  <iframe
-                    src={`${url}#view=FitH`}
+                  <embed
+                    src={`${url}#toolbar=1&navpanes=0&view=FitH`}
+                    type="application/pdf"
                     className="w-full bg-white shadow-lg rounded-lg"
                     style={{ 
                       height: '100%',
                       minHeight: '70vh',
-                      transform: `scale(${zoom / 100})`,
-                      transformOrigin: 'top center',
                     }}
-                    title={fileName}
                   />
                 </div>
               </div>

@@ -14,184 +14,140 @@ export function SimpleTracker({ proposal }: SimpleTrackerProps) {
   // Mapping status ke step description
   const getStepInfo = (status: Proposal["status"]) => {
     const stepMap: Record<string, { current: string; next: string; actor: string }> = {
+      // ── Drafting ──
       draft: {
         current: "Draft Proposal",
-        next: "Submit ke DKUI",
-        actor: "MITRA",
+        next: "Submit proposal ke Pimpinan Unit",
+        actor: "OPERATOR UNIT",
       },
       submitted: {
         current: "Proposal Diajukan",
-        next: "DKUI akan menerima dan review",
-        actor: "MITRA → DKUI",
+        next: "Pimpinan Unit akan review",
+        actor: "OPERATOR UNIT → PIMPINAN UNIT",
       },
-      dkui_received: {
-        current: "DKUI Menerima Proposal",
-        next: "DKUI akan jalankan Ringkasan AI",
+      // ── Review Berjenjang ──
+      pimpinan_unit_reviewing: {
+        current: "Pimpinan Unit Sedang Review",
+        next: "Pimpinan Unit putuskan: Setujui atau Tolak",
+        actor: "PIMPINAN UNIT",
+      },
+      pimpinan_unit_approved: {
+        current: "Pimpinan Unit Menyetujui",
+        next: "DKUI akan review proposal",
+        actor: "PIMPINAN UNIT → DKUI",
+      },
+      pimpinan_unit_rejected: {
+        current: "Pimpinan Unit Menolak",
+        next: "Operator Unit revisi dan ajukan ulang",
+        actor: "PIMPINAN UNIT → OPERATOR UNIT",
+      },
+      dkui_reviewing: {
+        current: "DKUI Sedang Review",
+        next: "DKUI putuskan: Setujui, Tolak, atau Revisi",
         actor: "DKUI",
       },
-      dkui_need_summary: {
-        current: "Menunggu Ringkasan AI",
-        next: "DKUI menjalankan fitur AI Summary",
-        actor: "DKUI",
-      },
-      dkui_summarized: {
-        current: "Sudah Diringkas AI",
-        next: "DKUI akan pilih dan kirim ke Fakultas/Unit",
-        actor: "DKUI",
-      },
-      dkui_sent_to_faculty: {
-        current: "Dikirim ke Fakultas/Unit",
-        next: "Fakultas/Unit akan review substansi",
-        actor: "DKUI → FAKULTAS",
-      },
-      faculty_reviewing: {
-        current: "Fakultas Review Substansi",
-        next: "Fakultas putuskan: Approve atau Reject",
-        actor: "FAKULTAS",
-      },
-      faculty_substansi_approved: {
-        current: "Substansi Disetujui",
-        next: "DKUI akan review hukum tahap 1",
-        actor: "FAKULTAS → DKUI",
-      },
-      faculty_substansi_rejected: {
-        current: "Substansi Ditolak",
-        next: "DKUI evaluasi feedback",
-        actor: "FAKULTAS → DKUI",
-      },
-      dkui_evaluating_feedback: {
-        current: "DKUI Evaluasi Feedback",
-        next: "DKUI tentukan: Revisi oleh Mitra atau DKUI",
-        actor: "DKUI",
-      },
-      dkui_requesting_mitra_revision: {
-        current: "Menunggu Revisi Mitra",
-        next: "Mitra upload dokumen revisi",
-        actor: "DKUI → MITRA",
-      },
-      mitra_revising: {
-        current: "Mitra Sedang Revisi",
-        next: "Mitra upload dokumen perbaikan",
-        actor: "MITRA",
-      },
-      mitra_resubmitted: {
-        current: "Mitra Upload Ulang",
-        next: "DKUI ringkas ulang dan kirim ke Fakultas",
-        actor: "MITRA → DKUI",
-      },
-      dkui_self_revising: {
-        current: "DKUI Revisi Sendiri",
-        next: "DKUI selesai revisi dan kirim ke Fakultas",
-        actor: "DKUI",
-      },
-      dkui_legal_review_1: {
-        current: "DKUI Review Hukum Tahap 1",
-        next: "DKUI putuskan approve atau perlu revisi",
-        actor: "DKUI",
-      },
-      dkui_legal_approved_1: {
-        current: "Legal Tahap 1 Approved",
+      dkui_approved: {
+        current: "DKUI Menyetujui",
         next: "Biro Hukum akan review legalitas",
         actor: "DKUI → BIRO HUKUM",
       },
+      dkui_rejected: {
+        current: "DKUI Menolak",
+        next: "Operator Unit evaluasi feedback",
+        actor: "DKUI → OPERATOR UNIT",
+      },
       biro_hukum_reviewing: {
         current: "Biro Hukum Review Legalitas",
-        next: "Biro Hukum putuskan approve atau reject",
+        next: "Biro Hukum putuskan: Setujui atau Tolak",
         actor: "BIRO HUKUM",
       },
-      biro_hukum_legalitas_approved: {
-        current: "Legalitas Disetujui",
-        next: "Biro Hukum akan paraf",
+      biro_hukum_approved: {
+        current: "Biro Hukum Menyetujui",
+        next: "Lanjut ke proses penandatanganan",
         actor: "BIRO HUKUM",
       },
-      biro_hukum_legalitas_rejected: {
-        current: "Legalitas Ditolak",
+      biro_hukum_rejected: {
+        current: "Biro Hukum Menolak",
         next: "DKUI evaluasi feedback Biro Hukum",
         actor: "BIRO HUKUM → DKUI",
       },
-      biro_hukum_paraf: {
-        current: "Biro Hukum Paraf",
-        next: "DKUI akan paraf",
-        actor: "BIRO HUKUM → DKUI",
+      // ── Path A: SU & WR ──
+      su_reviewing: {
+        current: "Sekretaris Universitas Review",
+        next: "SU putuskan: Setujui atau Tolak",
+        actor: "SEKRETARIS UNIVERSITAS",
       },
-      dkui_paraf: {
-        current: "DKUI Paraf",
-        next: "Fakultas/Unit approval akhir",
-        actor: "DKUI → FAKULTAS",
+      su_approved: {
+        current: "Sekretaris Universitas Menyetujui",
+        next: "Wakil Rektor akan review",
+        actor: "SU → WAKIL REKTOR",
       },
-      faculty_final_approval: {
-        current: "Fakultas Approval Akhir",
-        next: "Mulai proses tanda tangan parallel",
-        actor: "FAKULTAS → PARALLEL",
+      su_rejected: {
+        current: "Sekretaris Universitas Menolak",
+        next: "DKUI evaluasi feedback SU",
+        actor: "SU → DKUI",
       },
-      parallel_signing_started: {
-        current: "Proses Tanda Tangan Dimulai",
-        next: "Mitra & Warek proses parallel",
-        actor: "PARALLEL",
-      },
-      mitra_ready_to_sign: {
-        current: "Mitra Siap Tanda Tangan",
-        next: "Mitra bubuh materai",
-        actor: "MITRA",
-      },
-      mitra_stamped: {
-        current: "Mitra Bubuh Materai",
-        next: "Mitra tanda tangan elektronik",
-        actor: "MITRA",
-      },
-      mitra_signed: {
-        current: "Mitra Sudah Tanda Tangan",
-        next: "Tunggu Rektor selesai tanda tangan",
-        actor: "MITRA → MENUNGGU",
-      },
-      warek_reviewing: {
+      wr_reviewing: {
         current: "Wakil Rektor Review",
-        next: "Warek approve atau reject",
+        next: "Wakil Rektor putuskan: Setujui atau Tolak",
         actor: "WAKIL REKTOR",
       },
-      warek_stamped: {
-        current: "Warek Bubuh Materai",
-        next: "Warek tanda tangan",
-        actor: "WAKIL REKTOR",
-      },
-      warek_signed: {
-        current: "Warek Sudah Tanda Tangan",
-        next: "Rektor akan review",
+      wr_approved: {
+        current: "Wakil Rektor Menyetujui",
+        next: "Rektor akan menandatangani",
         actor: "WAKIL REKTOR → REKTOR",
       },
-      warek_rejected: {
-        current: "Warek Menolak",
-        next: "DKUI evaluasi feedback Warek",
+      wr_rejected: {
+        current: "Wakil Rektor Menolak",
+        next: "DKUI evaluasi feedback Wakil Rektor",
         actor: "WAKIL REKTOR → DKUI",
       },
-      rektor_reviewing: {
-        current: "Rektor Review",
-        next: "Rektor approve atau reject",
-        actor: "REKTOR",
-      },
-      rektor_stamped: {
-        current: "Rektor Bubuh Materai",
-        next: "Rektor tanda tangan",
+      // ── Penandatanganan ──
+      rektor_signing: {
+        current: "Rektor Proses Tanda Tangan",
+        next: "Rektor bubuh tanda tangan",
         actor: "REKTOR",
       },
       rektor_signed: {
         current: "Rektor Sudah Tanda Tangan",
-        next: "DKUI pertukaran dokumen final",
+        next: "Proses arsip atau pertukaran dokumen",
         actor: "REKTOR → DKUI",
       },
-      rektor_rejected: {
-        current: "Rektor Menolak",
-        next: "DKUI evaluasi feedback Rektor",
-        actor: "REKTOR → DKUI",
+      pimpinan_unit_signing: {
+        current: "Pimpinan Unit Proses Tanda Tangan",
+        next: "Pimpinan Unit bubuh tanda tangan",
+        actor: "PIMPINAN UNIT",
       },
-      document_exchange: {
-        current: "Pertukaran Dokumen Final",
-        next: "DKUI arsipkan dokumen",
+      pimpinan_unit_signed: {
+        current: "Pimpinan Unit Sudah Tanda Tangan",
+        next: "Mitra akan menandatangani",
+        actor: "PIMPINAN UNIT → MITRA",
+      },
+      mitra_signing: {
+        current: "Mitra Proses Tanda Tangan",
+        next: "Mitra bubuh tanda tangan",
+        actor: "MITRA",
+      },
+      mitra_signed: {
+        current: "Mitra Sudah Tanda Tangan",
+        next: "Dokumen final siap diarsipkan",
+        actor: "MITRA → DKUI",
+      },
+      // ── Revisi Loop ──
+      dkui_self_revising: {
+        current: "DKUI Revisi Internal",
+        next: "DKUI selesai revisi dan kirim ulang",
         actor: "DKUI",
       },
+      mitra_resubmitted: {
+        current: "Mitra Kirim Ulang Dokumen",
+        next: "DKUI akan review ulang",
+        actor: "MITRA → DKUI",
+      },
+      // ── Terminal ──
       archived: {
         current: "Dokumen Diarsipkan",
-        next: "Tandai selesai",
+        next: "Kerja sama aktif",
         actor: "DKUI",
       },
       completed: {
@@ -200,7 +156,7 @@ export function SimpleTracker({ proposal }: SimpleTrackerProps) {
         actor: "SELESAI",
       },
       rejected: {
-        current: "❌ Proposal Ditolak",
+        current: "❌ Proposal Ditolak Final",
         next: "Tidak dapat dilanjutkan",
         actor: "DITOLAK",
       },

@@ -1,0 +1,86 @@
+// Skema Database Sistem Kerja Sama UPI (Simkerma) - Revisi Berita Acara
+
+unit_kerja [icon: building, color: blue] {
+  id string pk
+  nama_unit string
+  jenis_unit string 
+}
+
+users [icon: user, color: blue] {
+  id string pk
+  nama string
+  email string
+  role string 
+  unit_id string
+}
+
+mitra [icon: users, color: purple] {
+  id string pk
+  nama_instansi string
+  alamat_lengkap string
+  jenis_mitra string 
+  nama_penandatangan string 
+  jabatan_penandatangan string 
+  nama_pic string 
+  kontak_pic string
+  email_pic string
+}
+
+pengajuan_penjajakan [icon: file-text, color: purple] {
+  id string pk
+  mitra_id string 
+  judul_tawaran string
+  deskripsi_singkat string
+  file_legalitas string
+  file_profil_mitra string
+  status_pengajuan string 
+  tanggal_pengajuan timestamp
+}
+
+dokumen_kerjasama [icon: folder, color: green] {
+  id string pk
+  mitra_id string
+  inisiator_id string 
+  unit_terkait_id string
+  jenis_dokumen string 
+  judul_kerjasama string
+  ruang_lingkup string
+  file_berita_acara_penjajakan string // <-- DITAMBAHKAN: Bukti tertulis hasil penjajakan (Pasal 13 ayat 5)
+  bentuk_kegiatan_lapkerma string 
+  tgl_mulai date
+  tgl_berakhir date
+  status_dokumen string 
+  penandatangan_upi string 
+  file_surat_kuasa string 
+  is_income_generating boolean // <-- Penanda apakah kerja sama menghasilkan uang (Pasal 6 & 26)
+  file_naskah_final string 
+}
+
+riwayat_review [icon: edit, color: red] {
+  id string pk
+  dokumen_id string
+  reviewer_id string
+  tahapan string 
+  status_review string 
+  catatan_revisi string 
+  tanggal_review timestamp
+}
+
+pendanaan [icon: dollar-sign, color: yellow] {
+  id string pk
+  dokumen_id string
+  nilai_kontrak number
+  biaya_pengembangan_institusi number 
+  rekening_penerima string
+  status_pembayaran string
+}
+
+// Relasi Antar Tabel
+users.unit_id > unit_kerja.id
+pengajuan_penjajakan.mitra_id > mitra.id
+dokumen_kerjasama.mitra_id > mitra.id
+dokumen_kerjasama.inisiator_id > users.id
+dokumen_kerjasama.unit_terkait_id > unit_kerja.id
+riwayat_review.dokumen_id > dokumen_kerjasama.id
+riwayat_review.reviewer_id > users.id
+pendanaan.dokumen_id - dokumen_kerjasama.id

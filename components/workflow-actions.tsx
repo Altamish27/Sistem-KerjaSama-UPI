@@ -5,12 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import {
   CheckCircle2,
   XCircle,
-  Sparkles,
   Send,
   FileEdit,
   Upload,
@@ -22,7 +20,10 @@ import {
 } from "lucide-react"
 import { useState } from "react"
 import type { Proposal, UserRole } from "@/lib/mock-data"
-import { getAvailableActions, canUserTakeAction, generateAISummary } from "@/lib/workflow-engine"
+import { ROLE_LABELS } from "@/lib/mock-data"
+import { getAvailableActions, canUserTakeAction, determineWorkflowPath } from "@/lib/workflow-engine"
+import { SigningSimulator } from "@/components/signing-simulator"
+import { getSigningSimulationData } from "@/lib/workflow-utils"
 
 interface WorkflowActionsProps {
   proposal: Proposal
@@ -34,12 +35,12 @@ interface WorkflowActionsProps {
 
 export function WorkflowActions({ proposal, userRole, userId, userName, onAction }: WorkflowActionsProps) {
   const [comment, setComment] = useState("")
-  const [selectedFaculty, setSelectedFaculty] = useState(proposal.fakultas || "")
   const [isProcessing, setIsProcessing] = useState(false)
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
 
-  const canTakeAction = canUserTakeAction(proposal.status, userRole)
-  const availableActions = getAvailableActions(proposal.status, userRole)
+  const path = determineWorkflowPath(proposal.fileSuratKuasa)
+  const canTakeAction = canUserTakeAction(proposal.status, userRole, path)
+  const availableActions = getAvailableActions(proposal.status, userRole, path)
 
   if (!canTakeAction || availableActions.length === 0) {
     if (proposal.status === "completed") {
@@ -72,25 +73,24 @@ export function WorkflowActions({ proposal, userRole, userId, userName, onAction
     )
   }
 
+  // Check if this is a signing step (uses SigningSimulator instead)
+  const isSigningStep = availableActions.length > 0 &&
+    availableActions.some(a => a.actionType === "sign") &&
+    getSigningSimulationData(proposal.status) !== null
+
   const handleAction = async (actionLabel: string) => {
     const action = availableActions.find((a) => a.label === actionLabel)
     if (!action) return
 
-    // Validasi input sesuai kebutuhan
-    if (action.requiresComment && !comment.trim() && actionLabel !== "Jalankan Ringkasan AI (Manual)") {
+    // Validate comment requirement
+    if (action.requiresComment && !comment.trim()) {
       alert("Mohon berikan komentar atau catatan")
       return
     }
 
-    // Validasi khusus untuk pemilihan fakultas
-    if (actionLabel === "Pilih & Kirim ke Fakultas/Unit" && !selectedFaculty) {
-      alert("Mohon pilih Fakultas/Unit tujuan")
-      return
-    }
-
-    // Validasi upload file untuk revisi
-    if (actionLabel === "Upload Dokumen Revisi" && !uploadedFile) {
-      alert("Mohon upload dokumen revisi")
+    // Validate document upload requirement (skip for signing steps - handled by SigningSimulator)
+    if (action.requiresDocument && !uploadedFile && action.actionType !== "sign") {
+      alert("Mohon upload dokumen yang diperlukan")
       return
     }
 
@@ -98,27 +98,16 @@ export function WorkflowActions({ proposal, userRole, userId, userName, onAction
     try {
       let extraData: any = {}
 
-      // Generate AI Summary jika action adalah trigger AI
-      if (actionLabel === "Jalankan Ringkasan AI (Manual)") {
-        const aiSummary = generateAISummary(proposal.description, proposal.objectives, proposal.benefits)
-        extraData = { aiSummary, aiSummaryGeneratedAt: new Date().toISOString() }
-      }
-
-      // Kirim data fakultas yang dipilih
-      if (actionLabel === "Pilih & Kirim ke Fakultas/Unit") {
-        extraData = { fakultas: selectedFaculty, selectedFacultyBy: userId }
-      }
-
-      // Kirim data file yang diupload
-      if (actionLabel === "Upload Dokumen Revisi" && uploadedFile) {
+      // Attach file data if uploaded
+      if (uploadedFile) {
         extraData = {
           revisionDocument: {
-            id: `rev-${Date.now()}`,
+            id: `doc-${Date.now()}`,
             name: uploadedFile.name,
             type: uploadedFile.type,
             size: uploadedFile.size,
             uploadedAt: new Date().toISOString(),
-            url: "#", // Dalam production, upload ke storage dulu
+            url: "#",
           },
         }
       }
@@ -134,78 +123,46 @@ export function WorkflowActions({ proposal, userRole, userId, userName, onAction
     }
   }
 
-  // Render input khusus untuk beberapa aksi
-  const renderSpecialInputs = () => {
-    // AI Summary trigger
-    if (proposal.status === "dkui_need_summary") {
-      return (
-        <Alert className="bg-amber-50 border border-amber-200">
-          <Sparkles className="h-5 w-5 text-amber-600" />
-          <AlertDescription className="text-amber-800 ml-2">
-            <strong>Fitur AI Summary:</strong> DKUI menjalankan fitur ringkasan AI secara manual untuk memahami isi
-            proposal sebelum distribusi ke Fakultas/Unit.
-          </AlertDescription>
-        </Alert>
-      )
-    }
+  // If this is a signing step, render SigningSimulator instead of generic form
+  if (isSigningStep) {
+    const signAction = availableActions.find(a => a.actionType === "sign")
+    return (
+      <SigningSimulator
+        status={proposal.status}
+        signerName={userName}
+        onSign={async () => {
+          if (signAction) {
+            await onAction(signAction.label, undefined, {})
+          }
+        }}
+      />
+    )
+  }
 
-    // Pemilihan Fakultas
-    if (proposal.status === "dkui_summarized") {
-      return (
-        <div className="space-y-3">
-          <Label htmlFor="faculty" className="text-slate-900 font-semibold text-base">
-            Pilih Fakultas/Unit Tujuan <span className="text-[#e10000]">*</span>
-          </Label>
-          <Select value={selectedFaculty} onValueChange={setSelectedFaculty}>
-            <SelectTrigger id="faculty" className="bg-white border-slate-300">
-              <SelectValue placeholder="Pilih Fakultas/Unit..." />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Fakultas Pendidikan Teknologi dan Kejuruan">
-                Fakultas Pendidikan Teknologi dan Kejuruan
-              </SelectItem>
-              <SelectItem value="Fakultas Pendidikan Ilmu Pengetahuan Sosial">
-                Fakultas Pendidikan Ilmu Pengetahuan Sosial
-              </SelectItem>
-              <SelectItem value="Fakultas Pendidikan Matematika dan Ilmu Pengetahuan Alam">
-                Fakultas Pendidikan Matematika dan Ilmu Pengetahuan Alam
-              </SelectItem>
-              <SelectItem value="Fakultas Pendidikan Bahasa dan Sastra">
-                Fakultas Pendidikan Bahasa dan Sastra
-              </SelectItem>
-              <SelectItem value="Fakultas Pendidikan Olahraga dan Kesehatan">
-                Fakultas Pendidikan Olahraga dan Kesehatan
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      )
-    }
+  // Render file upload if any action requires a document
+  const renderDocumentUpload = () => {
+    const needsDoc = availableActions.some((a) => a.requiresDocument)
+    if (!needsDoc) return null
 
-    // Upload file untuk revisi mitra
-    if (proposal.status === "dkui_requesting_mitra_revision" || proposal.status === "mitra_revising") {
-      return (
-        <div className="space-y-3">
-          <Label htmlFor="revision-file" className="text-slate-900 font-semibold text-base">
-            Upload Dokumen Revisi <span className="text-[#e10000]">*</span>
-          </Label>
-          <Input
-            id="revision-file"
-            type="file"
-            accept=".pdf,.doc,.docx"
-            onChange={(e) => setUploadedFile(e.target.files?.[0] || null)}
-            className="bg-white border-slate-300"
-          />
-          {uploadedFile && (
-            <p className="text-sm text-green-600">
-              ✓ File dipilih: {uploadedFile.name} ({(uploadedFile.size / 1024 / 1024).toFixed(2)} MB)
-            </p>
-          )}
-        </div>
-      )
-    }
-
-    return null
+    return (
+      <div className="space-y-3">
+        <Label htmlFor="action-file" className="text-slate-900 font-semibold text-base">
+          Upload Dokumen <span className="text-[#e10000]">*</span>
+        </Label>
+        <Input
+          id="action-file"
+          type="file"
+          accept=".pdf,.doc,.docx"
+          onChange={(e) => setUploadedFile(e.target.files?.[0] || null)}
+          className="bg-white border-slate-300"
+        />
+        {uploadedFile && (
+          <p className="text-sm text-green-600">
+            ✓ File dipilih: {uploadedFile.name} ({(uploadedFile.size / 1024 / 1024).toFixed(2)} MB)
+          </p>
+        )}
+      </div>
+    )
   }
 
   // Render tombol aksi
@@ -218,7 +175,7 @@ export function WorkflowActions({ proposal, userRole, userId, userName, onAction
           onClick={() => handleAction(action.label)}
           disabled={isProcessing}
           className={`w-full font-semibold py-5 text-base shadow-sm ${
-            action.actionType === "approve"
+            action.actionType === "approve" || action.actionType === "sign"
               ? "bg-emerald-600 hover:bg-emerald-700 text-white"
               : action.actionType === "reject"
                 ? "bg-[#e10000] hover:bg-[#c10000] text-white"
@@ -258,16 +215,18 @@ export function WorkflowActions({ proposal, userRole, userId, userName, onAction
   return (
     <Card className="bg-white border border-slate-200 shadow-sm">
       <CardHeader className="pb-5 bg-slate-50/50">
-        <CardTitle className="text-2xl font-bold text-slate-900">Tindakan {userRole.toUpperCase()}</CardTitle>
+        <CardTitle className="text-2xl font-bold text-slate-900">
+          Tindakan {ROLE_LABELS[userRole] || userRole.toUpperCase()}
+        </CardTitle>
         <CardDescription className="text-slate-600 text-base">
           Aksi yang dapat dilakukan sesuai dengan lane dan status dokumen saat ini
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6 pt-6">
-        {renderSpecialInputs()}
+        {renderDocumentUpload()}
 
-        {/* Alert khusus untuk penolakan final */}
-        {availableActions.some((a) => a.label.includes("Tolak Proposal (Final)")) && (
+        {/* Alert for final rejection */}
+        {availableActions.some((a) => a.label.includes("Tolak Final")) && (
           <Alert className="bg-red-50 border border-red-200">
             <XCircle className="h-5 w-5 text-[#e10000]" />
             <AlertDescription className="text-red-800 ml-2">
@@ -277,10 +236,8 @@ export function WorkflowActions({ proposal, userRole, userId, userName, onAction
           </Alert>
         )}
 
-        {/* Komentar textarea - hanya tampil jika diperlukan */}
-        {availableActions.some((a) => a.requiresComment) &&
-          proposal.status !== "dkui_need_summary" &&
-          proposal.status !== "dkui_received" && (
+        {/* Comment textarea */}
+        {availableActions.some((a) => a.requiresComment) && (
             <div className="space-y-3">
               <Label htmlFor="comment" className="text-slate-900 font-semibold text-base">
                 Komentar / Catatan {availableActions[0]?.requiresComment && <span className="text-[#e10000]">*</span>}
@@ -304,9 +261,8 @@ export function WorkflowActions({ proposal, userRole, userId, userName, onAction
 
 // Helper untuk mendapatkan icon yang sesuai dengan action
 function getActionIcon(label: string) {
-  if (label.includes("AI")) return <Sparkles className="w-5 h-5 mr-2" />
-  if (label.includes("Kirim") || label.includes("Salurkan")) return <Send className="w-5 h-5 mr-2" />
-  if (label.includes("Revisi") && label.includes("DKUI")) return <FileEdit className="w-5 h-5 mr-2" />
+  if (label.includes("Kirim") || label.includes("Salurkan") || label.includes("Mulai")) return <Send className="w-5 h-5 mr-2" />
+  if (label.includes("Revisi")) return <FileEdit className="w-5 h-5 mr-2" />
   if (label.includes("Upload")) return <Upload className="w-5 h-5 mr-2" />
   if (label.includes("Materai")) return <Stamp className="w-5 h-5 mr-2" />
   if (label.includes("Tanda Tangan")) return <FileSignature className="w-5 h-5 mr-2" />
