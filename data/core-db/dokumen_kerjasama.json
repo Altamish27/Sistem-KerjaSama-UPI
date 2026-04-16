@@ -1,0 +1,20 @@
+[
+  {
+    "id": "3fa7e7ee-7316-431b-91d5-713a702925c9",
+    "pengajuan_id": "2a74ae80-f9f3-459f-9807-6e027214e7aa",
+    "jenis_naskah": "MoU",
+    "level_penandatangan": "rektor",
+    "current_stage_id": "dkui_form_check",
+    "current_stage_actor_role": "dkui",
+    "current_stage_actor_label": "DKUI",
+    "unit_id": null,
+    "inisiator_id": null,
+    "nomor_naskah": null,
+    "file_url": "/uploads/proposals/1776279729569_Dokumen_Kerjasama_Riset_UPI_PT_Abhiraja.pdf",
+    "file_bap_url": null,
+    "is_locked": false,
+    "tanggal_kadaluarsa": null,
+    "proposer_type": "external",
+    "partner_account_sent_at": null
+  }
+]

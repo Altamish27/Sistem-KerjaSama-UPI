@@ -1,0 +1,24 @@
+[
+  {
+    "id": "wf-1776280015540",
+    "dokumen_id": "3fa7e7ee-7316-431b-91d5-713a702925c9",
+    "reviewer_id": "u-1776227820222",
+    "from_stage": "dkui_form_check",
+    "to_stage": "unit_initial_review",
+    "aksi": "approve",
+    "catatan": null,
+    "versi_dokumen": 1,
+    "created_at": "2026-04-15T19:06:55.540Z"
+  },
+  {
+    "id": "wf-1776283354448",
+    "dokumen_id": "3fa7e7ee-7316-431b-91d5-713a702925c9",
+    "reviewer_id": "u-1776227820222",
+    "from_stage": "dkui_form_check",
+    "to_stage": "dkui_form_check",
+    "aksi": "comment",
+    "catatan": null,
+    "versi_dokumen": 1,
+    "created_at": "2026-04-15T20:02:34.448Z"
+  }
+]

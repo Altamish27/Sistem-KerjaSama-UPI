@@ -1,0 +1,154 @@
+    {
+    "title": "Proses Persetujuan Kerja Sama - Pengusul Mitra Eksternal (Tanda Tangan Rektor)",
+    "revisionReturnStageId": "draft_submission",
+    "terminalRejectStageIds": [
+        "dkui_form_check",
+        "unit_initial_review"
+    ],
+    "transitionRules": [
+        {
+            "fromStageId": "legal_review",
+            "action": "advance",
+            "toStageId": "unit_leader_tte",
+            "when": {
+                "signatoryLevel": "unit"
+            }
+        }
+    ],
+    "stages": [
+        {
+        "id": "guest_submitted",
+        "title": "Isi Form Pengajuan (Guest Mode)",
+        "description": "Mitra eksternal mengisi form awal dan unggah dokumen dasar.",
+        "actorRole": "mitra",
+        "nextStageId": "dkui_form_check",
+        "actions": ["submit"]
+        },
+        {
+        "id": "dkui_form_check",
+        "title": "DKUI Cek Form Pengajuan",
+        "description": "DKUI memeriksa kelayakan form awal.",
+        "actorRole": "dkui",
+        "nextStageId": "unit_initial_review",
+        "actions": ["approve", "reject", "comment"]
+        },
+        {
+        "id": "unit_initial_review",
+        "title": "Review Awal Kesediaan Unit",
+        "description": "Unit internal menilai kesesuaian dan kapasitas unit.",
+        "actorRole": "fakultas",
+        "nextStageId": "dkui_assign_initiator",
+        "actions": ["approve", "reject", "comment"]
+        },
+        {
+        "id": "dkui_assign_initiator",
+        "title": "DKUI Tetapkan Inisiator & Buat Akun",
+        "description": "DKUI menunjuk inisiator dan menyiapkan akses proses drafting.",
+        "actorRole": "dkui",
+        "nextStageId": "negotiation",
+        "actions": ["assign", "comment"]
+        },
+        {
+        "id": "negotiation",
+        "title": "Penjajakan Kerja Sama",
+        "description": "Inisiator UPI dan mitra berdiskusi substansi kerja sama.",
+        "actorRole": "fakultas",
+        "nextStageId": "draft_submission",
+        "actions": ["proceed", "comment"]
+        },
+        {
+        "id": "draft_submission",
+        "title": "Ajukan Draf & Unggah BAP",
+        "description": "Draf dan BAP diajukan ke sistem untuk review formal.",
+        "actorRole": "fakultas",
+        "nextStageId": "unit_substance_review",
+        "actions": ["submit", "comment"]
+        },
+        {
+        "id": "unit_substance_review",
+        "title": "Review Pimpinan Unit",
+        "description": "Pimpinan unit melakukan review awal dokumen.",
+        "actorRole": "fakultas",
+        "nextStageId": "dkui_verification",
+        "actions": ["approve", "revision", "reject", "comment"]
+        },
+        {
+        "id": "dkui_verification",
+        "title": "Review DKUI",
+        "description": "DKUI menelaah administrasi dan kelayakan lanjut.",
+        "actorRole": "dkui",
+        "nextStageId": "legal_review",
+        "actions": ["approve", "revision", "reject", "comment"]
+        },
+        {
+        "id": "legal_review",
+        "title": "Review Hukum",
+        "description": "Biro Hukum menelaah legalitas dan redaksi hukum.",
+        "actorRole": "biro_hukum",
+        "nextStageId": "secretary_review",
+        "actions": ["approve", "revision", "reject", "comment"]
+        },
+        {
+        "id": "secretary_review",
+        "title": "Review Sekretaris Universitas",
+        "description": "Sekretaris melakukan verifikasi sebelum paraf Wakil Rektor.",
+            "actorRole": "sekretaris_univ",
+        "nextStageId": "warek_paraf",
+        "actions": ["approve", "revision", "reject", "comment"]
+        },
+        {
+            "id": "unit_leader_tte",
+            "title": "TTE Pimpinan Unit",
+            "description": "Pengesahan oleh Dekan/Direktur/Pimpinan Unit sesuai mandat.",
+            "actorRole": "fakultas",
+            "nextStageId": "partner_signing",
+            "actions": ["sign", "reject", "comment"]
+        },
+        {
+        "id": "warek_paraf",
+        "title": "Paraf Wakil Rektor",
+        "description": "Wakil Rektor memberikan paraf sebelum pengesahan rektor.",
+        "actorRole": "warek",
+        "nextStageId": "rector_tte",
+        "actions": ["paraf", "revision", "reject", "comment"]
+        },
+        {
+        "id": "rector_tte",
+        "title": "Tanda Tangan Digital Rektor",
+        "description": "Pengesahan akhir oleh Rektor.",
+        "actorRole": "rektor",
+        "nextStageId": "partner_signing",
+        "actions": ["sign", "revision", "reject", "comment"]
+        },
+        {
+        "id": "partner_signing",
+        "title": "Tanda Tangan Mitra",
+        "description": "Mitra menandatangani naskah yang telah disahkan UPI.",
+        "actorRole": "mitra",
+        "nextStageId": "archiving",
+        "actions": ["sign", "comment"]
+        },
+        {
+        "id": "archiving",
+        "title": "Pengarsipan",
+        "description": "DKUI melakukan finalisasi dan pengarsipan.",
+        "actorRole": "dkui",
+        "nextStageId": "completed",
+        "actions": ["archive", "comment"]
+        },
+        {
+        "id": "completed",
+        "title": "Selesai (Berhasil)",
+        "description": "Dokumen kerja sama selesai dan berlaku.",
+        "actorRole": "system",
+        "actions": []
+        },
+        {
+        "id": "rejected",
+        "title": "Selesai (Ditolak)",
+        "description": "Pengajuan berhenti karena ditolak di tahap awal.",
+        "actorRole": "system",
+        "actions": []
+        }
+    ]
+    }

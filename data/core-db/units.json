@@ -1,0 +1,20 @@
+[
+  {
+    "id": "unit-dkui",
+    "nama_unit": "Direktorat Kerja Sama UPI",
+    "kode_unit": "DKUI",
+    "pimpinan_id": "u-1776227820222"
+  },
+  {
+    "id": "unit-fpmipa",
+    "nama_unit": "FPMIPA",
+    "kode_unit": "FPMIPA",
+    "pimpinan_id": "u-1776227904731"
+  },
+  {
+    "id": "unit-biro-hukum",
+    "nama_unit": "Biro Hukum UPI",
+    "kode_unit": "BHU",
+    "pimpinan_id": "u-1776227885009"
+  }
+]

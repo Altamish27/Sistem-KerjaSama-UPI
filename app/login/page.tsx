@@ -2,10 +2,9 @@
 
 import type React from "react";
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +21,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useTheme } from "next-themes";
+import { saveSessionUser, type SessionUser } from "@/hooks/use-session-user";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -29,9 +29,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -41,10 +39,11 @@ export default function LoginPage() {
   }, []);
 
   useEffect(() => {
-    if (searchParams.get("registered") === "true") {
+    const isRegistered = new URLSearchParams(window.location.search).get("registered") === "true";
+    if (isRegistered) {
       setSuccessMessage("Registrasi berhasil! Silakan login dengan akun Anda.");
     }
-  }, [searchParams]);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,17 +52,48 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const success = await login(email, password);
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-      if (success) {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        router.push("/dashboard");
-      } else {
-        setError("Email atau password salah. Silakan coba lagi.");
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        const message = data?.message || "Email atau password salah. Silakan coba lagi.";
+        throw new Error(message);
       }
+
+      const user = (await response.json()) as {
+        id: string;
+        email: string;
+        name: string;
+        role: SessionUser["role"];
+        unit?: string;
+        institution?: string;
+      };
+
+      saveSessionUser({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        unit: user.unit,
+        institution: user.institution,
+      });
+
+      setSuccessMessage("Login berhasil! Mengarahkan ke dashboard...");
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      router.push("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
-      setError("Terjadi kesalahan saat login. Silakan coba lagi.");
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan saat login. Silakan coba lagi."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -83,28 +113,39 @@ export default function LoginPage() {
             priority
             className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-[#1B365D]/80 mix-blend-multiply" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1B365D] via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#e10000]/90 via-[#b00000]/80 to-[#1B365D]/90" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
-          <div className="relative z-10 flex flex-col justify-end p-16 text-white w-full">
-            <div className="mb-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
-              <div className="mb-6 inline-flex p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xl">
-                <GraduationCap className="w-10 h-10 text-white" />
+          <div className="relative z-10 flex flex-col justify-between p-16 text-white w-full">
+            <div className="flex items-center gap-4">
+              <Image
+                src="/upi.png"
+                alt="Logo UPI"
+                width={80}
+                height={80}
+                className="drop-shadow-2xl w-auto h-auto"
+              />
+              <div>
+                <h3 className="text-2xl font-black tracking-tight">Universitas Pendidikan</h3>
+                <h3 className="text-2xl font-black tracking-tight text-[#ffcc00]">Indonesia</h3>
               </div>
-              <h2 className="text-5xl font-extrabold mb-6 leading-[1.1] tracking-tight decoration-red-500 decoration-4">
+            </div>
+
+            <div className="mb-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
+              <h2 className="text-5xl font-extrabold mb-6 leading-[1.1] tracking-tight">
                 Membangun Masa Depan <br />
-                <span className="text-red-500">Melalui Kolaborasi</span>
+                <span className="text-[#ffcc00]">Melalui Kolaborasi</span>
               </h2>
-              <p className="text-blue-100/80 text-xl font-medium leading-relaxed max-w-lg">
+              <p className="text-white/90 text-xl font-medium leading-relaxed max-w-lg">
                 Sistem terintegrasi untuk mengelola kemitraan strategis dan
                 kerja sama akademik Universitas Pendidikan Indonesia.
               </p>
             </div>
 
             <div className="flex gap-3">
-              <div className="h-1.5 w-16 bg-red-600 rounded-full" />
-              <div className="h-1.5 w-3 bg-white/20 rounded-full" />
-              <div className="h-1.5 w-3 bg-white/20 rounded-full" />
+              <div className="h-1.5 w-16 bg-[#ffcc00] rounded-full shadow-lg" />
+              <div className="h-1.5 w-3 bg-white/30 rounded-full" />
+              <div className="h-1.5 w-3 bg-white/30 rounded-full" />
             </div>
           </div>
         </div>
@@ -126,15 +167,22 @@ export default function LoginPage() {
 
           <div className="w-full max-w-md space-y-10">
             <div className="text-center animate-in fade-in zoom-in-95 duration-500">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-500 mb-8 ring-1 ring-red-200/50 dark:ring-red-500/20 shadow-xl shadow-red-500/10">
-                <Landmark className="w-10 h-10" />
+              <div className="inline-flex items-center justify-center mb-6">
+                <Image
+                  src="/upi.png"
+                  alt="Logo UPI"
+                  width={100}
+                  height={100}
+                  className="drop-shadow-xl w-auto h-auto"
+                />
               </div>
-              <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
+              <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-2 tracking-tight">
                 Sistem Kerja Sama
               </h1>
-              <p className="text-base text-gray-500 dark:text-gray-400 font-bold uppercase tracking-[0.15em]">
+              <p className="text-sm text-gray-600 dark:text-gray-400 font-bold uppercase tracking-[0.15em]">
                 Universitas Pendidikan Indonesia
               </p>
+              <div className="mt-4 h-1 w-24 mx-auto bg-gradient-to-r from-[#e10000] to-[#ffcc00] rounded-full" />
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6 mt-10">

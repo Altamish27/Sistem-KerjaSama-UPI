@@ -1,0 +1,24 @@
+[
+  {
+    "id": "sp-u-1776227967103",
+    "user_id": "u-1776227967103",
+    "nama": "Altamish",
+    "jabatan": "Wakil Rektor",
+    "provider": "internal_upload",
+    "signature_hash": "3a1d21a37a4f0fe2f9119d58b3f4f5063b8a9a64fdb2c9a65f5d7a4f65b9a001",
+    "image_path": "/uploads/signatures/warek-paraf.png",
+    "is_active": true,
+    "updated_at": "2026-04-16T00:00:00.000Z"
+  },
+  {
+    "id": "sp-u-1776227949389",
+    "user_id": "u-1776227949389",
+    "nama": "Tamish",
+    "jabatan": "Rektor",
+    "provider": "internal_upload",
+    "signature_hash": "52f4370567a2e4a26edf4af5c6f77b2d55843b838f5bbbe4d2a2830a2bc9d440",
+    "image_path": "/uploads/signatures/rektor-tte.png",
+    "is_active": true,
+    "updated_at": "2026-04-16T00:00:00.000Z"
+  }
+]

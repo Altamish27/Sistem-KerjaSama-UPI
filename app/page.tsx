@@ -28,8 +28,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useAuth } from "@/lib/auth-context";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion, Variants } from "framer-motion";
 
@@ -54,9 +52,6 @@ const staggerContainer = {
 };
 
 export default function HomePage() {
-  const { user } = useAuth();
-  const router = useRouter();
-
   const [isScrolled, setIsScrolled] = useState(false);
 
   // Handle scroll effect
@@ -71,13 +66,6 @@ export default function HomePage() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  // Redirect jika sudah login
-  useEffect(() => {
-    if (user) {
-      router.push("/dashboard");
-    }
-  }, [user, router]);
 
   return (
     <div className="min-h-screen bg-[#fafcff] relative overflow-hidden font-sans selection:bg-blue-200">
@@ -104,7 +92,7 @@ export default function HomePage() {
                 alt="Logo UPI"
                 width={40}
                 height={40}
-                className="object-contain"
+                className="object-contain w-auto h-auto"
               />
             </div>
             <div>
@@ -598,7 +586,7 @@ export default function HomePage() {
                     alt="Logo UPI"
                     width={48}
                     height={48}
-                    className="object-contain"
+                    className="object-contain w-auto h-auto"
                   />
                 </div>
                 <div>

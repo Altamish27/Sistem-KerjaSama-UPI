@@ -1,0 +1,65 @@
+[
+  {
+    "id": "u-1776227820222",
+    "unit_id": null,
+    "partner_id": null,
+    "nama": "Hasbi",
+    "email": "dkui@upi.edu",
+    "password": "12345678",
+    "role": "dkui"
+  },
+  {
+    "id": "u-1776227885009",
+    "unit_id": null,
+    "partner_id": null,
+    "nama": "Fikri",
+    "email": "biro.hukum@upi.edu",
+    "password": "12345678",
+    "role": "legal"
+  },
+  {
+    "id": "u-1776227890999",
+    "unit_id": null,
+    "partner_id": null,
+    "nama": "Sekretaris UPI",
+    "email": "sekretaris@upi.edu",
+    "password": "12345678",
+    "role": "sekretaris_univ"
+  },
+  {
+    "id": "u-1776227904731",
+    "unit_id": null,
+    "partner_id": null,
+    "nama": "Haqqul",
+    "email": "fakultas@upi.edu",
+    "password": "12345678",
+    "role": "fakultas_staf"
+  },
+  {
+    "id": "u-1776227949389",
+    "unit_id": null,
+    "partner_id": null,
+    "nama": "Tamish",
+    "email": "rektor@upi.edu",
+    "password": "12345678",
+    "role": "rektor"
+  },
+  {
+    "id": "u-1776227967103",
+    "unit_id": null,
+    "partner_id": null,
+    "nama": "Altamish",
+    "email": "warek@upi.edu",
+    "password": "12345678",
+    "role": "warek"
+  },
+  {
+    "id": "u-1776227999000",
+    "unit_id": null,
+    "partner_id": null,
+    "nama": "Admin Workflow",
+    "email": "admin@upi.edu",
+    "password": "12345678",
+    "role": "admin"
+  }
+]

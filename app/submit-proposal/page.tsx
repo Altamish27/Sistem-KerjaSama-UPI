@@ -1,378 +1,380 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowLeft, Send, CheckCircle2, Upload, X } from "lucide-react"
-import Link from "next/link"
+import { useState } from "react";
+import Link from "next/link";
+import { FileText, ArrowLeft, Upload } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function SubmitProposalPage() {
-  const router = useRouter()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [error, setError] = useState("")
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState("");
 
   const [formData, setFormData] = useState({
-    // Contact Info
+    partnerName: "",
+    address: "",
     contactPerson: "",
-    contactEmail: "",
-    contactPhone: "",
-    institution: "",
-    
-    // Proposal Data (Simplified)
+    contactPosition: "",
+    phone: "",
+    companyEmail: "",
     title: "",
+    purpose: "",
     cooperationType: "",
-    objectives: "",
-    startDate: "",
-    endDate: "",
-  })
+    scope: "",
+  });
 
-  const handleChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-  }
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+
+  const handleChange = (field: keyof typeof formData, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setUploadedFile(e.target.files[0])
-    }
-  }
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploadedFile(files[0]);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
-    setIsSubmitting(true)
+    e.preventDefault();
+    setError("");
+    setIsSubmitted(false);
 
-    // Validation
-    if (!formData.contactEmail || !formData.contactPerson || !formData.institution || !formData.title || !formData.cooperationType) {
-      setError("Mohon lengkapi semua field yang wajib diisi")
-      setIsSubmitting(false)
-      return
+    if (!formData.partnerName || !formData.address || !formData.contactPerson || !formData.phone || !formData.companyEmail || !formData.title || !formData.purpose || !formData.cooperationType || !formData.scope) {
+      setError("Mohon lengkapi semua field wajib bertanda *");
+      return;
     }
 
-    if (!uploadedFile) {
-      setError("Dokumen proposal wajib diupload")
-      setIsSubmitting(false)
-      return
-    }
-
+    setIsSubmitting(true);
     try {
-      // Submit proposal DULU untuk dapat proposalId
-      const response = await fetch("/api/public-proposal", {
+      const payload = new FormData();
+      payload.append("partnerName", formData.partnerName);
+      payload.append("address", formData.address);
+      payload.append("contactPerson", formData.contactPerson);
+      payload.append("contactPosition", formData.contactPosition);
+      payload.append("phone", formData.phone);
+      payload.append("companyEmail", formData.companyEmail);
+      payload.append("title", formData.title);
+      payload.append("purpose", formData.purpose);
+      payload.append("cooperationType", formData.cooperationType);
+      payload.append("scope", formData.scope);
+
+      if (uploadedFile) {
+        payload.append("file", uploadedFile);
+      }
+
+      const res = await fetch("/api/public-proposal", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      })
+        body: payload,
+      });
 
-      if (!response.ok) {
-        throw new Error("Gagal mengirim proposal")
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.message || "Terjadi kesalahan saat mengirim pengajuan");
       }
 
-      const { proposalId } = await response.json()
-
-      // Upload file SETELAH proposal dibuat (jika ada)
-      if (uploadedFile && proposalId) {
-        const fileFormData = new FormData()
-        fileFormData.append("file", uploadedFile)
-        fileFormData.append("proposalId", proposalId)
-        fileFormData.append("category", "proposal")
-
-        const uploadResponse = await fetch("/api/upload", {
-          method: "POST",
-          body: fileFormData,
-        })
-
-        if (!uploadResponse.ok) {
-          const errorData = await uploadResponse.json()
-          console.error("File upload failed:", errorData)
-          // Don't fail the whole submission if file upload fails
-        }
-      }
-
-      setSuccess(true)
-      
-      // Redirect setelah 3 detik
-      setTimeout(() => {
-        router.push("/")
-      }, 3000)
-
-    } catch (err) {
-      console.error("Submit error:", err)
-      setError("Terjadi kesalahan saat mengirim proposal. Silakan coba lagi.")
+      setIsSubmitted(true);
+      // Optional: reset form setelah sukses
+      setFormData({
+        partnerName: "",
+        address: "",
+        contactPerson: "",
+        contactPosition: "",
+        phone: "",
+        companyEmail: "",
+        title: "",
+        purpose: "",
+        cooperationType: "",
+        scope: "",
+      });
+      setUploadedFile(null);
+    } catch (err: any) {
+      console.error("Submit proposal error", err);
+      setError(err.message || "Terjadi kesalahan saat mengirim pengajuan");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
-  if (success) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
-        <Card className="max-w-md w-full">
-          <CardContent className="pt-12 pb-12 text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle2 className="w-10 h-10 text-green-600" />
+  return (
+    <main className="min-h-screen bg-gray-50 py-8">
+      <div className="container mx-auto px-4 max-w-4xl">
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-[#e10000] transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+            Kembali ke Beranda
+          </Link>
+          <span className="hidden sm:inline-flex items-center text-xs font-semibold uppercase text-[#e10000] bg-red-50 border border-red-200 rounded-lg px-3 py-1.5">
+            Form Pengajuan
+          </span>
+        </div>
+
+        <Card className="bg-white border border-gray-200 shadow-lg">
+          <CardHeader className="border-b border-gray-200 bg-white">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#e10000] to-[#b00000] flex items-center justify-center flex-shrink-0">
+                <FileText className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <CardTitle className="text-2xl font-bold text-gray-900">
+                  Form Pengajuan Kemitraan
+                </CardTitle>
+                <CardDescription className="text-gray-600 text-sm mt-1.5">
+                  Isi identitas mitra dan ringkasan rencana kerja sama. Tim DKUI akan menindaklanjuti melalui kontak yang Anda cantumkan.
+                </CardDescription>
+              </div>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Proposal Berhasil Dikirim!</h2>
-            <p className="text-gray-600 mb-6">
-              Terima kasih telah mengajukan proposal kerjasama. Kami telah mengirimkan konfirmasi ke email Anda.
-              <br/><br/>
-              Tim DKUI akan segera mereview proposal Anda. Jika proposal disetujui, Anda akan menerima email dengan kredensial login untuk mengakses dashboard.
-            </p>
-            <Link href="/">
-              <Button>Kembali ke Beranda</Button>
-            </Link>
+          </CardHeader>
+
+          <CardContent className="p-6 md:p-8">
+            <form onSubmit={handleSubmit} className="space-y-8">
+              <section className="space-y-4">
+                <div className="pb-2 border-b border-gray-200">
+                  <h2 className="text-lg font-bold text-gray-900">
+                    A. Identitas Mitra
+                  </h2>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Data dasar organisasi/perusahaan mitra sebagai pihak pengaju kerja sama.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="space-y-2">
+                    <Label htmlFor="partnerName" className="text-slate-900 font-medium">
+                      Nama Mitra / Organisasi *
+                    </Label>
+                    <Input
+                      id="partnerName"
+                      placeholder="Contoh: PT. Teknologi Maju Indonesia"
+                      value={formData.partnerName}
+                      onChange={(e) => handleChange("partnerName", e.target.value)}
+                      className="border-gray-300 focus:border-[#e10000] focus:ring-2 focus:ring-red-100"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="contactPerson" className="text-slate-900 font-medium">
+                      Nama Contact Person (CP) *
+                    </Label>
+                    <Input
+                      id="contactPerson"
+                      placeholder="Nama lengkap CP"
+                      value={formData.contactPerson}
+                      onChange={(e) => handleChange("contactPerson", e.target.value)}
+                      className="border-gray-300 focus:border-[#e10000] focus:ring-2 focus:ring-red-100"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="contactPosition" className="text-slate-900 font-medium">
+                      Jabatan CP
+                    </Label>
+                    <Input
+                      id="contactPosition"
+                      placeholder="Contoh: Head of Partnership"
+                      value={formData.contactPosition}
+                      onChange={(e) => handleChange("contactPosition", e.target.value)}
+                      className="border-gray-300 focus:border-[#e10000] focus:ring-2 focus:ring-red-100"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="text-slate-900 font-medium">
+                      No. HP / Kontak *
+                    </Label>
+                    <Input
+                      id="phone"
+                      placeholder="Contoh: +62 812-3456-7890"
+                      value={formData.phone}
+                      onChange={(e) => handleChange("phone", e.target.value)}
+                      className="border-gray-300 focus:border-[#e10000] focus:ring-2 focus:ring-red-100"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-[2fr,1.5fr] gap-5">
+                  <div className="space-y-2">
+                    <Label htmlFor="address" className="text-slate-900 font-medium">
+                      Alamat Lengkap *
+                    </Label>
+                    <Textarea
+                      id="address"
+                      placeholder="Tulis alamat lengkap kantor / institusi mitra"
+                      value={formData.address}
+                      onChange={(e) => handleChange("address", e.target.value)}
+                      rows={3}
+                      className="border-gray-300 focus:border-[#e10000] focus:ring-2 focus:ring-red-100"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="companyEmail" className="text-slate-900 font-medium">
+                      Email Perusahaan *
+                    </Label>
+                    <Input
+                      id="companyEmail"
+                      type="email"
+                      placeholder="nama@perusahaan.co.id"
+                      value={formData.companyEmail}
+                      onChange={(e) => handleChange("companyEmail", e.target.value)}
+                      className="border-gray-300 focus:border-[#e10000] focus:ring-2 focus:ring-red-100"
+                    />
+                  </div>
+                </div>
+              </section>
+
+              <section className="space-y-4">
+                <div className="pb-2 border-b border-gray-200">
+                  <h2 className="text-lg font-bold text-gray-900">
+                    B. Informasi Pengajuan Kerja Sama
+                  </h2>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Ringkasan rencana kerja sama yang diajukan, termasuk jenis dan ruang lingkupnya.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="title" className="text-slate-900 font-medium">
+                    Judul Pengajuan *
+                  </Label>
+                  <Input
+                    id="title"
+                    placeholder="Contoh: Kerja Sama Penelitian IoT dan Smart City"
+                    value={formData.title}
+                    onChange={(e) => handleChange("title", e.target.value)}
+                    className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:border-[#003d7a] focus:ring-2 focus:ring-[#003d7a]/10"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="purpose" className="text-slate-900 font-medium">
+                    Tujuan Kerja Sama *
+                  </Label>
+                  <Textarea
+                    id="purpose"
+                    placeholder="Jelaskan secara singkat tujuan utama dari kerja sama yang diajukan"
+                    value={formData.purpose}
+                    onChange={(e) => handleChange("purpose", e.target.value)}
+                    rows={4}
+                    className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:border-[#003d7a] focus:ring-2 focus:ring-[#003d7a]/10"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="space-y-2">
+                    <Label htmlFor="cooperationType" className="text-slate-900 font-medium">
+                      Jenis Kerja Sama *
+                    </Label>
+                    <Select
+                      value={formData.cooperationType}
+                      onValueChange={(value) => handleChange("cooperationType", value)}
+                    >
+                      <SelectTrigger className="border-gray-300 focus:border-[#e10000] focus:ring-2 focus:ring-red-100">
+                        <SelectValue placeholder="Pilih jenis kerja sama" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border-gray-200 shadow-lg">
+                        <SelectItem value="penelitian">Penelitian</SelectItem>
+                        <SelectItem value="pendidikan">Pendidikan / Pengajaran</SelectItem>
+                        <SelectItem value="pengabdian">Pengabdian kepada Masyarakat</SelectItem>
+                        <SelectItem value="magang">Magang / PKL / Praktik</SelectItem>
+                        <SelectItem value="lainnya">Lainnya</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="scope" className="text-slate-900 font-medium">
+                      Ruang Lingkup Kerja Sama *
+                    </Label>
+                    <Select value={formData.scope} onValueChange={(value) => handleChange("scope", value)}>
+                      <SelectTrigger className="border-gray-300 focus:border-[#e10000] focus:ring-2 focus:ring-red-100">
+                        <SelectValue placeholder="Pilih ruang lingkup" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border-gray-200 shadow-lg">
+                        <SelectItem value="universitas">Universitas</SelectItem>
+                        <SelectItem value="fakultas">Fakultas</SelectItem>
+                        <SelectItem value="prodi">Prodi / Unit Kerja</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-slate-900 font-medium">Dokumen Pengajuan (opsional)</Label>
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <Upload className="w-5 h-5 text-gray-500" />
+                        <div className="space-y-0.5">
+                          <p className="text-sm font-medium text-gray-900">Upload dokumen konsep/proposal</p>
+                          <p className="text-xs text-gray-600">Format PDF/DOC/PPT/XLS, maks. 10MB</p>
+                          {uploadedFile && (
+                            <p className="text-xs text-[#e10000] font-semibold mt-1">
+                              ✓ {uploadedFile.name}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div>
+                        <input
+                          id="proposalFile"
+                          type="file"
+                          className="hidden"
+                          accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx"
+                          onChange={handleFileChange}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="border-gray-300 text-gray-700 hover:bg-gray-100"
+                          onClick={() => document.getElementById("proposalFile")?.click()}
+                        >
+                          Pilih File
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {error && (
+                <Alert variant="destructive" className="bg-red-50 border-red-200">
+                  <AlertDescription className="text-red-900 text-sm">{error}</AlertDescription>
+                </Alert>
+              )}
+
+              {isSubmitted && !error && (
+                <Alert className="bg-green-50 border-green-200">
+                  <AlertDescription className="text-green-900 text-sm">
+                    Terima kasih, pengajuan awal Anda sudah tercatat di sistem demo. Tim DKUI akan menghubungi melalui email/telepon setelah sistem backend terhubung penuh.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-6 border-t border-gray-200">
+                <p className="text-xs text-gray-600 max-w-md leading-relaxed">
+                  Dengan mengirimkan form ini, Anda menyetujui bahwa data kontak akan digunakan untuk proses tindak lanjut kerja sama oleh UPI.
+                </p>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-[#e10000] hover:bg-[#b00000] text-white font-semibold px-8 py-3 shadow-md hover:shadow-lg transition-all"
+                >
+                  {isSubmitting ? "Mengirim..." : "Kirim Pengajuan"}
+                </Button>
+              </div>
+            </form>
           </CardContent>
         </Card>
       </div>
-    )
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4 max-w-3xl">
-        {/* Header */}
-        <div className="mb-8">
-          <Link href="/">
-            <Button variant="outline" className="mb-4">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Kembali
-            </Button>
-          </Link>
-          <h1 className="text-3xl font-bold text-gray-900">Ajukan Proposal Kerjasama</h1>
-          <p className="text-gray-600 mt-2">
-            Isi form di bawah untuk mengajukan kerjasama dengan Universitas Pendidikan Indonesia
-          </p>
-        </div>
-
-        {error && (
-          <Alert className="mb-6 bg-red-50 border-red-200">
-            <AlertDescription className="text-red-800">{error}</AlertDescription>
-          </Alert>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Contact Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Informasi Kontak</CardTitle>
-              <CardDescription>Data institusi dan penanggung jawab proposal</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="institution">
-                  Nama Institusi/Perusahaan <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="institution"
-                  value={formData.institution}
-                  onChange={(e) => handleChange("institution", e.target.value)}
-                  placeholder="PT. Contoh Perusahaan"
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="contactPerson">
-                  Nama Penanggung Jawab <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="contactPerson"
-                  value={formData.contactPerson}
-                  onChange={(e) => handleChange("contactPerson", e.target.value)}
-                  placeholder="Nama lengkap"
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="contactEmail">
-                  Email <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="contactEmail"
-                  type="email"
-                  value={formData.contactEmail}
-                  onChange={(e) => handleChange("contactEmail", e.target.value)}
-                  placeholder="email@example.com"
-                  required
-                />
-                <p className="text-sm text-gray-500 mt-1">
-                  Email ini akan digunakan untuk login setelah proposal disetujui
-                </p>
-              </div>
-
-              <div>
-                <Label htmlFor="contactPhone">
-                  No. Telepon <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="contactPhone"
-                  type="tel"
-                  value={formData.contactPhone}
-                  onChange={(e) => handleChange("contactPhone", e.target.value)}
-                  placeholder="08123456789"
-                  required
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Proposal Details */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Detail Proposal</CardTitle>
-              <CardDescription>Informasi dasar tentang kerjasama yang diajukan</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="title">
-                  Judul Proposal <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) => handleChange("title", e.target.value)}
-                  placeholder="Kerjasama Penelitian Teknologi Pendidikan"
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="cooperationType">
-                  Jenis Kerjasama <span className="text-red-500">*</span>
-                </Label>
-                <Select value={formData.cooperationType} onValueChange={(value) => handleChange("cooperationType", value)} required>
-                  <SelectTrigger id="cooperationType">
-                    <SelectValue placeholder="Pilih jenis dokumen kerjasama..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="MoU">MoU (Memorandum of Understanding)</SelectItem>
-                    <SelectItem value="MoA">MoA (Memorandum of Agreement)</SelectItem>
-                    <SelectItem value="PKS">PKS (Perjanjian Kerjasama)</SelectItem>
-                    <SelectItem value="IA">IA (Implementation Agreement)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="objectives">
-                  Tujuan Kerjasama <span className="text-red-500">*</span>
-                </Label>
-                <Textarea
-                  id="objectives"
-                  value={formData.objectives}
-                  onChange={(e) => handleChange("objectives", e.target.value)}
-                  placeholder="Jelaskan tujuan dan hal yang ingin dicapai dari kerjasama ini..."
-                  rows={5}
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="startDate">
-                    Tanggal Mulai <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="startDate"
-                    type="date"
-                    value={formData.startDate}
-                    onChange={(e) => handleChange("startDate", e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="endDate">
-                    Tanggal Selesai <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="endDate"
-                    type="date"
-                    value={formData.endDate}
-                    onChange={(e) => handleChange("endDate", e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Document Upload */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Dokumen Proposal <span className="text-red-500">*</span></CardTitle>
-              <CardDescription>Upload dokumen proposal kerjasama (WAJIB)</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <Input
-                  id="file-upload"
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-                <Label
-                  htmlFor="file-upload"
-                  className="flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-[#003d7a] hover:bg-blue-50 transition"
-                >
-                  <div className="text-center">
-                    <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                    <p className="text-sm text-gray-600">
-                      {uploadedFile ? uploadedFile.name : "Klik untuk upload dokumen"}
-                    </p>
-                    <p className="text-xs text-gray-400 mt-1">PDF, DOC, DOCX (Max 10MB)</p>
-                  </div>
-                </Label>
-                
-                {uploadedFile && (
-                  <div className="flex items-center justify-between bg-blue-50 p-3 rounded">
-                    <span className="text-sm">{uploadedFile.name}</span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setUploadedFile(null)}
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Submit Button */}
-          <div className="flex gap-4">
-            <Link href="/" className="flex-1">
-              <Button type="button" variant="outline" className="w-full">
-                Batal
-              </Button>
-            </Link>
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex-1 bg-[#003d7a] hover:bg-[#002d5a]"
-            >
-              {isSubmitting ? (
-                <>Mengirim...</>
-              ) : (
-                <>
-                  <Send className="w-4 h-4 mr-2" />
-                  Kirim Proposal
-                </>
-              )}
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>
-  )
+    </main>
+  );
 }
