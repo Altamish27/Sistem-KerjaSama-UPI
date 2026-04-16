@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
       console.error("Error creating auth user:", authError)
       return NextResponse.json(
         { error: authError.message || "Gagal membuat akun" },
-        { status: 500 }
+        { status: 400 }
       )
     }
 
@@ -96,8 +96,8 @@ export async function POST(request: NextRequest) {
       await supabaseAdmin.auth.admin.deleteUser(authData.user.id)
       
       return NextResponse.json(
-        { error: "Gagal menyimpan data user" },
-        { status: 500 }
+        { error: insertError.message || "Gagal menyimpan data user" },
+        { status: 400 }
       )
     }
 
@@ -106,10 +106,10 @@ export async function POST(request: NextRequest) {
       message: "Registrasi berhasil! Silakan login.",
       userId: authData.user.id,
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in register:", error)
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: error?.message || "Internal server error", stack: error?.stack },
       { status: 500 }
     )
   }
