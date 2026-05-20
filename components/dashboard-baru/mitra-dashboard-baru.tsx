@@ -4,7 +4,7 @@ import { useAuth } from "@/lib/auth-context"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { FileText, Clock, CheckCircle2, AlertCircle, Plus } from "lucide-react"
+import { FileText, Clock, CheckCircle2, AlertCircle, Plus, ArrowRight, Sparkles, TrendingUp } from "lucide-react"
 import Link from "next/link"
 import { useDataStore } from "@/lib/data-store"
 import { STATUS_LABELS } from "@/lib/mock-data"
@@ -33,113 +33,170 @@ export function MitraDashboardBaru() {
     return "bg-amber-50 text-amber-700 border-amber-200"
   }
 
+  const statCards = [
+    {
+      label: "Draft",
+      value: draftCount,
+      desc: "Proposal belum diajukan",
+      icon: FileText,
+      gradient: "from-slate-500 to-slate-700",
+      bg: "from-slate-50 to-white",
+      border: "border-slate-200",
+      iconBg: "bg-slate-100",
+      iconColor: "text-slate-600",
+    },
+    {
+      label: "Dalam Proses",
+      value: pendingCount,
+      desc: "Sedang dalam review",
+      icon: Clock,
+      gradient: "from-amber-500 to-orange-600",
+      bg: "from-amber-50 to-white",
+      border: "border-amber-200",
+      iconBg: "bg-amber-100",
+      iconColor: "text-amber-600",
+    },
+    {
+      label: "Selesai",
+      value: completedCount,
+      desc: "Proposal disetujui",
+      icon: CheckCircle2,
+      gradient: "from-emerald-500 to-teal-600",
+      bg: "from-emerald-50 to-white",
+      border: "border-emerald-200",
+      iconBg: "bg-emerald-100",
+      iconColor: "text-emerald-600",
+    },
+    {
+      label: "Ditolak",
+      value: rejectedCount,
+      desc: "Proposal tidak disetujui",
+      icon: AlertCircle,
+      gradient: "from-red-500 to-rose-600",
+      bg: "from-red-50 to-white",
+      border: "border-red-200",
+      iconBg: "bg-red-100",
+      iconColor: "text-red-600",
+    },
+  ]
+
   return (
     <div className="space-y-6 sm:space-y-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">Dashboard MITRA</h1>
-          <p className="text-slate-600 mt-1 sm:mt-2 text-base lg:text-lg">Selamat datang, {user?.name}</p>
+      {/* Hero Header */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] p-6 sm:p-8 shadow-xl">
+        {/* Decorative elements */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#e10000]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4" />
+
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="p-1.5 rounded-lg bg-[#e10000]/20 border border-[#e10000]/30">
+                <Sparkles className="w-4 h-4 text-[#e10000]" />
+              </div>
+              <span className="text-[#e10000] text-sm font-semibold tracking-wide uppercase">Portal Mitra</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight">
+              Dashboard <span className="text-[#e10000]">MITRA</span>
+            </h1>
+            <p className="text-slate-300 mt-1.5 text-sm sm:text-base">
+              Selamat datang, <span className="text-white font-semibold">{user?.name}</span>
+            </p>
+          </div>
+          <Link href="/dashboard/proposals/new">
+            <Button className="bg-[#e10000] text-white hover:bg-[#c10000] shadow-lg shadow-red-900/30 px-5 sm:px-7 py-3 sm:py-5 text-sm sm:text-base w-full sm:w-auto rounded-xl font-semibold transition-all duration-200 hover:scale-105 hover:shadow-red-800/40 border border-[#ff4444]/30">
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+              Ajukan Proposal Kerja Sama
+            </Button>
+          </Link>
         </div>
-        <Link href="/dashboard/proposals/new">
-          <Button className="bg-[#e10000] text-white hover:bg-[#c10000] shadow-sm px-4 sm:px-6 py-3 sm:py-5 text-sm sm:text-base w-full sm:w-auto">
-            <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-            Ajukan Proposal Kerja Sama
-          </Button>
-        </Link>
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
-        <Card className="bg-white border-slate-200 shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 sm:pb-3">
-            <CardTitle className="text-sm sm:text-base font-semibold text-slate-900">Draft</CardTitle>
-            <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-slate-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl sm:text-3xl font-bold text-slate-900">{draftCount}</div>
-            <p className="text-xs sm:text-sm text-slate-600 mt-1 sm:mt-2">Proposal belum diajukan</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white border-slate-200 shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 sm:pb-3">
-            <CardTitle className="text-sm sm:text-base font-semibold text-slate-900">Dalam Proses</CardTitle>
-            <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl sm:text-3xl font-bold text-slate-900">{pendingCount}</div>
-            <p className="text-xs sm:text-sm text-slate-600 mt-1 sm:mt-2">Sedang dalam review</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white border-slate-200 shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 sm:pb-3">
-            <CardTitle className="text-sm sm:text-base font-semibold text-slate-900">Selesai</CardTitle>
-            <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl sm:text-3xl font-bold text-slate-900">{completedCount}</div>
-            <p className="text-xs sm:text-sm text-slate-600 mt-1 sm:mt-2">Proposal disetujui</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white border-slate-200 shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 sm:pb-3">
-            <CardTitle className="text-sm sm:text-base font-semibold text-slate-900">Ditolak</CardTitle>
-            <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-[#e10000]" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-slate-900">{rejectedCount}</div>
-            <p className="text-sm text-slate-600 mt-2">Proposal tidak disetujui</p>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
+        {statCards.map((card) => {
+          const Icon = card.icon
+          return (
+            <div
+              key={card.label}
+              className={`relative overflow-hidden rounded-2xl border ${card.border} bg-gradient-to-br ${card.bg} p-4 sm:p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5`}
+            >
+              <div className={`absolute top-0 right-0 w-20 h-20 rounded-full blur-2xl opacity-30 bg-gradient-to-br ${card.gradient}`} />
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs sm:text-sm font-semibold text-slate-600">{card.label}</span>
+                  <div className={`p-2 rounded-xl ${card.iconBg}`}>
+                    <Icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${card.iconColor}`} />
+                  </div>
+                </div>
+                <div className={`text-2xl sm:text-3xl font-black bg-gradient-to-br ${card.gradient} bg-clip-text text-transparent`}>
+                  {card.value}
+                </div>
+                <p className="text-xs text-slate-500 mt-1">{card.desc}</p>
+              </div>
+            </div>
+          )
+        })}
       </div>
 
       {/* Action Needed */}
       {actionNeeded.length > 0 && (
-        <Card className="bg-amber-50/30 border-amber-200 shadow-sm">
-          <CardHeader className="pb-5">
-            <CardTitle className="text-2xl font-bold text-slate-900">Memerlukan Tindakan Anda</CardTitle>
-            <CardDescription className="text-slate-600 text-base">
-              Proposal yang menunggu tindakan dari Anda
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {actionNeeded.map((proposal) => (
-                <Link key={proposal.id} href={`/dashboard/proposals/${proposal.id}`}>
-                  <div className="p-6 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors bg-white shadow-sm">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <Badge className={getStatusColor(proposal.status)}>{STATUS_LABELS[proposal.status]}</Badge>
-                        </div>
-                        <h3 className="font-semibold text-slate-900 text-lg">{proposal.title}</h3>
-                        <p className="text-base text-slate-600 mt-2">UPI - {proposal.fakultas}</p>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
+        <div className="rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50/30 overflow-hidden shadow-sm">
+          <div className="p-5 sm:p-6 border-b border-amber-200/60">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-amber-100 border border-amber-200">
+                <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
+              </div>
+              <div>
+                <h2 className="text-base sm:text-lg font-bold text-slate-900">Memerlukan Tindakan Anda</h2>
+                <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Proposal yang menunggu tindakan dari Anda</p>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="p-4 sm:p-6 space-y-3">
+            {actionNeeded.map((proposal) => (
+              <Link key={proposal.id} href={`/dashboard/proposals/${proposal.id}`}>
+                <div className="group p-4 sm:p-5 rounded-xl border border-slate-200 hover:border-amber-300 bg-white hover:bg-amber-50/30 transition-all duration-200 shadow-sm hover:shadow-md">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-2 flex-wrap">
+                        <Badge className={getStatusColor(proposal.status)}>{STATUS_LABELS[proposal.status]}</Badge>
+                      </div>
+                      <h3 className="font-semibold text-slate-900 text-sm sm:text-base leading-snug truncate">{proposal.title}</h3>
+                      <p className="text-xs sm:text-sm text-slate-500 mt-1">UPI - {proposal.fakultas}</p>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-amber-600 group-hover:translate-x-0.5 transition-all duration-200 flex-shrink-0 mt-1" />
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
       )}
 
       {/* Tracking Proposal Aktif */}
       {userProposals.filter((p) => p.status !== "draft" && p.status !== "completed" && p.status !== "rejected").length > 0 && (
-        <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-slate-900">Tracking Proposal Aktif</h2>
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-blue-100 border border-blue-200">
+              <TrendingUp className="w-4 h-4 text-blue-600" />
+            </div>
+            <h2 className="text-lg sm:text-xl font-bold text-slate-900">Tracking Proposal Aktif</h2>
+          </div>
           {userProposals
             .filter((p) => p.status !== "draft" && p.status !== "completed" && p.status !== "rejected")
             .slice(0, 2)
             .map((proposal) => (
-              <div key={proposal.id} className="space-y-4">
+              <div key={proposal.id} className="space-y-3">
                 <Link href={`/dashboard/proposals/${proposal.id}`}>
-                  <div className="p-6 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors shadow-sm">
-                    <h3 className="font-semibold text-slate-900 mb-2 text-lg">{proposal.title}</h3>
-                    <p className="text-base text-slate-600">{proposal.partnerName}</p>
+                  <div className="group p-4 sm:p-5 rounded-xl border border-slate-200 bg-white hover:border-blue-200 hover:bg-blue-50/20 transition-all duration-200 shadow-sm hover:shadow-md">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-slate-900 text-sm sm:text-base leading-snug">{proposal.title}</h3>
+                        <p className="text-xs sm:text-sm text-slate-500 mt-0.5">{proposal.partnerName}</p>
+                      </div>
+                      <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all duration-200 flex-shrink-0" />
+                    </div>
                   </div>
                 </Link>
                 <SimpleTracker proposal={proposal} />
@@ -152,45 +209,46 @@ export function MitraDashboardBaru() {
       <CommentsCard />
 
       {/* Daftar Proposal */}
-      <Card className="bg-white border-slate-200 shadow-sm">
-        <CardHeader className="pb-5">
-          <CardTitle className="text-2xl font-bold text-slate-900">Proposal Terbaru</CardTitle>
-          <CardDescription className="text-slate-600 text-base">
-            Daftar proposal kerja sama terbaru Anda
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+      <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+        <div className="p-5 sm:p-6 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
+          <h2 className="text-base sm:text-lg font-bold text-slate-900">Proposal Terbaru</h2>
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Daftar proposal kerja sama terbaru Anda</p>
+        </div>
+        <div className="p-4 sm:p-6">
           {userProposals.length === 0 ? (
-            <div className="text-center py-16">
-              <FileText className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-              <p className="text-slate-600 mb-6 text-lg">Belum ada proposal</p>
+            <div className="text-center py-14">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-slate-100 mb-4">
+                <FileText className="w-8 h-8 text-slate-400" />
+              </div>
+              <p className="text-slate-500 mb-5 text-sm sm:text-base">Belum ada proposal</p>
               <Link href="/dashboard/proposals/new">
-                <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-50 bg-white px-6 py-5">
+                <Button variant="outline" className="border-slate-200 text-slate-700 hover:bg-slate-50 bg-white px-6 rounded-xl">
                   Buat Proposal Pertama
                 </Button>
               </Link>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {userProposals.slice(0, 5).map((proposal) => (
                 <Link key={proposal.id} href={`/dashboard/proposals/${proposal.id}`}>
-                  <div className="p-6 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors shadow-sm">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
+                  <div className="group p-4 sm:p-5 rounded-xl border border-slate-150 hover:border-slate-300 bg-slate-50/50 hover:bg-white transition-all duration-200 hover:shadow-sm">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                           <Badge className={getStatusColor(proposal.status)}>{STATUS_LABELS[proposal.status]}</Badge>
                         </div>
-                        <h3 className="font-semibold text-slate-900 text-lg">{proposal.title}</h3>
-                        <p className="text-base text-slate-600 mt-2">UPI - {proposal.fakultas}</p>
+                        <h3 className="font-semibold text-slate-900 text-sm sm:text-base leading-snug truncate">{proposal.title}</h3>
+                        <p className="text-xs sm:text-sm text-slate-500 mt-1">UPI - {proposal.fakultas}</p>
                       </div>
+                      <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-all duration-200 flex-shrink-0 mt-1" />
                     </div>
                   </div>
                 </Link>
               ))}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }
